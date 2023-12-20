@@ -1478,10 +1478,8 @@ run_clpm_mplus <- function(data,
 
 #' Runs Univariate Starts Model for X in Mplus
 #'
-#' `run_sts_mplus()` Wrapper function for `run_starts_mplus()`. Produces and
-#' runs Mplus code for the STS Model, which is a STARTS model where the
-#' autoregressive trait variance is set to 0. This is also known as a factor
-#' CLPM.
+#' `run_startsx_mplus()` Wrapper function for `run_starts_mplus()`. Produces and
+#' runs Mplus code for the univariate STARTS model (for variables names X).
 #'
 #' @param data Dataframe that contains variables for analysis.
 #' @param waves Numeric value indicating total number of waves.
@@ -1532,11 +1530,10 @@ run_startsx_mplus <- function(data,
     )
 }
 
-#' Runs Univariate Starts Model for X in Mplus
+#' Runs Univariate Starts Model for Y in Mplus
 #'
-#' `run_sts_mplus()` Wrapper function for `run_starts_mplus()`. Produces and
-#' runs Mplus code for the STS Model, which is a STARTS model where the
-#' autoregressive trait variance is set to 0. This is also known as a factor
+#' `run_startsy_mplus()` Wrapper function for `run_starts_mplus()`. Produces and
+#' runs Mplus code for the univariate STARTS model (for variables names Y).
 #' CLPM.
 #'
 #' @param data Dataframe that contains variables for analysis.

@@ -91,3 +91,47 @@ run_startsy_mplus(data[1:1000,],
 test$results$parameters$unstandardized
 summary(test)
 
+################################################################################
+## lavaan
+################################################################################
+
+## Univariate Starts
+startsModelX <- lavaanStartsX(10, 1:10)
+cat(startsModelX)
+startsFitX <- lavaan(startsModelX, data)
+summary(startsFitX)
+
+startsModelX <- lavaanStartsX(10, xWaves = c(1,2,3,5,6,7,9,10))
+cat(startsModelX)
+startsFitX <- lavaan(startsModelX, data)
+summary(startsFitX)
+
+startsModelY <- lavaanStartsY(10, 1:10)
+cat(startsModelY)
+startsFitY <- lavaan(startsModelY, data)
+summary(startsFitY)
+fitMeasures(startsFitY)
+
+startsMod2 <- lavaanStarts2(10, xWaves = c(1,2,3,5,6,7,9,10), yWaves = c(2,3,5,6,8,9))
+cat(startsMod2)
+startsFit2 <- lavaan(startsMod2, data)
+summary(startsFit2)
+
+
+riclpmMod <- lavaanRiclpm(10, 1:10)
+cat(riclpmMod)
+riclpmFit <- lavaan(riclpmMod, data[1:1000,])
+summary(riclpmFit)
+
+clpmMod <- lavaanClpm(10,1:10)
+cat(clpmMod)
+clpmFit <- lavaan(clpmMod, data[1:1000,])
+summary(clpmFit)
+
+
+artsMod <- lavaanArts(10, 1:10)
+cat(artsMod)
+artsFit <- lavaan(artsMod, data)
+summary(artsFit)
+
+
