@@ -1,0 +1,11 @@
+Package: panelCodeR
+Title: Produces Lavaan and Mplus Code for Various Models for Panel Data
+Version: 0.0.0.9000
+Authors@R: 
+    person("Richard", "Lucas", , "richard.e.lucas@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-7995-3319"))
+Description: This package produces lavaan and Mplus code for various models for panel data. One function creates lavaan code for the Stable Trait, Autoregressive Trait, State (STARTS) model and its constrained variants, and one function does this for Mplus. Univariate or bivariate models can be specified. The package also produces code for one version of a dynamic panel model. 
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3

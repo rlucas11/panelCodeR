@@ -1,0 +1,2693 @@
+Mplus VERSION 7.3 (Linux)
+MUTHEN & MUTHEN
+12/19/2023  11:15 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE:
+  arts
+  DATA:
+  FILE = "mplus/arts_4d58af24b30d4413a119ba00f5a6bc62.dat";
+
+  VARIABLE:
+  NAMES = x1a x1b x1c x2a x2b x2c x3a x3b x3c x4a x4b x4c x5a x5b x5c x7a x7b x7c x8a
+       x8b x8c x9a x9b x9c x10a x10b x10c y1 y2 y3 y4 y5;
+   MISSING=.;
+
+  ANALYSIS:
+  MODEL=NOCOVARIANCES;
+  COVERAGE=.001;
+  MODEL:
+  !!! Automated Code for Mplus
+
+  !!! No Phantom X Variables;
+
+  !! Multiple Indicators;
+  lx1 by x1a@1;
+  lx1 by x1b (lxb) ;
+  lx1 by x1c (lxc) ;
+  lx2 by x2a@1;
+  lx2 by x2b (lxb) ;
+  lx2 by x2c (lxc) ;
+  lx3 by x3a@1;
+  lx3 by x3b (lxb) ;
+  lx3 by x3c (lxc) ;
+  lx4 by x4a@1;
+  lx4 by x4b (lxb) ;
+  lx4 by x4c (lxc) ;
+  lx5 by x5a@1;
+  lx5 by x5b (lxb) ;
+  lx5 by x5c (lxc) ;
+  lx7 by x7a@1;
+  lx7 by x7b (lxb) ;
+  lx7 by x7c (lxc) ;
+  lx8 by x8a@1;
+  lx8 by x8b (lxb) ;
+  lx8 by x8c (lxc) ;
+  lx9 by x9a@1;
+  lx9 by x9b (lxb) ;
+  lx9 by x9c (lxc) ;
+  lx10 by x10a@1;
+  lx10 by x10b (lxb) ;
+  lx10 by x10c (lxc) ;
+
+  !!! Indicator Residual Variance
+  x1a (xra) ;
+  x1b (xrb) ;
+  x1c (xrc) ;
+  x2a (xra) ;
+  x2b (xrb) ;
+  x2c (xrc) ;
+  x3a (xra) ;
+  x3b (xrb) ;
+  x3c (xrc) ;
+  x4a (xra) ;
+  x4b (xrb) ;
+  x4c (xrc) ;
+  x5a (xra) ;
+  x5b (xrb) ;
+  x5c (xrc) ;
+  x7a (xra) ;
+  x7b (xrb) ;
+  x7c (xrc) ;
+  x8a (xra) ;
+  x8b (xrb) ;
+  x8c (xrc) ;
+  x9a (xra) ;
+  x9b (xrb) ;
+  x9c (xrc) ;
+  x10a (xra) ;
+  x10b (xrb) ;
+  x10c (xrc) ;
+
+
+  !!! Constrain Latent Occasion Residuals for X to 0
+  lx1@0;
+  lx2@0;
+  lx3@0;
+  lx4@0;
+  lx5@0;
+
+  !!! Stable Trait X;
+  traitX by lx1@1;
+  traitX by lx2@1;
+  traitX by lx3@1;
+  traitX by lx4@1;
+  traitX by lx5@1;
+
+  !!! Trait Variance for X
+  traitX (tx);
+
+  !!! Autoregressive Part for X;
+
+  !!! Indicator Statements;
+  arx1 by lx1@1;
+  arx2 by lx2@1;
+  arx3 by lx3@1;
+  arx4 by lx4@1;
+  arx5 by lx5@1;
+
+  !!! Regression Statements;
+  arx2 on arx1(a);
+  arx3 on arx2(a2);
+  arx4 on arx3(a3);
+  arx5 on arx4(a4);
+
+  !!! Autoregressive Component Variance for X
+  arx1 (arvx);
+  arx2 (arvx2);
+  arx3 (arvx3);
+  arx4 (arvx4);
+  arx5 (arvx5);
+
+
+  !!! States for X;
+  sx1 by lx1@1;
+  sx2 by lx2@1;
+  sx3 by lx3@1;
+  sx4 by lx4@1;
+  sx5 by lx5@1;
+
+  !!! State Variance for X;
+  sx1 (sx);
+  sx2 (sx2);
+  sx3 (sx3);
+  sx4 (sx4);
+  sx5 (sx5);
+
+  !!! No Phantom Y Variables;
+
+  !!! Observed Variables for Y;
+  ly1 by y1@1;
+  ly2 by y2@1;
+  ly3 by y3@1;
+  ly4 by y4@1;
+  ly5 by y5@1;
+
+  !!! Residual Variance Constrained to 0
+  y1@0;
+  y2@0;
+  y3@0;
+  y4@0;
+  y5@0;
+
+
+  !!! Constrain Latent Occasion Residuals for Y to 0
+  ly1@0;
+  ly2@0;
+  ly3@0;
+  ly4@0;
+  ly5@0;
+
+  !!! Stable Trait Y;
+  traitY by ly1@1;
+  traitY by ly2@1;
+  traitY by ly3@1;
+  traitY by ly4@1;
+  traitY by ly5@1;
+
+  !!! Trait Variance for Y
+  traitY (ty);
+
+  !!! Autoregressive Part for Y;
+
+  !!! Indicator Statements;
+  ary1 by ly1@1;
+  ary2 by ly2@1;
+  ary3 by ly3@1;
+  ary4 by ly4@1;
+  ary5 by ly5@1;
+
+  !!! Regression Statements;
+  ary2 on ary1(b);
+  ary3 on ary2(b2);
+  ary4 on ary3(b3);
+  ary5 on ary4(b4);
+
+  !!! Autoregressive Component Variance for Y
+  ary1 (arvy);
+  ary2 (arvy2);
+  ary3 (arvy3);
+  ary4 (arvy4);
+  ary5 (arvy5);
+
+
+  !!! States for Y;
+  sy1 by ly1@1;
+  sy2 by ly2@1;
+  sy3 by ly3@1;
+  sy4 by ly4@1;
+  sy5 by ly5@1;
+
+  !!! State Variance for Y;
+  sy1 (sy);
+  sy2 (sy2);
+  sy3 (sy3);
+  sy4 (sy4);
+  sy5 (sy5);
+
+
+  !!! Cross-Lagged Paths
+
+  !!! Y Predicted from X
+
+  ary2 on arx1 (c);
+  ary3 on arx2(c2);
+  ary4 on arx3(c3);
+  ary5 on arx4(c4);
+
+
+  !!! Cross-Lagged Paths
+
+  !!! X Predicted from Y
+
+  arx2 on ary1 (d);
+  arx3 on ary2(d2);
+  arx4 on ary3(d3);
+  arx5 on ary4(d4);
+
+
+  !!! Stable Trait Correlations
+  traitX with traitY(cov_txty);
+
+  !!! AR Correlations
+  arx1 with ary1(cov_xy);
+  arx2 with ary2(cov_xyr2);
+  arx3 with ary3(cov_xyr3);
+  arx4 with ary4(cov_xyr4);
+  arx5 with ary5(cov_xyr5);
+
+  !!! State Correlations
+
+  sx1 with sy1(cov_s);
+  sx2 with sy2(cov_s2);
+  sx3 with sy3(cov_s3);
+  sx4 with sy4(cov_s4);
+  sx5 with sy5(cov_s5);
+
+  !!! Residual Correlations
+  x1a with x2a (xalag1);
+  x1a with x3a (xalag2);
+  x1a with x4a (xalag3);
+  x1a with x5a (xalag4);
+  x1a with x7a (xalag6);
+  x1a with x8a (xalag7);
+  x1a with x9a (xalag8);
+  x1a with x10a (xalag9);
+  x2a with x3a (xalag1);
+  x2a with x4a (xalag2);
+  x2a with x5a (xalag3);
+  x2a with x7a (xalag5);
+  x2a with x8a (xalag6);
+  x2a with x9a (xalag7);
+  x2a with x10a (xalag8);
+  x3a with x4a (xalag1);
+  x3a with x5a (xalag2);
+  x3a with x7a (xalag4);
+  x3a with x8a (xalag5);
+  x3a with x9a (xalag6);
+  x3a with x10a (xalag7);
+  x4a with x5a (xalag1);
+  x4a with x7a (xalag3);
+  x4a with x8a (xalag4);
+  x4a with x9a (xalag5);
+  x4a with x10a (xalag6);
+  x5a with x7a (xalag2);
+  x5a with x8a (xalag3);
+  x5a with x9a (xalag4);
+  x5a with x10a (xalag5);
+  x7a with x8a (xalag1);
+  x7a with x9a (xalag2);
+  x7a with x10a (xalag3);
+  x8a with x9a (xalag1);
+  x8a with x10a (xalag2);
+  x9a with x10a (xalag1);
+  x1b with x2b (xblag1);
+  x1b with x3b (xblag2);
+  x1b with x4b (xblag3);
+  x1b with x5b (xblag4);
+  x1b with x7b (xblag6);
+  x1b with x8b (xblag7);
+  x1b with x9b (xblag8);
+  x1b with x10b (xblag9);
+  x2b with x3b (xblag1);
+  x2b with x4b (xblag2);
+  x2b with x5b (xblag3);
+  x2b with x7b (xblag5);
+  x2b with x8b (xblag6);
+  x2b with x9b (xblag7);
+  x2b with x10b (xblag8);
+  x3b with x4b (xblag1);
+  x3b with x5b (xblag2);
+  x3b with x7b (xblag4);
+  x3b with x8b (xblag5);
+  x3b with x9b (xblag6);
+  x3b with x10b (xblag7);
+  x4b with x5b (xblag1);
+  x4b with x7b (xblag3);
+  x4b with x8b (xblag4);
+  x4b with x9b (xblag5);
+  x4b with x10b (xblag6);
+  x5b with x7b (xblag2);
+  x5b with x8b (xblag3);
+  x5b with x9b (xblag4);
+  x5b with x10b (xblag5);
+  x7b with x8b (xblag1);
+  x7b with x9b (xblag2);
+  x7b with x10b (xblag3);
+  x8b with x9b (xblag1);
+  x8b with x10b (xblag2);
+  x9b with x10b (xblag1);
+  x1c with x2c (xclag1);
+  x1c with x3c (xclag2);
+  x1c with x4c (xclag3);
+  x1c with x5c (xclag4);
+  x1c with x7c (xclag6);
+  x1c with x8c (xclag7);
+  x1c with x9c (xclag8);
+  x1c with x10c (xclag9);
+  x2c with x3c (xclag1);
+  x2c with x4c (xclag2);
+  x2c with x5c (xclag3);
+  x2c with x7c (xclag5);
+  x2c with x8c (xclag6);
+  x2c with x9c (xclag7);
+  x2c with x10c (xclag8);
+  x3c with x4c (xclag1);
+  x3c with x5c (xclag2);
+  x3c with x7c (xclag4);
+  x3c with x8c (xclag5);
+  x3c with x9c (xclag6);
+  x3c with x10c (xclag7);
+  x4c with x5c (xclag1);
+  x4c with x7c (xclag3);
+  x4c with x8c (xclag4);
+  x4c with x9c (xclag5);
+  x4c with x10c (xclag6);
+  x5c with x7c (xclag2);
+  x5c with x8c (xclag3);
+  x5c with x9c (xclag4);
+  x5c with x10c (xclag5);
+  x7c with x8c (xclag1);
+  x7c with x9c (xclag2);
+  x7c with x10c (xclag3);
+  x8c with x9c (xclag1);
+  x8c with x10c (xclag2);
+  x9c with x10c (xclag1);
+
+  MODEL CONSTRAINT:
+
+  !! Use constraints to specify Models;
+  a2 = a;
+  a3 = a;
+  a4 = a;
+  b2 = b;
+  b3 = b;
+  b4 = b;
+  c2 = c;
+  d2 = d;
+  c3 = c;
+  d3 = d;
+  c4 = c;
+  d4 = d;
+
+  tx = 0;
+  ty = 0;
+  cov_txty = 0;
+
+  NEW(cor_arxary);
+  cor_arxary = cov_xy/(sqrt(arvx) * sqrt(arvy));
+
+  NEW(cor_sxsy);
+  cor_sxsy = cov_s/(sqrt(sx) * sqrt(sy));
+
+  arvx2 = arvx - arvx*a*a - 2*a*d*cov_xy;
+  arvx3 = arvx2;
+  arvx4 = arvx2;
+  arvx5 = arvx2;
+
+  arvy2 = arvy - arvy*b*b - 2*b*c*cov_xy;
+  arvy3 = arvy2;
+  arvy4 = arvy2;
+  arvy5 = arvy2;
+
+  sx2 = sx;
+  sx3 = sx;
+  sx4 = sx;
+  sx5 = sx;
+
+  sy2 = sy;
+  sy3 = sy;
+  sy4 = sy;
+  sy5 = sy;
+
+  cov_xyr2 = (1-a*b-c*d)*cov_xy - a*c*arvx - b*d*arvy;
+  cov_xyr3 = cov_xyr2;
+  cov_xyr4 = cov_xyr2;
+  cov_xyr5 = cov_xyr2;
+
+  cov_s2 = cov_s;
+  cov_s3 = cov_s;
+  cov_s4 = cov_s;
+  cov_s5 = cov_s;
+
+
+
+  arvx > 0;
+  arvy > 0;
+  sx > 0;
+  sy > 0;
+  cor_arxary < 1;
+  cor_arxary > -1;
+  cor_sxsy < 1;
+  cor_sxsy > -1;
+  NEW(trait.p.x);
+  NEW(ar.p.x);
+  NEW(st.p.x);
+  NEW(stab.x);
+  trait.p.x = tx/(tx + arvx + sx);
+  ar.p.x = arvx/(tx + arvx + sx);
+  st.p.x = sx/(tx + arvx + sx);
+  stab.x = a;
+
+  NEW(trait.p.y);
+  NEW(ar.p.y);
+  NEW(st.p.y);
+  NEW(stab.y);
+  trait.p.y = ty/(ty + arvy + sy);
+  ar.p.y = arvy/(ty + arvy + sy);
+  st.p.y = sy/(ty + arvy + sy);
+  stab.y = b;
+
+  OUTPUT:
+  stdyx;
+    cinterval;
+
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+
+arts
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                        1000
+
+Number of dependent variables                                   32
+Number of independent variables                                  0
+Number of continuous latent variables                           36
+
+Observed dependent variables
+
+  Continuous
+   X1A         X1B         X1C         X2A         X2B         X2C
+   X3A         X3B         X3C         X4A         X4B         X4C
+   X5A         X5B         X5C         X7A         X7B         X7C
+   X8A         X8B         X8C         X9A         X9B         X9C
+   X10A        X10B        X10C        Y1          Y2          Y3
+   Y4          Y5
+
+Continuous latent variables
+   LX1         LX2         LX3         LX4         LX5         LX7
+   LX8         LX9         LX10        TRAITX      ARX1        ARX2
+   ARX3        ARX4        ARX5        SX1         SX2         SX3
+   SX4         SX5         LY1         LY2         LY3         LY4
+   LY5         TRAITY      ARY1        ARY2        ARY3        ARY4
+   ARY5        SY1         SY2         SY3         SY4         SY5
+
+
+Estimator                                                       ML
+Information matrix                                        OBSERVED
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-03
+
+Input data file(s)
+  mplus/arts_4d58af24b30d4413a119ba00f5a6bc62.dat
+
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of missing data patterns             1
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.001
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              X1A           X1B           X1C           X2A           X2B
+              ________      ________      ________      ________      ________
+ X1A            1.000
+ X1B            1.000         1.000
+ X1C            1.000         1.000         1.000
+ X2A            1.000         1.000         1.000         1.000
+ X2B            1.000         1.000         1.000         1.000         1.000
+ X2C            1.000         1.000         1.000         1.000         1.000
+ X3A            1.000         1.000         1.000         1.000         1.000
+ X3B            1.000         1.000         1.000         1.000         1.000
+ X3C            1.000         1.000         1.000         1.000         1.000
+ X4A            1.000         1.000         1.000         1.000         1.000
+ X4B            1.000         1.000         1.000         1.000         1.000
+ X4C            1.000         1.000         1.000         1.000         1.000
+ X5A            1.000         1.000         1.000         1.000         1.000
+ X5B            1.000         1.000         1.000         1.000         1.000
+ X5C            1.000         1.000         1.000         1.000         1.000
+ X7A            1.000         1.000         1.000         1.000         1.000
+ X7B            1.000         1.000         1.000         1.000         1.000
+ X7C            1.000         1.000         1.000         1.000         1.000
+ X8A            1.000         1.000         1.000         1.000         1.000
+ X8B            1.000         1.000         1.000         1.000         1.000
+ X8C            1.000         1.000         1.000         1.000         1.000
+ X9A            1.000         1.000         1.000         1.000         1.000
+ X9B            1.000         1.000         1.000         1.000         1.000
+ X9C            1.000         1.000         1.000         1.000         1.000
+ X10A           1.000         1.000         1.000         1.000         1.000
+ X10B           1.000         1.000         1.000         1.000         1.000
+ X10C           1.000         1.000         1.000         1.000         1.000
+ Y1             1.000         1.000         1.000         1.000         1.000
+ Y2             1.000         1.000         1.000         1.000         1.000
+ Y3             1.000         1.000         1.000         1.000         1.000
+ Y4             1.000         1.000         1.000         1.000         1.000
+ Y5             1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              X2C           X3A           X3B           X3C           X4A
+              ________      ________      ________      ________      ________
+ X2C            1.000
+ X3A            1.000         1.000
+ X3B            1.000         1.000         1.000
+ X3C            1.000         1.000         1.000         1.000
+ X4A            1.000         1.000         1.000         1.000         1.000
+ X4B            1.000         1.000         1.000         1.000         1.000
+ X4C            1.000         1.000         1.000         1.000         1.000
+ X5A            1.000         1.000         1.000         1.000         1.000
+ X5B            1.000         1.000         1.000         1.000         1.000
+ X5C            1.000         1.000         1.000         1.000         1.000
+ X7A            1.000         1.000         1.000         1.000         1.000
+ X7B            1.000         1.000         1.000         1.000         1.000
+ X7C            1.000         1.000         1.000         1.000         1.000
+ X8A            1.000         1.000         1.000         1.000         1.000
+ X8B            1.000         1.000         1.000         1.000         1.000
+ X8C            1.000         1.000         1.000         1.000         1.000
+ X9A            1.000         1.000         1.000         1.000         1.000
+ X9B            1.000         1.000         1.000         1.000         1.000
+ X9C            1.000         1.000         1.000         1.000         1.000
+ X10A           1.000         1.000         1.000         1.000         1.000
+ X10B           1.000         1.000         1.000         1.000         1.000
+ X10C           1.000         1.000         1.000         1.000         1.000
+ Y1             1.000         1.000         1.000         1.000         1.000
+ Y2             1.000         1.000         1.000         1.000         1.000
+ Y3             1.000         1.000         1.000         1.000         1.000
+ Y4             1.000         1.000         1.000         1.000         1.000
+ Y5             1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              X4B           X4C           X5A           X5B           X5C
+              ________      ________      ________      ________      ________
+ X4B            1.000
+ X4C            1.000         1.000
+ X5A            1.000         1.000         1.000
+ X5B            1.000         1.000         1.000         1.000
+ X5C            1.000         1.000         1.000         1.000         1.000
+ X7A            1.000         1.000         1.000         1.000         1.000
+ X7B            1.000         1.000         1.000         1.000         1.000
+ X7C            1.000         1.000         1.000         1.000         1.000
+ X8A            1.000         1.000         1.000         1.000         1.000
+ X8B            1.000         1.000         1.000         1.000         1.000
+ X8C            1.000         1.000         1.000         1.000         1.000
+ X9A            1.000         1.000         1.000         1.000         1.000
+ X9B            1.000         1.000         1.000         1.000         1.000
+ X9C            1.000         1.000         1.000         1.000         1.000
+ X10A           1.000         1.000         1.000         1.000         1.000
+ X10B           1.000         1.000         1.000         1.000         1.000
+ X10C           1.000         1.000         1.000         1.000         1.000
+ Y1             1.000         1.000         1.000         1.000         1.000
+ Y2             1.000         1.000         1.000         1.000         1.000
+ Y3             1.000         1.000         1.000         1.000         1.000
+ Y4             1.000         1.000         1.000         1.000         1.000
+ Y5             1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              X7A           X7B           X7C           X8A           X8B
+              ________      ________      ________      ________      ________
+ X7A            1.000
+ X7B            1.000         1.000
+ X7C            1.000         1.000         1.000
+ X8A            1.000         1.000         1.000         1.000
+ X8B            1.000         1.000         1.000         1.000         1.000
+ X8C            1.000         1.000         1.000         1.000         1.000
+ X9A            1.000         1.000         1.000         1.000         1.000
+ X9B            1.000         1.000         1.000         1.000         1.000
+ X9C            1.000         1.000         1.000         1.000         1.000
+ X10A           1.000         1.000         1.000         1.000         1.000
+ X10B           1.000         1.000         1.000         1.000         1.000
+ X10C           1.000         1.000         1.000         1.000         1.000
+ Y1             1.000         1.000         1.000         1.000         1.000
+ Y2             1.000         1.000         1.000         1.000         1.000
+ Y3             1.000         1.000         1.000         1.000         1.000
+ Y4             1.000         1.000         1.000         1.000         1.000
+ Y5             1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              X8C           X9A           X9B           X9C           X10A
+              ________      ________      ________      ________      ________
+ X8C            1.000
+ X9A            1.000         1.000
+ X9B            1.000         1.000         1.000
+ X9C            1.000         1.000         1.000         1.000
+ X10A           1.000         1.000         1.000         1.000         1.000
+ X10B           1.000         1.000         1.000         1.000         1.000
+ X10C           1.000         1.000         1.000         1.000         1.000
+ Y1             1.000         1.000         1.000         1.000         1.000
+ Y2             1.000         1.000         1.000         1.000         1.000
+ Y3             1.000         1.000         1.000         1.000         1.000
+ Y4             1.000         1.000         1.000         1.000         1.000
+ Y5             1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              X10B          X10C          Y1            Y2            Y3
+              ________      ________      ________      ________      ________
+ X10B           1.000
+ X10C           1.000         1.000
+ Y1             1.000         1.000         1.000
+ Y2             1.000         1.000         1.000         1.000
+ Y3             1.000         1.000         1.000         1.000         1.000
+ Y4             1.000         1.000         1.000         1.000         1.000
+ Y5             1.000         1.000         1.000         1.000         1.000
+
+
+           Covariance Coverage
+              Y4            Y5
+              ________      ________
+ Y4             1.000
+ Y5             1.000         1.000
+
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                       78
+
+Loglikelihood
+
+          H0 Value                      -55137.969
+          H1 Value                      -53998.611
+
+Information Criteria
+
+          Akaike (AIC)                  110431.937
+          Bayesian (BIC)                110814.742
+          Sample-Size Adjusted BIC      110567.010
+            (n* = (n + 2) / 24)
+
+Chi-Square Test of Model Fit
+
+          Value                           2278.716
+          Degrees of Freedom                   482
+          P-Value                           0.0000
+
+RMSEA (Root Mean Square Error Of Approximation)
+
+          Estimate                           0.061
+          90 Percent C.I.                    0.059  0.064
+          Probability RMSEA <= .05           0.000
+
+CFI/TLI
+
+          CFI                                0.915
+          TLI                                0.912
+
+Chi-Square Test of Model Fit for the Baseline Model
+
+          Value                          21533.933
+          Degrees of Freedom                   496
+          P-Value                           0.0000
+
+SRMR (Standardized Root Mean Square Residual)
+
+          Value                              0.232
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ LX1      BY
+    X1A                1.000      0.000    999.000    999.000
+    X1B                0.994      0.012     83.173      0.000
+    X1C                1.008      0.012     83.269      0.000
+
+ LX2      BY
+    X2A                1.000      0.000    999.000    999.000
+    X2B                0.994      0.012     83.173      0.000
+    X2C                1.008      0.012     83.269      0.000
+
+ LX3      BY
+    X3A                1.000      0.000    999.000    999.000
+    X3B                0.994      0.012     83.173      0.000
+    X3C                1.008      0.012     83.269      0.000
+
+ LX4      BY
+    X4A                1.000      0.000    999.000    999.000
+    X4B                0.994      0.012     83.173      0.000
+    X4C                1.008      0.012     83.269      0.000
+
+ LX5      BY
+    X5A                1.000      0.000    999.000    999.000
+    X5B                0.994      0.012     83.173      0.000
+    X5C                1.008      0.012     83.269      0.000
+
+ LX7      BY
+    X7A                1.000      0.000    999.000    999.000
+    X7B                0.994      0.012     83.173      0.000
+    X7C                1.008      0.012     83.269      0.000
+
+ LX8      BY
+    X8A                1.000      0.000    999.000    999.000
+    X8B                0.994      0.012     83.173      0.000
+    X8C                1.008      0.012     83.269      0.000
+
+ LX9      BY
+    X9A                1.000      0.000    999.000    999.000
+    X9B                0.994      0.012     83.173      0.000
+    X9C                1.008      0.012     83.269      0.000
+
+ LX10     BY
+    X10A               1.000      0.000    999.000    999.000
+    X10B               0.994      0.012     83.173      0.000
+    X10C               1.008      0.012     83.269      0.000
+
+ LY1      BY
+    Y1                 1.000      0.000    999.000    999.000
+
+ LY2      BY
+    Y2                 1.000      0.000    999.000    999.000
+
+ LY3      BY
+    Y3                 1.000      0.000    999.000    999.000
+
+ LY4      BY
+    Y4                 1.000      0.000    999.000    999.000
+
+ LY5      BY
+    Y5                 1.000      0.000    999.000    999.000
+
+ TRAITX   BY
+    LX1                1.000      0.000    999.000    999.000
+    LX2                1.000      0.000    999.000    999.000
+    LX3                1.000      0.000    999.000    999.000
+    LX4                1.000      0.000    999.000    999.000
+    LX5                1.000      0.000    999.000    999.000
+
+ ARX1     BY
+    LX1                1.000      0.000    999.000    999.000
+
+ ARX2     BY
+    LX2                1.000      0.000    999.000    999.000
+
+ ARX3     BY
+    LX3                1.000      0.000    999.000    999.000
+
+ ARX4     BY
+    LX4                1.000      0.000    999.000    999.000
+
+ ARX5     BY
+    LX5                1.000      0.000    999.000    999.000
+
+ SX1      BY
+    LX1                1.000      0.000    999.000    999.000
+
+ SX2      BY
+    LX2                1.000      0.000    999.000    999.000
+
+ SX3      BY
+    LX3                1.000      0.000    999.000    999.000
+
+ SX4      BY
+    LX4                1.000      0.000    999.000    999.000
+
+ SX5      BY
+    LX5                1.000      0.000    999.000    999.000
+
+ TRAITY   BY
+    LY1                1.000      0.000    999.000    999.000
+    LY2                1.000      0.000    999.000    999.000
+    LY3                1.000      0.000    999.000    999.000
+    LY4                1.000      0.000    999.000    999.000
+    LY5                1.000      0.000    999.000    999.000
+
+ ARY1     BY
+    LY1                1.000      0.000    999.000    999.000
+
+ ARY2     BY
+    LY2                1.000      0.000    999.000    999.000
+
+ ARY3     BY
+    LY3                1.000      0.000    999.000    999.000
+
+ ARY4     BY
+    LY4                1.000      0.000    999.000    999.000
+
+ ARY5     BY
+    LY5                1.000      0.000    999.000    999.000
+
+ SY1      BY
+    LY1                1.000      0.000    999.000    999.000
+
+ SY2      BY
+    LY2                1.000      0.000    999.000    999.000
+
+ SY3      BY
+    LY3                1.000      0.000    999.000    999.000
+
+ SY4      BY
+    LY4                1.000      0.000    999.000    999.000
+
+ SY5      BY
+    LY5                1.000      0.000    999.000    999.000
+
+ ARX2     ON
+    ARX1               0.939      0.019     49.426      0.000
+    ARY1              -0.058      0.018     -3.263      0.001
+
+ ARX3     ON
+    ARX2               0.939      0.019     49.426      0.000
+    ARY2              -0.058      0.018     -3.263      0.001
+
+ ARX4     ON
+    ARX3               0.939      0.019     49.426      0.000
+    ARY3              -0.058      0.018     -3.263      0.001
+
+ ARX5     ON
+    ARX4               0.939      0.019     49.426      0.000
+    ARY4              -0.058      0.018     -3.263      0.001
+
+ ARY2     ON
+    ARY1               0.855      0.018     47.816      0.000
+    ARX1               0.015      0.017      0.880      0.379
+
+ ARY3     ON
+    ARY2               0.855      0.018     47.816      0.000
+    ARX2               0.015      0.017      0.880      0.379
+
+ ARY4     ON
+    ARY3               0.855      0.018     47.816      0.000
+    ARX3               0.015      0.017      0.880      0.379
+
+ ARY5     ON
+    ARY4               0.855      0.018     47.816      0.000
+    ARX4               0.015      0.017      0.880      0.379
+
+ TRAITX   WITH
+    TRAITY             0.000      0.000    999.000    999.000
+
+ ARX1     WITH
+    ARY1               1.022      0.066     15.597      0.000
+
+ ARX2     WITH
+    ARY2               0.264      0.033      7.921      0.000
+
+ ARX3     WITH
+    ARY3               0.264      0.033      7.921      0.000
+
+ ARX4     WITH
+    ARY4               0.264      0.033      7.921      0.000
+
+ ARX5     WITH
+    ARY5               0.264      0.033      7.921      0.000
+
+ SX1      WITH
+    SY1               -0.094      0.029     -3.266      0.001
+
+ SX2      WITH
+    SY2               -0.094      0.029     -3.266      0.001
+
+ SX3      WITH
+    SY3               -0.094      0.029     -3.266      0.001
+
+ SX4      WITH
+    SY4               -0.094      0.029     -3.266      0.001
+
+ SX5      WITH
+    SY5               -0.094      0.029     -3.266      0.001
+
+ X1A      WITH
+    X2A                0.021      0.017      1.217      0.224
+    X3A                0.016      0.019      0.862      0.389
+    X4A                0.042      0.021      2.038      0.042
+    X5A                0.040      0.023      1.770      0.077
+    X7A                0.012      0.022      0.547      0.584
+    X8A                0.040      0.025      1.591      0.112
+    X9A                0.034      0.031      1.070      0.285
+    X10A              -0.025      0.043     -0.585      0.559
+
+ X2A      WITH
+    X3A                0.021      0.017      1.217      0.224
+    X4A                0.016      0.019      0.862      0.389
+    X5A                0.042      0.021      2.038      0.042
+    X7A               -0.012      0.022     -0.527      0.598
+    X8A                0.012      0.022      0.547      0.584
+    X9A                0.040      0.025      1.591      0.112
+    X10A               0.034      0.031      1.070      0.285
+
+ X3A      WITH
+    X4A                0.021      0.017      1.217      0.224
+    X5A                0.016      0.019      0.862      0.389
+    X7A                0.040      0.023      1.770      0.077
+    X8A               -0.012      0.022     -0.527      0.598
+    X9A                0.012      0.022      0.547      0.584
+    X10A               0.040      0.025      1.591      0.112
+
+ X4A      WITH
+    X5A                0.021      0.017      1.217      0.224
+    X7A                0.042      0.021      2.038      0.042
+    X8A                0.040      0.023      1.770      0.077
+    X9A               -0.012      0.022     -0.527      0.598
+    X10A               0.012      0.022      0.547      0.584
+
+ X5A      WITH
+    X7A                0.016      0.019      0.862      0.389
+    X8A                0.042      0.021      2.038      0.042
+    X9A                0.040      0.023      1.770      0.077
+    X10A              -0.012      0.022     -0.527      0.598
+
+ X7A      WITH
+    X8A                0.021      0.017      1.217      0.224
+    X9A                0.016      0.019      0.862      0.389
+    X10A               0.042      0.021      2.038      0.042
+
+ X8A      WITH
+    X9A                0.021      0.017      1.217      0.224
+    X10A               0.016      0.019      0.862      0.389
+
+ X9A      WITH
+    X10A               0.021      0.017      1.217      0.224
+
+ X1B      WITH
+    X2B                0.036      0.018      2.078      0.038
+    X3B                0.033      0.019      1.750      0.080
+    X4B                0.032      0.020      1.570      0.116
+    X5B                0.021      0.023      0.902      0.367
+    X7B                0.016      0.023      0.694      0.488
+    X8B                0.036      0.026      1.386      0.166
+    X9B                0.083      0.032      2.582      0.010
+    X10B               0.127      0.046      2.769      0.006
+
+ X2B      WITH
+    X3B                0.036      0.018      2.078      0.038
+    X4B                0.033      0.019      1.750      0.080
+    X5B                0.032      0.020      1.570      0.116
+    X7B                0.026      0.022      1.172      0.241
+    X8B                0.016      0.023      0.694      0.488
+    X9B                0.036      0.026      1.386      0.166
+    X10B               0.083      0.032      2.582      0.010
+
+ X3B      WITH
+    X4B                0.036      0.018      2.078      0.038
+    X5B                0.033      0.019      1.750      0.080
+    X7B                0.021      0.023      0.902      0.367
+    X8B                0.026      0.022      1.172      0.241
+    X9B                0.016      0.023      0.694      0.488
+    X10B               0.036      0.026      1.386      0.166
+
+ X4B      WITH
+    X5B                0.036      0.018      2.078      0.038
+    X7B                0.032      0.020      1.570      0.116
+    X8B                0.021      0.023      0.902      0.367
+    X9B                0.026      0.022      1.172      0.241
+    X10B               0.016      0.023      0.694      0.488
+
+ X5B      WITH
+    X7B                0.033      0.019      1.750      0.080
+    X8B                0.032      0.020      1.570      0.116
+    X9B                0.021      0.023      0.902      0.367
+    X10B               0.026      0.022      1.172      0.241
+
+ X7B      WITH
+    X8B                0.036      0.018      2.078      0.038
+    X9B                0.033      0.019      1.750      0.080
+    X10B               0.032      0.020      1.570      0.116
+
+ X8B      WITH
+    X9B                0.036      0.018      2.078      0.038
+    X10B               0.033      0.019      1.750      0.080
+
+ X9B      WITH
+    X10B               0.036      0.018      2.078      0.038
+
+ X1C      WITH
+    X2C                0.042      0.018      2.398      0.017
+    X3C                0.005      0.019      0.249      0.803
+    X4C                0.049      0.021      2.342      0.019
+    X5C                0.012      0.023      0.503      0.615
+    X7C                0.000      0.023      0.000      1.000
+    X8C               -0.003      0.026     -0.122      0.903
+    X9C                0.038      0.032      1.170      0.242
+    X10C              -0.065      0.045     -1.444      0.149
+
+ X2C      WITH
+    X3C                0.042      0.018      2.398      0.017
+    X4C                0.005      0.019      0.249      0.803
+    X5C                0.049      0.021      2.342      0.019
+    X7C                0.022      0.023      0.972      0.331
+    X8C                0.000      0.023      0.000      1.000
+    X9C               -0.003      0.026     -0.122      0.903
+    X10C               0.038      0.032      1.170      0.242
+
+ X3C      WITH
+    X4C                0.042      0.018      2.398      0.017
+    X5C                0.005      0.019      0.249      0.803
+    X7C                0.012      0.023      0.503      0.615
+    X8C                0.022      0.023      0.972      0.331
+    X9C                0.000      0.023      0.000      1.000
+    X10C              -0.003      0.026     -0.122      0.903
+
+ X4C      WITH
+    X5C                0.042      0.018      2.398      0.017
+    X7C                0.049      0.021      2.342      0.019
+    X8C                0.012      0.023      0.503      0.615
+    X9C                0.022      0.023      0.972      0.331
+    X10C               0.000      0.023      0.000      1.000
+
+ X5C      WITH
+    X7C                0.005      0.019      0.249      0.803
+    X8C                0.049      0.021      2.342      0.019
+    X9C                0.012      0.023      0.503      0.615
+    X10C               0.022      0.023      0.972      0.331
+
+ X7C      WITH
+    X8C                0.042      0.018      2.398      0.017
+    X9C                0.005      0.019      0.249      0.803
+    X10C               0.049      0.021      2.342      0.019
+
+ X8C      WITH
+    X9C                0.042      0.018      2.398      0.017
+    X10C               0.005      0.019      0.249      0.803
+
+ X9C      WITH
+    X10C               0.042      0.018      2.398      0.017
+
+ Intercepts
+    X1A                0.063      0.060      1.058      0.290
+    X1B                0.062      0.060      1.036      0.300
+    X1C                0.034      0.060      0.557      0.577
+    X2A                0.014      0.060      0.242      0.809
+    X2B                0.042      0.060      0.696      0.487
+    X2C                0.071      0.060      1.181      0.238
+    X3A                0.047      0.060      0.788      0.431
+    X3B                0.038      0.060      0.641      0.521
+    X3C                0.063      0.060      1.049      0.294
+    X4A                0.059      0.060      0.979      0.327
+    X4B                0.121      0.060      2.012      0.044
+    X4C                0.038      0.061      0.623      0.533
+    X5A                0.077      0.060      1.278      0.201
+    X5B                0.069      0.060      1.147      0.251
+    X5C                0.067      0.061      1.107      0.268
+    X7A                0.082      0.060      1.374      0.170
+    X7B                0.085      0.060      1.428      0.153
+    X7C                0.107      0.060      1.767      0.077
+    X8A                0.002      0.058      0.041      0.967
+    X8B                0.009      0.058      0.152      0.879
+    X8C               -0.005      0.059     -0.084      0.933
+    X9A                0.031      0.058      0.532      0.594
+    X9B                0.052      0.057      0.901      0.367
+    X9C                0.085      0.058      1.459      0.145
+    X10A              -0.047      0.059     -0.795      0.427
+    X10B              -0.078      0.059     -1.335      0.182
+    X10C               0.032      0.059      0.548      0.584
+    Y1                -0.013      0.049     -0.273      0.785
+    Y2                 0.028      0.049      0.560      0.575
+    Y3                 0.057      0.049      1.161      0.246
+    Y4                 0.063      0.049      1.267      0.205
+    Y5                 0.015      0.049      0.302      0.763
+
+ Variances
+    LX7                2.599      0.136     19.062      0.000
+    LX8                2.400      0.127     18.895      0.000
+    LX9                2.320      0.124     18.760      0.000
+    LX10               2.454      0.130     18.945      0.000
+    TRAITX             0.000      0.000    999.000    999.000
+    ARX1               1.814      0.096     18.883      0.000
+    SX1                0.778      0.048     16.360      0.000
+    SX2                0.778      0.048     16.360      0.000
+    SX3                0.778      0.048     16.360      0.000
+    SX4                0.778      0.048     16.360      0.000
+    SX5                0.778      0.048     16.360      0.000
+    TRAITY             0.000      0.000    999.000    999.000
+    ARY1               1.756      0.079     22.365      0.000
+    SY1                0.689      0.037     18.841      0.000
+    SY2                0.689      0.037     18.841      0.000
+    SY3                0.689      0.037     18.841      0.000
+    SY4                0.689      0.037     18.841      0.000
+    SY5                0.689      0.037     18.841      0.000
+
+ Residual Variances
+    X1A                0.987      0.023     43.007      0.000
+    X1B                1.011      0.023     43.819      0.000
+    X1C                1.011      0.023     43.272      0.000
+    X2A                0.987      0.023     43.007      0.000
+    X2B                1.011      0.023     43.819      0.000
+    X2C                1.011      0.023     43.272      0.000
+    X3A                0.987      0.023     43.007      0.000
+    X3B                1.011      0.023     43.819      0.000
+    X3C                1.011      0.023     43.272      0.000
+    X4A                0.987      0.023     43.007      0.000
+    X4B                1.011      0.023     43.819      0.000
+    X4C                1.011      0.023     43.272      0.000
+    X5A                0.987      0.023     43.007      0.000
+    X5B                1.011      0.023     43.819      0.000
+    X5C                1.011      0.023     43.272      0.000
+    X7A                0.987      0.023     43.007      0.000
+    X7B                1.011      0.023     43.819      0.000
+    X7C                1.011      0.023     43.272      0.000
+    X8A                0.987      0.023     43.007      0.000
+    X8B                1.011      0.023     43.819      0.000
+    X8C                1.011      0.023     43.272      0.000
+    X9A                0.987      0.023     43.007      0.000
+    X9B                1.011      0.023     43.819      0.000
+    X9C                1.011      0.023     43.272      0.000
+    X10A               0.987      0.023     43.007      0.000
+    X10B               1.011      0.023     43.819      0.000
+    X10C               1.011      0.023     43.272      0.000
+    Y1                 0.000      0.000    999.000    999.000
+    Y2                 0.000      0.000    999.000    999.000
+    Y3                 0.000      0.000    999.000    999.000
+    Y4                 0.000      0.000    999.000    999.000
+    Y5                 0.000      0.000    999.000    999.000
+    LX1                0.000      0.000    999.000    999.000
+    LX2                0.000      0.000    999.000    999.000
+    LX3                0.000      0.000    999.000    999.000
+    LX4                0.000      0.000    999.000    999.000
+    LX5                0.000      0.000    999.000    999.000
+    ARX2               0.327      0.048      6.842      0.000
+    ARX3               0.327      0.048      6.842      0.000
+    ARX4               0.327      0.048      6.842      0.000
+    ARX5               0.327      0.048      6.842      0.000
+    LY1                0.000      0.000    999.000    999.000
+    LY2                0.000      0.000    999.000    999.000
+    LY3                0.000      0.000    999.000    999.000
+    LY4                0.000      0.000    999.000    999.000
+    LY5                0.000      0.000    999.000    999.000
+    ARY2               0.446      0.044     10.019      0.000
+    ARY3               0.446      0.044     10.019      0.000
+    ARY4               0.446      0.044     10.019      0.000
+    ARY5               0.446      0.044     10.019      0.000
+
+New/Additional Parameters
+    COR_ARXA           0.572      0.027     21.441      0.000
+    COR_SXSY          -0.129      0.041     -3.157      0.002
+    TRAIT.P.           0.000      0.000      0.000      1.000
+    AR.P.X             0.700      0.020     35.693      0.000
+    ST.P.X             0.300      0.020     15.308      0.000
+    STAB.X             0.939      0.019     49.426      0.000
+    TRAIT.P.           0.000      0.000      0.000      1.000
+    AR.P.Y             0.718      0.017     43.279      0.000
+    ST.P.Y             0.282      0.017     16.972      0.000
+    STAB.Y             0.855      0.018     47.816      0.000
+
+
+STANDARDIZED MODEL RESULTS
+
+
+STDYX Standardization
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ LX1      BY
+    X1A                0.851      0.005    158.591      0.000
+    X1B                0.847      0.005    155.687      0.000
+    X1C                0.850      0.005    158.742      0.000
+
+ LX2      BY
+    X2A                0.851      0.005    159.048      0.000
+    X2B                0.847      0.005    156.169      0.000
+    X2C                0.850      0.005    159.205      0.000
+
+ LX3      BY
+    X3A                0.852      0.005    159.296      0.000
+    X3B                0.847      0.005    156.444      0.000
+    X3C                0.851      0.005    159.456      0.000
+
+ LX4      BY
+    X4A                0.852      0.005    159.377      0.000
+    X4B                0.848      0.005    156.552      0.000
+    X4C                0.851      0.005    159.538      0.000
+
+ LX5      BY
+    X5A                0.852      0.005    159.330      0.000
+    X5B                0.848      0.005    156.531      0.000
+    X5C                0.851      0.005    159.489      0.000
+
+ LX7      BY
+    X7A                0.851      0.007    121.325      0.000
+    X7B                0.847      0.007    118.359      0.000
+    X7C                0.850      0.007    121.105      0.000
+
+ LX8      BY
+    X8A                0.842      0.007    113.878      0.000
+    X8B                0.837      0.008    111.544      0.000
+    X8C                0.841      0.007    112.876      0.000
+
+ LX9      BY
+    X9A                0.838      0.008    110.064      0.000
+    X9B                0.833      0.008    109.004      0.000
+    X9C                0.837      0.008    110.205      0.000
+
+ LX10     BY
+    X10A               0.845      0.007    115.709      0.000
+    X10B               0.840      0.007    113.297      0.000
+    X10C               0.844      0.007    115.736      0.000
+
+ LY1      BY
+    Y1                 1.000      0.000    999.000    999.000
+
+ LY2      BY
+    Y2                 1.000      0.000    999.000    999.000
+
+ LY3      BY
+    Y3                 1.000      0.000    999.000    999.000
+
+ LY4      BY
+    Y4                 1.000      0.000    999.000    999.000
+
+ LY5      BY
+    Y5                 1.000      0.000    999.000    999.000
+
+ TRAITX   BY
+    LX1              999.000    999.000    999.000    999.000
+    LX2              999.000    999.000    999.000    999.000
+    LX3              999.000    999.000    999.000    999.000
+    LX4              999.000    999.000    999.000    999.000
+    LX5              999.000    999.000    999.000    999.000
+
+ ARX1     BY
+    LX1                0.837      0.012     71.386      0.000
+
+ ARX2     BY
+    LX2                0.837      0.012     72.004      0.000
+
+ ARX3     BY
+    LX3                0.837      0.012     72.572      0.000
+
+ ARX4     BY
+    LX4                0.838      0.011     73.091      0.000
+
+ ARX5     BY
+    LX5                0.838      0.011     73.565      0.000
+
+ SX1      BY
+    LX1                0.548      0.018     30.616      0.000
+
+ SX2      BY
+    LX2                0.547      0.018     30.780      0.000
+
+ SX3      BY
+    LX3                0.547      0.018     30.934      0.000
+
+ SX4      BY
+    LX4                0.546      0.018     31.077      0.000
+
+ SX5      BY
+    LX5                0.546      0.017     31.210      0.000
+
+ TRAITY   BY
+    LY1              999.000    999.000    999.000    999.000
+    LY2              999.000    999.000    999.000    999.000
+    LY3              999.000    999.000    999.000    999.000
+    LY4              999.000    999.000    999.000    999.000
+    LY5              999.000    999.000    999.000    999.000
+
+ ARY1     BY
+    LY1                0.848      0.010     86.558      0.000
+
+ ARY2     BY
+    LY2                0.848      0.010     86.446      0.000
+
+ ARY3     BY
+    LY3                0.848      0.010     86.365      0.000
+
+ ARY4     BY
+    LY4                0.848      0.010     86.306      0.000
+
+ ARY5     BY
+    LY5                0.848      0.010     86.264      0.000
+
+ SY1      BY
+    LY1                0.531      0.016     33.945      0.000
+
+ SY2      BY
+    LY2                0.531      0.016     33.893      0.000
+
+ SY3      BY
+    LY3                0.531      0.016     33.856      0.000
+
+ SY4      BY
+    LY4                0.531      0.016     33.828      0.000
+
+ SY5      BY
+    LY5                0.531      0.016     33.809      0.000
+
+ ARX2     ON
+    ARX1               0.937      0.018     51.334      0.000
+    ARY1              -0.057      0.018     -3.237      0.001
+
+ ARX3     ON
+    ARX2               0.937      0.018     51.245      0.000
+    ARY2              -0.057      0.018     -3.246      0.001
+
+ ARX4     ON
+    ARX3               0.937      0.018     51.144      0.000
+    ARY3              -0.057      0.017     -3.255      0.001
+
+ ARX5     ON
+    ARX4               0.938      0.018     51.036      0.000
+    ARY4              -0.057      0.017     -3.263      0.001
+
+ ARY2     ON
+    ARY1               0.855      0.018     47.390      0.000
+    ARX1               0.015      0.017      0.881      0.378
+
+ ARY3     ON
+    ARY2               0.855      0.018     47.510      0.000
+    ARX2               0.015      0.017      0.881      0.378
+
+ ARY4     ON
+    ARY3               0.855      0.018     47.595      0.000
+    ARX3               0.015      0.017      0.881      0.378
+
+ ARY5     ON
+    ARY4               0.855      0.018     47.655      0.000
+    ARX4               0.015      0.017      0.881      0.378
+
+ TRAITX   WITH
+    TRAITY           999.000    999.000    999.000    999.000
+
+ ARX1     WITH
+    ARY1               0.572      0.027     21.441      0.000
+
+ ARX2     WITH
+    ARY2               0.692      0.078      8.840      0.000
+
+ ARX3     WITH
+    ARY3               0.692      0.078      8.840      0.000
+
+ ARX4     WITH
+    ARY4               0.692      0.078      8.840      0.000
+
+ ARX5     WITH
+    ARY5               0.692      0.078      8.840      0.000
+
+ SX1      WITH
+    SY1               -0.129      0.041     -3.157      0.002
+
+ SX2      WITH
+    SY2               -0.129      0.041     -3.157      0.002
+
+ SX3      WITH
+    SY3               -0.129      0.041     -3.157      0.002
+
+ SX4      WITH
+    SY4               -0.129      0.041     -3.157      0.002
+
+ SX5      WITH
+    SY5               -0.129      0.041     -3.157      0.002
+
+ X1A      WITH
+    X2A                0.022      0.018      1.222      0.222
+    X3A                0.016      0.019      0.863      0.388
+    X4A                0.042      0.021      2.050      0.040
+    X5A                0.041      0.023      1.777      0.076
+    X7A                0.012      0.023      0.548      0.584
+    X8A                0.041      0.026      1.595      0.111
+    X9A                0.034      0.032      1.072      0.284
+    X10A              -0.026      0.044     -0.585      0.559
+
+ X2A      WITH
+    X3A                0.022      0.018      1.222      0.222
+    X4A                0.016      0.019      0.863      0.388
+    X5A                0.042      0.021      2.050      0.040
+    X7A               -0.012      0.023     -0.526      0.599
+    X8A                0.012      0.023      0.548      0.584
+    X9A                0.041      0.026      1.595      0.111
+    X10A               0.034      0.032      1.072      0.284
+
+ X3A      WITH
+    X4A                0.022      0.018      1.222      0.222
+    X5A                0.016      0.019      0.863      0.388
+    X7A                0.041      0.023      1.777      0.076
+    X8A               -0.012      0.023     -0.526      0.599
+    X9A                0.012      0.023      0.548      0.584
+    X10A               0.041      0.026      1.595      0.111
+
+ X4A      WITH
+    X5A                0.022      0.018      1.222      0.222
+    X7A                0.042      0.021      2.050      0.040
+    X8A                0.041      0.023      1.777      0.076
+    X9A               -0.012      0.023     -0.526      0.599
+    X10A               0.012      0.023      0.548      0.584
+
+ X5A      WITH
+    X7A                0.016      0.019      0.863      0.388
+    X8A                0.042      0.021      2.050      0.040
+    X9A                0.041      0.023      1.777      0.076
+    X10A              -0.012      0.023     -0.526      0.599
+
+ X7A      WITH
+    X8A                0.022      0.018      1.222      0.222
+    X9A                0.016      0.019      0.863      0.388
+    X10A               0.042      0.021      2.050      0.040
+
+ X8A      WITH
+    X9A                0.022      0.018      1.222      0.222
+    X10A               0.016      0.019      0.863      0.388
+
+ X9A      WITH
+    X10A               0.022      0.018      1.222      0.222
+
+ X1B      WITH
+    X2B                0.036      0.017      2.093      0.036
+    X3B                0.032      0.018      1.758      0.079
+    X4B                0.032      0.020      1.576      0.115
+    X5B                0.020      0.023      0.903      0.367
+    X7B                0.016      0.022      0.695      0.487
+    X8B                0.036      0.026      1.389      0.165
+    X9B                0.082      0.032      2.596      0.009
+    X10B               0.126      0.045      2.779      0.005
+
+ X2B      WITH
+    X3B                0.036      0.017      2.093      0.036
+    X4B                0.032      0.018      1.758      0.079
+    X5B                0.032      0.020      1.576      0.115
+    X7B                0.026      0.022      1.174      0.240
+    X8B                0.016      0.022      0.695      0.487
+    X9B                0.036      0.026      1.389      0.165
+    X10B               0.082      0.032      2.596      0.009
+
+ X3B      WITH
+    X4B                0.036      0.017      2.093      0.036
+    X5B                0.032      0.018      1.758      0.079
+    X7B                0.020      0.023      0.903      0.367
+    X8B                0.026      0.022      1.174      0.240
+    X9B                0.016      0.022      0.695      0.487
+    X10B               0.036      0.026      1.389      0.165
+
+ X4B      WITH
+    X5B                0.036      0.017      2.093      0.036
+    X7B                0.032      0.020      1.576      0.115
+    X8B                0.020      0.023      0.903      0.367
+    X9B                0.026      0.022      1.174      0.240
+    X10B               0.016      0.022      0.695      0.487
+
+ X5B      WITH
+    X7B                0.032      0.018      1.758      0.079
+    X8B                0.032      0.020      1.576      0.115
+    X9B                0.020      0.023      0.903      0.367
+    X10B               0.026      0.022      1.174      0.240
+
+ X7B      WITH
+    X8B                0.036      0.017      2.093      0.036
+    X9B                0.032      0.018      1.758      0.079
+    X10B               0.032      0.020      1.576      0.115
+
+ X8B      WITH
+    X9B                0.036      0.017      2.093      0.036
+    X10B               0.032      0.018      1.758      0.079
+
+ X9B      WITH
+    X10B               0.036      0.017      2.093      0.036
+
+ X1C      WITH
+    X2C                0.042      0.017      2.418      0.016
+    X3C                0.005      0.019      0.249      0.803
+    X4C                0.048      0.020      2.356      0.018
+    X5C                0.011      0.023      0.503      0.615
+    X7C                0.000      0.023      0.000      1.000
+    X8C               -0.003      0.026     -0.122      0.903
+    X9C                0.037      0.032      1.172      0.241
+    X10C              -0.065      0.045     -1.443      0.149
+
+ X2C      WITH
+    X3C                0.042      0.017      2.418      0.016
+    X4C                0.005      0.019      0.249      0.803
+    X5C                0.048      0.020      2.356      0.018
+    X7C                0.022      0.023      0.973      0.330
+    X8C                0.000      0.023      0.000      1.000
+    X9C               -0.003      0.026     -0.122      0.903
+    X10C               0.037      0.032      1.172      0.241
+
+ X3C      WITH
+    X4C                0.042      0.017      2.418      0.016
+    X5C                0.005      0.019      0.249      0.803
+    X7C                0.011      0.023      0.503      0.615
+    X8C                0.022      0.023      0.973      0.330
+    X9C                0.000      0.023      0.000      1.000
+    X10C              -0.003      0.026     -0.122      0.903
+
+ X4C      WITH
+    X5C                0.042      0.017      2.418      0.016
+    X7C                0.048      0.020      2.356      0.018
+    X8C                0.011      0.023      0.503      0.615
+    X9C                0.022      0.023      0.973      0.330
+    X10C               0.000      0.023      0.000      1.000
+
+ X5C      WITH
+    X7C                0.005      0.019      0.249      0.803
+    X8C                0.048      0.020      2.356      0.018
+    X9C                0.011      0.023      0.503      0.615
+    X10C               0.022      0.023      0.973      0.330
+
+ X7C      WITH
+    X8C                0.042      0.017      2.418      0.016
+    X9C                0.005      0.019      0.249      0.803
+    X10C               0.048      0.020      2.356      0.018
+
+ X8C      WITH
+    X9C                0.042      0.017      2.418      0.016
+    X10C               0.005      0.019      0.249      0.803
+
+ X9C      WITH
+    X10C               0.042      0.017      2.418      0.016
+
+ Intercepts
+    X1A                0.033      0.032      1.058      0.290
+    X1B                0.033      0.032      1.036      0.300
+    X1C                0.018      0.032      0.557      0.577
+    X2A                0.008      0.032      0.242      0.809
+    X2B                0.022      0.032      0.696      0.487
+    X2C                0.037      0.032      1.181      0.238
+    X3A                0.025      0.032      0.788      0.431
+    X3B                0.020      0.032      0.641      0.521
+    X3C                0.033      0.032      1.049      0.294
+    X4A                0.031      0.032      0.979      0.327
+    X4B                0.064      0.032      2.011      0.044
+    X4C                0.020      0.032      0.623      0.533
+    X5A                0.040      0.032      1.278      0.201
+    X5B                0.036      0.032      1.147      0.252
+    X5C                0.035      0.032      1.106      0.269
+    X7A                0.043      0.032      1.373      0.170
+    X7B                0.045      0.032      1.427      0.154
+    X7C                0.056      0.032      1.766      0.077
+    X8A                0.001      0.032      0.041      0.967
+    X8B                0.005      0.032      0.152      0.879
+    X8C               -0.003      0.032     -0.084      0.933
+    X9A                0.017      0.032      0.532      0.594
+    X9B                0.028      0.032      0.901      0.368
+    X9C                0.046      0.032      1.458      0.145
+    X10A              -0.025      0.032     -0.795      0.427
+    X10B              -0.042      0.032     -1.334      0.182
+    X10C               0.017      0.032      0.548      0.584
+    Y1                -0.009      0.032     -0.273      0.785
+    Y2                 0.018      0.032      0.560      0.575
+    Y3                 0.037      0.032      1.160      0.246
+    Y4                 0.040      0.032      1.266      0.205
+    Y5                 0.010      0.032      0.302      0.763
+
+ Variances
+    LX7                1.000      0.000    999.000    999.000
+    LX8                1.000      0.000    999.000    999.000
+    LX9                1.000      0.000    999.000    999.000
+    LX10               1.000      0.000    999.000    999.000
+    TRAITX           999.000    999.000    999.000    999.000
+    ARX1               1.000      0.000    999.000    999.000
+    SX1                1.000      0.000    999.000    999.000
+    SX2                1.000      0.000    999.000    999.000
+    SX3                1.000      0.000    999.000    999.000
+    SX4                1.000      0.000    999.000    999.000
+    SX5                1.000      0.000    999.000    999.000
+    TRAITY           999.000    999.000    999.000    999.000
+    ARY1               1.000      0.000    999.000    999.000
+    SY1                1.000      0.000    999.000    999.000
+    SY2                1.000      0.000    999.000    999.000
+    SY3                1.000      0.000    999.000    999.000
+    SY4                1.000      0.000    999.000    999.000
+    SY5                1.000      0.000    999.000    999.000
+
+ Residual Variances
+    X1A                0.276      0.009     30.180      0.000
+    X1B                0.283      0.009     30.702      0.000
+    X1C                0.277      0.009     30.450      0.000
+    X2A                0.275      0.009     30.198      0.000
+    X2B                0.282      0.009     30.727      0.000
+    X2C                0.277      0.009     30.469      0.000
+    X3A                0.275      0.009     30.184      0.000
+    X3B                0.282      0.009     30.719      0.000
+    X3C                0.276      0.009     30.456      0.000
+    X4A                0.274      0.009     30.146      0.000
+    X4B                0.282      0.009     30.686      0.000
+    X4C                0.276      0.009     30.418      0.000
+    X5A                0.274      0.009     30.090      0.000
+    X5B                0.281      0.009     30.634      0.000
+    X5C                0.276      0.009     30.361      0.000
+    X7A                0.275      0.012     23.031      0.000
+    X7B                0.282      0.012     23.283      0.000
+    X7C                0.277      0.012     23.173      0.000
+    X8A                0.291      0.012     23.406      0.000
+    X8B                0.299      0.013     23.759      0.000
+    X8C                0.293      0.013     23.386      0.000
+    X9A                0.298      0.013     23.398      0.000
+    X9B                0.306      0.013     24.014      0.000
+    X9C                0.300      0.013     23.615      0.000
+    X10A               0.287      0.012     23.264      0.000
+    X10B               0.294      0.012     23.606      0.000
+    X10C               0.288      0.012     23.456      0.000
+    Y1                 0.000    999.000    999.000    999.000
+    Y2                 0.000    999.000    999.000    999.000
+    Y3                 0.000    999.000    999.000    999.000
+    Y4                 0.000    999.000    999.000    999.000
+    Y5                 0.000    999.000    999.000    999.000
+    LX1                0.000    999.000    999.000    999.000
+    LX2                0.000    999.000    999.000    999.000
+    LX3                0.000    999.000    999.000    999.000
+    LX4                0.000    999.000    999.000    999.000
+    LX5                0.000    999.000    999.000    999.000
+    ARX2               0.180      0.023      7.774      0.000
+    ARX3               0.179      0.023      7.738      0.000
+    ARX4               0.179      0.023      7.700      0.000
+    ARX5               0.178      0.023      7.663      0.000
+    LY1                0.000    999.000    999.000    999.000
+    LY2                0.000    999.000    999.000    999.000
+    LY3                0.000    999.000    999.000    999.000
+    LY4                0.000    999.000    999.000    999.000
+    LY5                0.000    999.000    999.000    999.000
+    ARY2               0.254      0.022     11.428      0.000
+    ARY3               0.254      0.022     11.439      0.000
+    ARY4               0.254      0.022     11.446      0.000
+    ARY5               0.254      0.022     11.452      0.000
+
+
+R-SQUARE
+
+    Observed                                        Two-Tailed
+    Variable        Estimate       S.E.  Est./S.E.    P-Value
+
+    X1A                0.724      0.009     79.296      0.000
+    X1B                0.717      0.009     77.843      0.000
+    X1C                0.723      0.009     79.371      0.000
+    X2A                0.725      0.009     79.524      0.000
+    X2B                0.718      0.009     78.085      0.000
+    X2C                0.723      0.009     79.602      0.000
+    X3A                0.725      0.009     79.648      0.000
+    X3B                0.718      0.009     78.222      0.000
+    X3C                0.724      0.009     79.728      0.000
+    X4A                0.726      0.009     79.689      0.000
+    X4B                0.718      0.009     78.276      0.000
+    X4C                0.724      0.009     79.769      0.000
+    X5A                0.726      0.009     79.665      0.000
+    X5B                0.719      0.009     78.265      0.000
+    X5C                0.724      0.009     79.745      0.000
+    X7A                0.725      0.012     60.663      0.000
+    X7B                0.718      0.012     59.180      0.000
+    X7C                0.723      0.012     60.552      0.000
+    X8A                0.709      0.012     56.939      0.000
+    X8B                0.701      0.013     55.772      0.000
+    X8C                0.707      0.013     56.438      0.000
+    X9A                0.702      0.013     55.032      0.000
+    X9B                0.694      0.013     54.502      0.000
+    X9C                0.700      0.013     55.103      0.000
+    X10A               0.713      0.012     57.855      0.000
+    X10B               0.706      0.012     56.648      0.000
+    X10C               0.712      0.012     57.868      0.000
+    Y1                 1.000    999.000    999.000    999.000
+    Y2                 1.000    999.000    999.000    999.000
+    Y3                 1.000    999.000    999.000    999.000
+    Y4                 1.000    999.000    999.000    999.000
+    Y5                 1.000    999.000    999.000    999.000
+
+     Latent                                         Two-Tailed
+    Variable        Estimate       S.E.  Est./S.E.    P-Value
+
+    LX1                1.000    999.000    999.000    999.000
+    LX2                1.000    999.000    999.000    999.000
+    LX3                1.000    999.000    999.000    999.000
+    LX4                1.000    999.000    999.000    999.000
+    LX5                1.000    999.000    999.000    999.000
+    ARX2               0.820      0.023     35.463      0.000
+    ARX3               0.821      0.023     35.422      0.000
+    ARX4               0.821      0.023     35.359      0.000
+    ARX5               0.822      0.023     35.280      0.000
+    LY1                1.000    999.000    999.000    999.000
+    LY2                1.000    999.000    999.000    999.000
+    LY3                1.000    999.000    999.000    999.000
+    LY4                1.000    999.000    999.000    999.000
+    LY5                1.000    999.000    999.000    999.000
+    ARY2               0.746      0.022     33.611      0.000
+    ARY3               0.746      0.022     33.651      0.000
+    ARY4               0.746      0.022     33.679      0.000
+    ARY5               0.746      0.022     33.699      0.000
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.347E-04
+       (ratio of smallest to largest eigenvalue)
+
+
+CONFIDENCE INTERVALS OF MODEL RESULTS
+
+                  Lower .5%  Lower 2.5%    Lower 5%    Estimate    Upper 5%  Upper 2.5%   Upper .5%
+
+ LX1      BY
+    X1A              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    X1B              0.963       0.971       0.975       0.994       1.014       1.018       1.025
+    X1C              0.977       0.985       0.989       1.008       1.028       1.032       1.040
+
+ LX2      BY
+    X2A              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    X2B              0.963       0.971       0.975       0.994       1.014       1.018       1.025
+    X2C              0.977       0.985       0.989       1.008       1.028       1.032       1.040
+
+ LX3      BY
+    X3A              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    X3B              0.963       0.971       0.975       0.994       1.014       1.018       1.025
+    X3C              0.977       0.985       0.989       1.008       1.028       1.032       1.040
+
+ LX4      BY
+    X4A              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    X4B              0.963       0.971       0.975       0.994       1.014       1.018       1.025
+    X4C              0.977       0.985       0.989       1.008       1.028       1.032       1.040
+
+ LX5      BY
+    X5A              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    X5B              0.963       0.971       0.975       0.994       1.014       1.018       1.025
+    X5C              0.977       0.985       0.989       1.008       1.028       1.032       1.040
+
+ LX7      BY
+    X7A              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    X7B              0.963       0.971       0.975       0.994       1.014       1.018       1.025
+    X7C              0.977       0.985       0.989       1.008       1.028       1.032       1.040
+
+ LX8      BY
+    X8A              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    X8B              0.963       0.971       0.975       0.994       1.014       1.018       1.025
+    X8C              0.977       0.985       0.989       1.008       1.028       1.032       1.040
+
+ LX9      BY
+    X9A              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    X9B              0.963       0.971       0.975       0.994       1.014       1.018       1.025
+    X9C              0.977       0.985       0.989       1.008       1.028       1.032       1.040
+
+ LX10     BY
+    X10A             1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    X10B             0.963       0.971       0.975       0.994       1.014       1.018       1.025
+    X10C             0.977       0.985       0.989       1.008       1.028       1.032       1.040
+
+ LY1      BY
+    Y1               1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ LY2      BY
+    Y2               1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ LY3      BY
+    Y3               1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ LY4      BY
+    Y4               1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ LY5      BY
+    Y5               1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ TRAITX   BY
+    LX1              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    LX2              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    LX3              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    LX4              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    LX5              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ ARX1     BY
+    LX1              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ ARX2     BY
+    LX2              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ ARX3     BY
+    LX3              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ ARX4     BY
+    LX4              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ ARX5     BY
+    LX5              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ SX1      BY
+    LX1              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ SX2      BY
+    LX2              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ SX3      BY
+    LX3              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ SX4      BY
+    LX4              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ SX5      BY
+    LX5              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ TRAITY   BY
+    LY1              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    LY2              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    LY3              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    LY4              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    LY5              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ ARY1     BY
+    LY1              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ ARY2     BY
+    LY2              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ ARY3     BY
+    LY3              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ ARY4     BY
+    LY4              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ ARY5     BY
+    LY5              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ SY1      BY
+    LY1              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ SY2      BY
+    LY2              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ SY3      BY
+    LY3              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ SY4      BY
+    LY4              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ SY5      BY
+    LY5              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ ARX2     ON
+    ARX1             0.890       0.901       0.907       0.939       0.970       0.976       0.988
+    ARY1            -0.104      -0.093      -0.087      -0.058      -0.029      -0.023      -0.012
+
+ ARX3     ON
+    ARX2             0.890       0.901       0.907       0.939       0.970       0.976       0.988
+    ARY2            -0.104      -0.093      -0.087      -0.058      -0.029      -0.023      -0.012
+
+ ARX4     ON
+    ARX3             0.890       0.901       0.907       0.939       0.970       0.976       0.988
+    ARY3            -0.104      -0.093      -0.087      -0.058      -0.029      -0.023      -0.012
+
+ ARX5     ON
+    ARX4             0.890       0.901       0.907       0.939       0.970       0.976       0.988
+    ARY4            -0.104      -0.093      -0.087      -0.058      -0.029      -0.023      -0.012
+
+ ARY2     ON
+    ARY1             0.809       0.820       0.826       0.855       0.885       0.890       0.901
+    ARX1            -0.029      -0.018      -0.013       0.015       0.043       0.048       0.059
+
+ ARY3     ON
+    ARY2             0.809       0.820       0.826       0.855       0.885       0.890       0.901
+    ARX2            -0.029      -0.018      -0.013       0.015       0.043       0.048       0.059
+
+ ARY4     ON
+    ARY3             0.809       0.820       0.826       0.855       0.885       0.890       0.901
+    ARX3            -0.029      -0.018      -0.013       0.015       0.043       0.048       0.059
+
+ ARY5     ON
+    ARY4             0.809       0.820       0.826       0.855       0.885       0.890       0.901
+    ARX4            -0.029      -0.018      -0.013       0.015       0.043       0.048       0.059
+
+ TRAITX   WITH
+    TRAITY           0.000       0.000       0.000       0.000       0.000       0.000       0.000
+
+ ARX1     WITH
+    ARY1             0.853       0.893       0.914       1.022       1.129       1.150       1.190
+
+ ARX2     WITH
+    ARY2             0.178       0.199       0.209       0.264       0.319       0.330       0.350
+
+ ARX3     WITH
+    ARY3             0.178       0.199       0.209       0.264       0.319       0.330       0.350
+
+ ARX4     WITH
+    ARY4             0.178       0.199       0.209       0.264       0.319       0.330       0.350
+
+ ARX5     WITH
+    ARY5             0.178       0.199       0.209       0.264       0.319       0.330       0.350
+
+ SX1      WITH
+    SY1             -0.169      -0.151      -0.142      -0.094      -0.047      -0.038      -0.020
+
+ SX2      WITH
+    SY2             -0.169      -0.151      -0.142      -0.094      -0.047      -0.038      -0.020
+
+ SX3      WITH
+    SY3             -0.169      -0.151      -0.142      -0.094      -0.047      -0.038      -0.020
+
+ SX4      WITH
+    SY4             -0.169      -0.151      -0.142      -0.094      -0.047      -0.038      -0.020
+
+ SX5      WITH
+    SY5             -0.169      -0.151      -0.142      -0.094      -0.047      -0.038      -0.020
+
+ X1A      WITH
+    X2A             -0.024      -0.013      -0.007       0.021       0.050       0.056       0.066
+    X3A             -0.032      -0.021      -0.015       0.016       0.047       0.053       0.064
+    X4A             -0.011       0.002       0.008       0.042       0.076       0.082       0.095
+    X5A             -0.018      -0.004       0.003       0.040       0.078       0.085       0.099
+    X7A             -0.045      -0.032      -0.025       0.012       0.049       0.056       0.070
+    X8A             -0.025      -0.009      -0.001       0.040       0.082       0.090       0.106
+    X9A             -0.047      -0.028      -0.018       0.034       0.085       0.095       0.114
+    X10A            -0.137      -0.110      -0.097      -0.025       0.046       0.060       0.086
+
+ X2A      WITH
+    X3A             -0.024      -0.013      -0.007       0.021       0.050       0.056       0.066
+    X4A             -0.032      -0.021      -0.015       0.016       0.047       0.053       0.064
+    X5A             -0.011       0.002       0.008       0.042       0.076       0.082       0.095
+    X7A             -0.070      -0.056      -0.049      -0.012       0.025       0.032       0.046
+    X8A             -0.045      -0.032      -0.025       0.012       0.049       0.056       0.070
+    X9A             -0.025      -0.009      -0.001       0.040       0.082       0.090       0.106
+    X10A            -0.047      -0.028      -0.018       0.034       0.085       0.095       0.114
+
+ X3A      WITH
+    X4A             -0.024      -0.013      -0.007       0.021       0.050       0.056       0.066
+    X5A             -0.032      -0.021      -0.015       0.016       0.047       0.053       0.064
+    X7A             -0.018      -0.004       0.003       0.040       0.078       0.085       0.099
+    X8A             -0.070      -0.056      -0.049      -0.012       0.025       0.032       0.046
+    X9A             -0.045      -0.032      -0.025       0.012       0.049       0.056       0.070
+    X10A            -0.025      -0.009      -0.001       0.040       0.082       0.090       0.106
+
+ X4A      WITH
+    X5A             -0.024      -0.013      -0.007       0.021       0.050       0.056       0.066
+    X7A             -0.011       0.002       0.008       0.042       0.076       0.082       0.095
+    X8A             -0.018      -0.004       0.003       0.040       0.078       0.085       0.099
+    X9A             -0.070      -0.056      -0.049      -0.012       0.025       0.032       0.046
+    X10A            -0.045      -0.032      -0.025       0.012       0.049       0.056       0.070
+
+ X5A      WITH
+    X7A             -0.032      -0.021      -0.015       0.016       0.047       0.053       0.064
+    X8A             -0.011       0.002       0.008       0.042       0.076       0.082       0.095
+    X9A             -0.018      -0.004       0.003       0.040       0.078       0.085       0.099
+    X10A            -0.070      -0.056      -0.049      -0.012       0.025       0.032       0.046
+
+ X7A      WITH
+    X8A             -0.024      -0.013      -0.007       0.021       0.050       0.056       0.066
+    X9A             -0.032      -0.021      -0.015       0.016       0.047       0.053       0.064
+    X10A            -0.011       0.002       0.008       0.042       0.076       0.082       0.095
+
+ X8A      WITH
+    X9A             -0.024      -0.013      -0.007       0.021       0.050       0.056       0.066
+    X10A            -0.032      -0.021      -0.015       0.016       0.047       0.053       0.064
+
+ X9A      WITH
+    X10A            -0.024      -0.013      -0.007       0.021       0.050       0.056       0.066
+
+ X1B      WITH
+    X2B             -0.009       0.002       0.008       0.036       0.065       0.071       0.082
+    X3B             -0.015      -0.004       0.002       0.033       0.063       0.069       0.081
+    X4B             -0.021      -0.008      -0.002       0.032       0.066       0.072       0.085
+    X5B             -0.038      -0.024      -0.017       0.021       0.058       0.065       0.079
+    X7B             -0.043      -0.029      -0.022       0.016       0.053       0.060       0.074
+    X8B             -0.031      -0.015      -0.007       0.036       0.079       0.088       0.104
+    X9B              0.000       0.020       0.030       0.083       0.136       0.146       0.166
+    X10B             0.009       0.037       0.052       0.127       0.202       0.217       0.245
+
+ X2B      WITH
+    X3B             -0.009       0.002       0.008       0.036       0.065       0.071       0.082
+    X4B             -0.015      -0.004       0.002       0.033       0.063       0.069       0.081
+    X5B             -0.021      -0.008      -0.002       0.032       0.066       0.072       0.085
+    X7B             -0.032      -0.018      -0.011       0.026       0.063       0.070       0.084
+    X8B             -0.043      -0.029      -0.022       0.016       0.053       0.060       0.074
+    X9B             -0.031      -0.015      -0.007       0.036       0.079       0.088       0.104
+    X10B             0.000       0.020       0.030       0.083       0.136       0.146       0.166
+
+ X3B      WITH
+    X4B             -0.009       0.002       0.008       0.036       0.065       0.071       0.082
+    X5B             -0.015      -0.004       0.002       0.033       0.063       0.069       0.081
+    X7B             -0.038      -0.024      -0.017       0.021       0.058       0.065       0.079
+    X8B             -0.032      -0.018      -0.011       0.026       0.063       0.070       0.084
+    X9B             -0.043      -0.029      -0.022       0.016       0.053       0.060       0.074
+    X10B            -0.031      -0.015      -0.007       0.036       0.079       0.088       0.104
+
+ X4B      WITH
+    X5B             -0.009       0.002       0.008       0.036       0.065       0.071       0.082
+    X7B             -0.021      -0.008      -0.002       0.032       0.066       0.072       0.085
+    X8B             -0.038      -0.024      -0.017       0.021       0.058       0.065       0.079
+    X9B             -0.032      -0.018      -0.011       0.026       0.063       0.070       0.084
+    X10B            -0.043      -0.029      -0.022       0.016       0.053       0.060       0.074
+
+ X5B      WITH
+    X7B             -0.015      -0.004       0.002       0.033       0.063       0.069       0.081
+    X8B             -0.021      -0.008      -0.002       0.032       0.066       0.072       0.085
+    X9B             -0.038      -0.024      -0.017       0.021       0.058       0.065       0.079
+    X10B            -0.032      -0.018      -0.011       0.026       0.063       0.070       0.084
+
+ X7B      WITH
+    X8B             -0.009       0.002       0.008       0.036       0.065       0.071       0.082
+    X9B             -0.015      -0.004       0.002       0.033       0.063       0.069       0.081
+    X10B            -0.021      -0.008      -0.002       0.032       0.066       0.072       0.085
+
+ X8B      WITH
+    X9B             -0.009       0.002       0.008       0.036       0.065       0.071       0.082
+    X10B            -0.015      -0.004       0.002       0.033       0.063       0.069       0.081
+
+ X9B      WITH
+    X10B            -0.009       0.002       0.008       0.036       0.065       0.071       0.082
+
+ X1C      WITH
+    X2C             -0.003       0.008       0.013       0.042       0.071       0.076       0.087
+    X3C             -0.044      -0.033      -0.027       0.005       0.036       0.042       0.054
+    X4C             -0.005       0.008       0.014       0.049       0.083       0.089       0.102
+    X5C             -0.048      -0.034      -0.026       0.012       0.050       0.057       0.071
+    X7C             -0.059      -0.045      -0.038       0.000       0.038       0.045       0.059
+    X8C             -0.071      -0.054      -0.046      -0.003       0.040       0.048       0.064
+    X9C             -0.045      -0.025      -0.015       0.038       0.091       0.101       0.120
+    X10C            -0.182      -0.154      -0.140      -0.065       0.009       0.023       0.051
+
+ X2C      WITH
+    X3C             -0.003       0.008       0.013       0.042       0.071       0.076       0.087
+    X4C             -0.044      -0.033      -0.027       0.005       0.036       0.042       0.054
+    X5C             -0.005       0.008       0.014       0.049       0.083       0.089       0.102
+    X7C             -0.037      -0.023      -0.015       0.022       0.060       0.067       0.081
+    X8C             -0.059      -0.045      -0.038       0.000       0.038       0.045       0.059
+    X9C             -0.071      -0.054      -0.046      -0.003       0.040       0.048       0.064
+    X10C            -0.045      -0.025      -0.015       0.038       0.091       0.101       0.120
+
+ X3C      WITH
+    X4C             -0.003       0.008       0.013       0.042       0.071       0.076       0.087
+    X5C             -0.044      -0.033      -0.027       0.005       0.036       0.042       0.054
+    X7C             -0.048      -0.034      -0.026       0.012       0.050       0.057       0.071
+    X8C             -0.037      -0.023      -0.015       0.022       0.060       0.067       0.081
+    X9C             -0.059      -0.045      -0.038       0.000       0.038       0.045       0.059
+    X10C            -0.071      -0.054      -0.046      -0.003       0.040       0.048       0.064
+
+ X4C      WITH
+    X5C             -0.003       0.008       0.013       0.042       0.071       0.076       0.087
+    X7C             -0.005       0.008       0.014       0.049       0.083       0.089       0.102
+    X8C             -0.048      -0.034      -0.026       0.012       0.050       0.057       0.071
+    X9C             -0.037      -0.023      -0.015       0.022       0.060       0.067       0.081
+    X10C            -0.059      -0.045      -0.038       0.000       0.038       0.045       0.059
+
+ X5C      WITH
+    X7C             -0.044      -0.033      -0.027       0.005       0.036       0.042       0.054
+    X8C             -0.005       0.008       0.014       0.049       0.083       0.089       0.102
+    X9C             -0.048      -0.034      -0.026       0.012       0.050       0.057       0.071
+    X10C            -0.037      -0.023      -0.015       0.022       0.060       0.067       0.081
+
+ X7C      WITH
+    X8C             -0.003       0.008       0.013       0.042       0.071       0.076       0.087
+    X9C             -0.044      -0.033      -0.027       0.005       0.036       0.042       0.054
+    X10C            -0.005       0.008       0.014       0.049       0.083       0.089       0.102
+
+ X8C      WITH
+    X9C             -0.003       0.008       0.013       0.042       0.071       0.076       0.087
+    X10C            -0.044      -0.033      -0.027       0.005       0.036       0.042       0.054
+
+ X9C      WITH
+    X10C            -0.003       0.008       0.013       0.042       0.071       0.076       0.087
+
+ Intercepts
+    X1A             -0.091      -0.054      -0.035       0.063       0.162       0.181       0.217
+    X1B             -0.092      -0.055      -0.036       0.062       0.160       0.179       0.216
+    X1C             -0.122      -0.085      -0.066       0.034       0.133       0.152       0.189
+    X2A             -0.140      -0.103      -0.084       0.014       0.113       0.132       0.169
+    X2B             -0.112      -0.076      -0.057       0.042       0.140       0.159       0.196
+    X2C             -0.084      -0.047      -0.028       0.071       0.171       0.190       0.227
+    X3A             -0.107      -0.070      -0.051       0.047       0.146       0.165       0.202
+    X3B             -0.116      -0.079      -0.060       0.038       0.137       0.156       0.193
+    X3C             -0.092      -0.055      -0.036       0.063       0.163       0.182       0.219
+    X4A             -0.096      -0.059      -0.040       0.059       0.157       0.176       0.213
+    X4B             -0.034       0.003       0.022       0.121       0.219       0.238       0.275
+    X4C             -0.118      -0.081      -0.062       0.038       0.137       0.156       0.194
+    X5A             -0.078      -0.041      -0.022       0.077       0.175       0.194       0.231
+    X5B             -0.086      -0.049      -0.030       0.069       0.167       0.186       0.223
+    X5C             -0.089      -0.052      -0.033       0.067       0.167       0.186       0.223
+    X7A             -0.072      -0.035      -0.016       0.082       0.181       0.200       0.236
+    X7B             -0.069      -0.032      -0.013       0.085       0.184       0.203       0.240
+    X7C             -0.049      -0.012       0.007       0.107       0.206       0.225       0.262
+    X8A             -0.147      -0.112      -0.093       0.002       0.098       0.116       0.152
+    X8B             -0.141      -0.105      -0.087       0.009       0.105       0.123       0.159
+    X8C             -0.156      -0.120      -0.102      -0.005       0.092       0.110       0.146
+    X9A             -0.118      -0.082      -0.064       0.031       0.125       0.143       0.179
+    X9B             -0.096      -0.061      -0.043       0.052       0.146       0.164       0.200
+    X9C             -0.065      -0.029      -0.011       0.085       0.180       0.198       0.234
+    X10A            -0.198      -0.162      -0.143      -0.047       0.050       0.068       0.104
+    X10B            -0.229      -0.193      -0.175      -0.078       0.018       0.037       0.073
+    X10C            -0.120      -0.084      -0.065       0.032       0.130       0.149       0.185
+    Y1              -0.141      -0.110      -0.095      -0.013       0.068       0.083       0.114
+    Y2              -0.100      -0.069      -0.054       0.028       0.109       0.125       0.155
+    Y3              -0.070      -0.040      -0.024       0.057       0.139       0.154       0.185
+    Y4              -0.065      -0.034      -0.019       0.063       0.144       0.160       0.190
+    Y5              -0.112      -0.082      -0.066       0.015       0.096       0.112       0.142
+
+ Variances
+    LX7              2.248       2.331       2.374       2.599       2.823       2.866       2.950
+    LX8              2.073       2.151       2.191       2.400       2.609       2.649       2.727
+    LX9              2.002       2.078       2.117       2.320       2.524       2.563       2.639
+    LX10             2.120       2.200       2.241       2.454       2.667       2.707       2.787
+    TRAITX           0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    ARX1             1.567       1.626       1.656       1.814       1.972       2.003       2.062
+    SX1              0.656       0.685       0.700       0.778       0.856       0.871       0.901
+    SX2              0.656       0.685       0.700       0.778       0.856       0.871       0.901
+    SX3              0.656       0.685       0.700       0.778       0.856       0.871       0.901
+    SX4              0.656       0.685       0.700       0.778       0.856       0.871       0.901
+    SX5              0.656       0.685       0.700       0.778       0.856       0.871       0.901
+    TRAITY           0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    ARY1             1.554       1.603       1.627       1.756       1.886       1.910       1.959
+    SY1              0.595       0.617       0.629       0.689       0.749       0.760       0.783
+    SY2              0.595       0.617       0.629       0.689       0.749       0.760       0.783
+    SY3              0.595       0.617       0.629       0.689       0.749       0.760       0.783
+    SY4              0.595       0.617       0.629       0.689       0.749       0.760       0.783
+    SY5              0.595       0.617       0.629       0.689       0.749       0.760       0.783
+
+ Residual Variances
+    X1A              0.928       0.942       0.949       0.987       1.024       1.032       1.046
+    X1B              0.951       0.965       0.973       1.011       1.049       1.056       1.070
+    X1C              0.951       0.966       0.973       1.011       1.050       1.057       1.072
+    X2A              0.928       0.942       0.949       0.987       1.024       1.032       1.046
+    X2B              0.951       0.965       0.973       1.011       1.049       1.056       1.070
+    X2C              0.951       0.966       0.973       1.011       1.050       1.057       1.072
+    X3A              0.928       0.942       0.949       0.987       1.024       1.032       1.046
+    X3B              0.951       0.965       0.973       1.011       1.049       1.056       1.070
+    X3C              0.951       0.966       0.973       1.011       1.050       1.057       1.072
+    X4A              0.928       0.942       0.949       0.987       1.024       1.032       1.046
+    X4B              0.951       0.965       0.973       1.011       1.049       1.056       1.070
+    X4C              0.951       0.966       0.973       1.011       1.050       1.057       1.072
+    X5A              0.928       0.942       0.949       0.987       1.024       1.032       1.046
+    X5B              0.951       0.965       0.973       1.011       1.049       1.056       1.070
+    X5C              0.951       0.966       0.973       1.011       1.050       1.057       1.072
+    X7A              0.928       0.942       0.949       0.987       1.024       1.032       1.046
+    X7B              0.951       0.965       0.973       1.011       1.049       1.056       1.070
+    X7C              0.951       0.966       0.973       1.011       1.050       1.057       1.072
+    X8A              0.928       0.942       0.949       0.987       1.024       1.032       1.046
+    X8B              0.951       0.965       0.973       1.011       1.049       1.056       1.070
+    X8C              0.951       0.966       0.973       1.011       1.050       1.057       1.072
+    X9A              0.928       0.942       0.949       0.987       1.024       1.032       1.046
+    X9B              0.951       0.965       0.973       1.011       1.049       1.056       1.070
+    X9C              0.951       0.966       0.973       1.011       1.050       1.057       1.072
+    X10A             0.928       0.942       0.949       0.987       1.024       1.032       1.046
+    X10B             0.951       0.965       0.973       1.011       1.049       1.056       1.070
+    X10C             0.951       0.966       0.973       1.011       1.050       1.057       1.072
+    Y1               0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    Y2               0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    Y3               0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    Y4               0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    Y5               0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    LX1              0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    LX2              0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    LX3              0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    LX4              0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    LX5              0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    ARX2             0.204       0.234       0.249       0.327       0.406       0.421       0.450
+    ARX3             0.204       0.234       0.249       0.327       0.406       0.421       0.450
+    ARX4             0.204       0.234       0.249       0.327       0.406       0.421       0.450
+    ARX5             0.204       0.234       0.249       0.327       0.406       0.421       0.450
+    LY1              0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    LY2              0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    LY3              0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    LY4              0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    LY5              0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    ARY2             0.331       0.359       0.373       0.446       0.519       0.533       0.560
+    ARY3             0.331       0.359       0.373       0.446       0.519       0.533       0.560
+    ARY4             0.331       0.359       0.373       0.446       0.519       0.533       0.560
+    ARY5             0.331       0.359       0.373       0.446       0.519       0.533       0.560
+
+New/Additional Parameters
+    COR_ARXA         0.504       0.520       0.528       0.572       0.616       0.625       0.641
+    COR_SXSY        -0.234      -0.209      -0.196      -0.129      -0.062      -0.049      -0.024
+    TRAIT.P.         0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    AR.P.X           0.649       0.661       0.668       0.700       0.732       0.738       0.750
+    ST.P.X           0.250       0.262       0.268       0.300       0.332       0.339       0.351
+    STAB.X           0.890       0.901       0.907       0.939       0.970       0.976       0.988
+    TRAIT.P.         0.000       0.000       0.000       0.000       0.000       0.000       0.000
+    AR.P.Y           0.676       0.686       0.691       0.718       0.746       0.751       0.761
+    ST.P.Y           0.239       0.249       0.254       0.282       0.309       0.314       0.324
+    STAB.Y           0.809       0.820       0.826       0.855       0.885       0.890       0.901
+
+
+CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS
+
+
+STDYX Standardization
+
+                  Lower .5%  Lower 2.5%    Lower 5%    Estimate    Upper 5%  Upper 2.5%   Upper .5%
+
+ LX1      BY
+    X1A              0.837       0.841       0.842       0.851       0.860       0.862       0.865
+    X1B              0.833       0.836       0.838       0.847       0.856       0.858       0.861
+    X1C              0.836       0.840       0.841       0.850       0.859       0.861       0.864
+
+ LX2      BY
+    X2A              0.838       0.841       0.843       0.851       0.860       0.862       0.865
+    X2B              0.833       0.836       0.838       0.847       0.856       0.858       0.861
+    X2C              0.837       0.840       0.842       0.850       0.859       0.861       0.864
+
+ LX3      BY
+    X3A              0.838       0.841       0.843       0.852       0.860       0.862       0.865
+    X3B              0.833       0.837       0.838       0.847       0.856       0.858       0.861
+    X3C              0.837       0.840       0.842       0.851       0.859       0.861       0.864
+
+ LX4      BY
+    X4A              0.838       0.841       0.843       0.852       0.861       0.862       0.866
+    X4B              0.834       0.837       0.839       0.848       0.856       0.858       0.862
+    X4C              0.837       0.840       0.842       0.851       0.860       0.861       0.865
+
+ LX5      BY
+    X5A              0.838       0.841       0.843       0.852       0.861       0.862       0.866
+    X5B              0.834       0.837       0.839       0.848       0.857       0.858       0.862
+    X5C              0.837       0.841       0.842       0.851       0.860       0.861       0.865
+
+ LX7      BY
+    X7A              0.833       0.838       0.840       0.851       0.863       0.865       0.869
+    X7B              0.829       0.833       0.835       0.847       0.859       0.861       0.866
+    X7C              0.832       0.837       0.839       0.850       0.862       0.864       0.869
+
+ LX8      BY
+    X8A              0.823       0.827       0.830       0.842       0.854       0.856       0.861
+    X8B              0.818       0.823       0.825       0.837       0.850       0.852       0.857
+    X8C              0.822       0.826       0.829       0.841       0.853       0.855       0.860
+
+ LX9      BY
+    X9A              0.818       0.823       0.825       0.838       0.850       0.853       0.857
+    X9B              0.813       0.818       0.821       0.833       0.846       0.848       0.853
+    X9C              0.817       0.822       0.824       0.837       0.849       0.852       0.856
+
+ LX10     BY
+    X10A             0.826       0.830       0.833       0.845       0.857       0.859       0.863
+    X10B             0.821       0.826       0.828       0.840       0.852       0.855       0.859
+    X10C             0.825       0.829       0.832       0.844       0.856       0.858       0.862
+
+ LY1      BY
+    Y1               1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ LY2      BY
+    Y2               1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ LY3      BY
+    Y3               1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ LY4      BY
+    Y4               1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ LY5      BY
+    Y5               1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ TRAITX   BY
+    LX1            999.000     999.000     999.000     999.000     999.000     999.000     999.000
+    LX2            999.000     999.000     999.000     999.000     999.000     999.000     999.000
+    LX3            999.000     999.000     999.000     999.000     999.000     999.000     999.000
+    LX4            999.000     999.000     999.000     999.000     999.000     999.000     999.000
+    LX5            999.000     999.000     999.000     999.000     999.000     999.000     999.000
+
+ ARX1     BY
+    LX1              0.806       0.814       0.817       0.837       0.856       0.860       0.867
+
+ ARX2     BY
+    LX2              0.807       0.814       0.818       0.837       0.856       0.860       0.867
+
+ ARX3     BY
+    LX3              0.808       0.815       0.818       0.837       0.856       0.860       0.867
+
+ ARX4     BY
+    LX4              0.808       0.815       0.819       0.838       0.857       0.860       0.867
+
+ ARX5     BY
+    LX5              0.809       0.816       0.819       0.838       0.857       0.860       0.867
+
+ SX1      BY
+    LX1              0.502       0.513       0.518       0.548       0.577       0.583       0.594
+
+ SX2      BY
+    LX2              0.501       0.512       0.518       0.547       0.576       0.582       0.593
+
+ SX3      BY
+    LX3              0.501       0.512       0.518       0.547       0.576       0.581       0.592
+
+ SX4      BY
+    LX4              0.501       0.512       0.517       0.546       0.575       0.581       0.591
+
+ SX5      BY
+    LX5              0.501       0.512       0.517       0.546       0.575       0.580       0.591
+
+ TRAITY   BY
+    LY1            999.000     999.000     999.000     999.000     999.000     999.000     999.000
+    LY2            999.000     999.000     999.000     999.000     999.000     999.000     999.000
+    LY3            999.000     999.000     999.000     999.000     999.000     999.000     999.000
+    LY4            999.000     999.000     999.000     999.000     999.000     999.000     999.000
+    LY5            999.000     999.000     999.000     999.000     999.000     999.000     999.000
+
+ ARY1     BY
+    LY1              0.822       0.828       0.831       0.848       0.864       0.867       0.873
+
+ ARY2     BY
+    LY2              0.822       0.828       0.831       0.848       0.864       0.867       0.873
+
+ ARY3     BY
+    LY3              0.822       0.828       0.831       0.848       0.864       0.867       0.873
+
+ ARY4     BY
+    LY4              0.822       0.828       0.831       0.848       0.864       0.867       0.873
+
+ ARY5     BY
+    LY5              0.822       0.828       0.831       0.848       0.864       0.867       0.873
+
+ SY1      BY
+    LY1              0.490       0.500       0.505       0.531       0.556       0.561       0.571
+
+ SY2      BY
+    LY2              0.490       0.500       0.505       0.531       0.556       0.561       0.571
+
+ SY3      BY
+    LY3              0.490       0.500       0.505       0.531       0.556       0.561       0.571
+
+ SY4      BY
+    LY4              0.490       0.500       0.505       0.531       0.556       0.561       0.571
+
+ SY5      BY
+    LY5              0.490       0.500       0.505       0.531       0.556       0.561       0.571
+
+ ARX2     ON
+    ARX1             0.890       0.901       0.907       0.937       0.967       0.973       0.984
+    ARY1            -0.103      -0.092      -0.086      -0.057      -0.028      -0.023      -0.012
+
+ ARX3     ON
+    ARX2             0.890       0.901       0.907       0.937       0.967       0.973       0.984
+    ARY2            -0.102      -0.091      -0.086      -0.057      -0.028      -0.023      -0.012
+
+ ARX4     ON
+    ARX3             0.890       0.902       0.907       0.937       0.968       0.973       0.985
+    ARY3            -0.102      -0.091      -0.086      -0.057      -0.028      -0.023      -0.012
+
+ ARX5     ON
+    ARX4             0.890       0.902       0.907       0.938       0.968       0.974       0.985
+    ARY4            -0.102      -0.091      -0.086      -0.057      -0.028      -0.023      -0.012
+
+ ARY2     ON
+    ARY1             0.809       0.820       0.825       0.855       0.885       0.890       0.902
+    ARX1            -0.029      -0.019      -0.013       0.015       0.043       0.049       0.059
+
+ ARY3     ON
+    ARY2             0.809       0.820       0.826       0.855       0.885       0.890       0.901
+    ARX2            -0.029      -0.019      -0.013       0.015       0.044       0.049       0.060
+
+ ARY4     ON
+    ARY3             0.809       0.820       0.826       0.855       0.885       0.890       0.901
+    ARX3            -0.029      -0.019      -0.013       0.015       0.044       0.049       0.060
+
+ ARY5     ON
+    ARY4             0.809       0.820       0.826       0.855       0.885       0.890       0.901
+    ARX4            -0.029      -0.019      -0.013       0.015       0.044       0.049       0.060
+
+ TRAITX   WITH
+    TRAITY         999.000     999.000     999.000     999.000     999.000     999.000     999.000
+
+ ARX1     WITH
+    ARY1             0.504       0.520       0.528       0.572       0.616       0.625       0.641
+
+ ARX2     WITH
+    ARY2             0.490       0.539       0.563       0.692       0.821       0.846       0.894
+
+ ARX3     WITH
+    ARY3             0.490       0.539       0.563       0.692       0.821       0.846       0.894
+
+ ARX4     WITH
+    ARY4             0.490       0.539       0.563       0.692       0.821       0.846       0.894
+
+ ARX5     WITH
+    ARY5             0.490       0.539       0.563       0.692       0.821       0.846       0.894
+
+ SX1      WITH
+    SY1             -0.234      -0.209      -0.196      -0.129      -0.062      -0.049      -0.024
+
+ SX2      WITH
+    SY2             -0.234      -0.209      -0.196      -0.129      -0.062      -0.049      -0.024
+
+ SX3      WITH
+    SY3             -0.234      -0.209      -0.196      -0.129      -0.062      -0.049      -0.024
+
+ SX4      WITH
+    SY4             -0.234      -0.209      -0.196      -0.129      -0.062      -0.049      -0.024
+
+ SX5      WITH
+    SY5             -0.234      -0.209      -0.196      -0.129      -0.062      -0.049      -0.024
+
+ X1A      WITH
+    X2A             -0.024      -0.013      -0.007       0.022       0.051       0.056       0.067
+    X3A             -0.032      -0.021      -0.015       0.016       0.047       0.053       0.065
+    X4A             -0.011       0.002       0.008       0.042       0.077       0.083       0.096
+    X5A             -0.018      -0.004       0.003       0.041       0.078       0.086       0.100
+    X7A             -0.046      -0.032      -0.025       0.012       0.050       0.057       0.071
+    X8A             -0.025      -0.009      -0.001       0.041       0.083       0.091       0.107
+    X9A             -0.048      -0.028      -0.018       0.034       0.086       0.096       0.116
+    X10A            -0.139      -0.112      -0.098      -0.026       0.047       0.060       0.088
+
+ X2A      WITH
+    X3A             -0.024      -0.013      -0.007       0.022       0.051       0.056       0.067
+    X4A             -0.032      -0.021      -0.015       0.016       0.047       0.053       0.065
+    X5A             -0.011       0.002       0.008       0.042       0.077       0.083       0.096
+    X7A             -0.071      -0.057      -0.050      -0.012       0.026       0.033       0.047
+    X8A             -0.046      -0.032      -0.025       0.012       0.050       0.057       0.071
+    X9A             -0.025      -0.009      -0.001       0.041       0.083       0.091       0.107
+    X10A            -0.048      -0.028      -0.018       0.034       0.086       0.096       0.116
+
+ X3A      WITH
+    X4A             -0.024      -0.013      -0.007       0.022       0.051       0.056       0.067
+    X5A             -0.032      -0.021      -0.015       0.016       0.047       0.053       0.065
+    X7A             -0.018      -0.004       0.003       0.041       0.078       0.086       0.100
+    X8A             -0.071      -0.057      -0.050      -0.012       0.026       0.033       0.047
+    X9A             -0.046      -0.032      -0.025       0.012       0.050       0.057       0.071
+    X10A            -0.025      -0.009      -0.001       0.041       0.083       0.091       0.107
+
+ X4A      WITH
+    X5A             -0.024      -0.013      -0.007       0.022       0.051       0.056       0.067
+    X7A             -0.011       0.002       0.008       0.042       0.077       0.083       0.096
+    X8A             -0.018      -0.004       0.003       0.041       0.078       0.086       0.100
+    X9A             -0.071      -0.057      -0.050      -0.012       0.026       0.033       0.047
+    X10A            -0.046      -0.032      -0.025       0.012       0.050       0.057       0.071
+
+ X5A      WITH
+    X7A             -0.032      -0.021      -0.015       0.016       0.047       0.053       0.065
+    X8A             -0.011       0.002       0.008       0.042       0.077       0.083       0.096
+    X9A             -0.018      -0.004       0.003       0.041       0.078       0.086       0.100
+    X10A            -0.071      -0.057      -0.050      -0.012       0.026       0.033       0.047
+
+ X7A      WITH
+    X8A             -0.024      -0.013      -0.007       0.022       0.051       0.056       0.067
+    X9A             -0.032      -0.021      -0.015       0.016       0.047       0.053       0.065
+    X10A            -0.011       0.002       0.008       0.042       0.077       0.083       0.096
+
+ X8A      WITH
+    X9A             -0.024      -0.013      -0.007       0.022       0.051       0.056       0.067
+    X10A            -0.032      -0.021      -0.015       0.016       0.047       0.053       0.065
+
+ X9A      WITH
+    X10A            -0.024      -0.013      -0.007       0.022       0.051       0.056       0.067
+
+ X1B      WITH
+    X2B             -0.008       0.002       0.008       0.036       0.064       0.070       0.080
+    X3B             -0.015      -0.004       0.002       0.032       0.063       0.068       0.080
+    X4B             -0.020      -0.008      -0.001       0.032       0.065       0.071       0.084
+    X5B             -0.038      -0.024      -0.017       0.020       0.057       0.065       0.078
+    X7B             -0.042      -0.028      -0.021       0.016       0.053       0.060       0.074
+    X8B             -0.031      -0.015      -0.007       0.036       0.078       0.087       0.102
+    X9B              0.001       0.020       0.030       0.082       0.134       0.144       0.164
+    X10B             0.009       0.037       0.051       0.126       0.200       0.214       0.242
+
+ X2B      WITH
+    X3B             -0.008       0.002       0.008       0.036       0.064       0.070       0.080
+    X4B             -0.015      -0.004       0.002       0.032       0.063       0.068       0.080
+    X5B             -0.020      -0.008      -0.001       0.032       0.065       0.071       0.084
+    X7B             -0.031      -0.017      -0.010       0.026       0.063       0.070       0.083
+    X8B             -0.042      -0.028      -0.021       0.016       0.053       0.060       0.074
+    X9B             -0.031      -0.015      -0.007       0.036       0.078       0.087       0.102
+    X10B             0.001       0.020       0.030       0.082       0.134       0.144       0.164
+
+ X3B      WITH
+    X4B             -0.008       0.002       0.008       0.036       0.064       0.070       0.080
+    X5B             -0.015      -0.004       0.002       0.032       0.063       0.068       0.080
+    X7B             -0.038      -0.024      -0.017       0.020       0.057       0.065       0.078
+    X8B             -0.031      -0.017      -0.010       0.026       0.063       0.070       0.083
+    X9B             -0.042      -0.028      -0.021       0.016       0.053       0.060       0.074
+    X10B            -0.031      -0.015      -0.007       0.036       0.078       0.087       0.102
+
+ X4B      WITH
+    X5B             -0.008       0.002       0.008       0.036       0.064       0.070       0.080
+    X7B             -0.020      -0.008      -0.001       0.032       0.065       0.071       0.084
+    X8B             -0.038      -0.024      -0.017       0.020       0.057       0.065       0.078
+    X9B             -0.031      -0.017      -0.010       0.026       0.063       0.070       0.083
+    X10B            -0.042      -0.028      -0.021       0.016       0.053       0.060       0.074
+
+ X5B      WITH
+    X7B             -0.015      -0.004       0.002       0.032       0.063       0.068       0.080
+    X8B             -0.020      -0.008      -0.001       0.032       0.065       0.071       0.084
+    X9B             -0.038      -0.024      -0.017       0.020       0.057       0.065       0.078
+    X10B            -0.031      -0.017      -0.010       0.026       0.063       0.070       0.083
+
+ X7B      WITH
+    X8B             -0.008       0.002       0.008       0.036       0.064       0.070       0.080
+    X9B             -0.015      -0.004       0.002       0.032       0.063       0.068       0.080
+    X10B            -0.020      -0.008      -0.001       0.032       0.065       0.071       0.084
+
+ X8B      WITH
+    X9B             -0.008       0.002       0.008       0.036       0.064       0.070       0.080
+    X10B            -0.015      -0.004       0.002       0.032       0.063       0.068       0.080
+
+ X9B      WITH
+    X10B            -0.008       0.002       0.008       0.036       0.064       0.070       0.080
+
+ X1C      WITH
+    X2C             -0.003       0.008       0.013       0.042       0.070       0.075       0.086
+    X3C             -0.044      -0.032      -0.026       0.005       0.036       0.042       0.053
+    X4C             -0.004       0.008       0.015       0.048       0.082       0.088       0.101
+    X5C             -0.047      -0.033      -0.026       0.011       0.049       0.056       0.070
+    X7C             -0.058      -0.044      -0.037       0.000       0.037       0.044       0.058
+    X8C             -0.070      -0.054      -0.046      -0.003       0.039       0.048       0.063
+    X9C             -0.045      -0.025      -0.015       0.037       0.089       0.099       0.119
+    X10C            -0.180      -0.152      -0.138      -0.065       0.009       0.023       0.051
+
+ X2C      WITH
+    X3C             -0.003       0.008       0.013       0.042       0.070       0.075       0.086
+    X4C             -0.044      -0.032      -0.026       0.005       0.036       0.042       0.053
+    X5C             -0.004       0.008       0.015       0.048       0.082       0.088       0.101
+    X7C             -0.036      -0.022      -0.015       0.022       0.059       0.066       0.080
+    X8C             -0.058      -0.044      -0.037       0.000       0.037       0.044       0.058
+    X9C             -0.070      -0.054      -0.046      -0.003       0.039       0.048       0.063
+    X10C            -0.045      -0.025      -0.015       0.037       0.089       0.099       0.119
+
+ X3C      WITH
+    X4C             -0.003       0.008       0.013       0.042       0.070       0.075       0.086
+    X5C             -0.044      -0.032      -0.026       0.005       0.036       0.042       0.053
+    X7C             -0.047      -0.033      -0.026       0.011       0.049       0.056       0.070
+    X8C             -0.036      -0.022      -0.015       0.022       0.059       0.066       0.080
+    X9C             -0.058      -0.044      -0.037       0.000       0.037       0.044       0.058
+    X10C            -0.070      -0.054      -0.046      -0.003       0.039       0.048       0.063
+
+ X4C      WITH
+    X5C             -0.003       0.008       0.013       0.042       0.070       0.075       0.086
+    X7C             -0.004       0.008       0.015       0.048       0.082       0.088       0.101
+    X8C             -0.047      -0.033      -0.026       0.011       0.049       0.056       0.070
+    X9C             -0.036      -0.022      -0.015       0.022       0.059       0.066       0.080
+    X10C            -0.058      -0.044      -0.037       0.000       0.037       0.044       0.058
+
+ X5C      WITH
+    X7C             -0.044      -0.032      -0.026       0.005       0.036       0.042       0.053
+    X8C             -0.004       0.008       0.015       0.048       0.082       0.088       0.101
+    X9C             -0.047      -0.033      -0.026       0.011       0.049       0.056       0.070
+    X10C            -0.036      -0.022      -0.015       0.022       0.059       0.066       0.080
+
+ X7C      WITH
+    X8C             -0.003       0.008       0.013       0.042       0.070       0.075       0.086
+    X9C             -0.044      -0.032      -0.026       0.005       0.036       0.042       0.053
+    X10C            -0.004       0.008       0.015       0.048       0.082       0.088       0.101
+
+ X8C      WITH
+    X9C             -0.003       0.008       0.013       0.042       0.070       0.075       0.086
+    X10C            -0.044      -0.032      -0.026       0.005       0.036       0.042       0.053
+
+ X9C      WITH
+    X10C            -0.003       0.008       0.013       0.042       0.070       0.075       0.086
+
+ Intercepts
+    X1A             -0.048      -0.029      -0.019       0.033       0.085       0.095       0.115
+    X1B             -0.049      -0.029      -0.019       0.033       0.085       0.095       0.114
+    X1C             -0.064      -0.044      -0.034       0.018       0.070       0.080       0.099
+    X2A             -0.074      -0.054      -0.044       0.008       0.060       0.070       0.089
+    X2B             -0.059      -0.040      -0.030       0.022       0.074       0.084       0.103
+    X2C             -0.044      -0.025      -0.015       0.037       0.089       0.099       0.119
+    X3A             -0.057      -0.037      -0.027       0.025       0.077       0.087       0.106
+    X3B             -0.061      -0.042      -0.032       0.020       0.072       0.082       0.102
+    X3C             -0.048      -0.029      -0.019       0.033       0.085       0.095       0.115
+    X4A             -0.050      -0.031      -0.021       0.031       0.083       0.093       0.112
+    X4B             -0.018       0.002       0.012       0.064       0.116       0.126       0.145
+    X4C             -0.062      -0.042      -0.032       0.020       0.072       0.082       0.101
+    X5A             -0.041      -0.022      -0.012       0.040       0.092       0.102       0.122
+    X5B             -0.045      -0.026      -0.016       0.036       0.088       0.098       0.118
+    X5C             -0.046      -0.027      -0.017       0.035       0.087       0.097       0.116
+    X7A             -0.038      -0.019      -0.009       0.043       0.095       0.105       0.125
+    X7B             -0.036      -0.017      -0.007       0.045       0.097       0.107       0.127
+    X7C             -0.026      -0.006       0.004       0.056       0.108       0.118       0.137
+    X8A             -0.080      -0.061      -0.051       0.001       0.053       0.063       0.083
+    X8B             -0.077      -0.057      -0.047       0.005       0.057       0.067       0.086
+    X8C             -0.084      -0.065      -0.055      -0.003       0.049       0.059       0.079
+    X9A             -0.065      -0.045      -0.035       0.017       0.069       0.079       0.098
+    X9B             -0.053      -0.033      -0.024       0.028       0.081       0.090       0.110
+    X9C             -0.035      -0.016      -0.006       0.046       0.098       0.108       0.128
+    X10A            -0.107      -0.087      -0.077      -0.025       0.027       0.037       0.056
+    X10B            -0.124      -0.104      -0.094      -0.042       0.010       0.020       0.039
+    X10C            -0.064      -0.045      -0.035       0.017       0.069       0.079       0.099
+    Y1              -0.090      -0.071      -0.061      -0.009       0.043       0.053       0.073
+    Y2              -0.064      -0.044      -0.034       0.018       0.070       0.080       0.099
+    Y3              -0.045      -0.025      -0.015       0.037       0.089       0.099       0.118
+    Y4              -0.041      -0.022      -0.012       0.040       0.092       0.102       0.122
+    Y5              -0.072      -0.052      -0.042       0.010       0.062       0.072       0.091
+
+ Variances
+    LX7              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    LX8              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    LX9              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    LX10             1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    TRAITX         999.000     999.000     999.000     999.000     999.000     999.000     999.000
+    ARX1             1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    SX1              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    SX2              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    SX3              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    SX4              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    SX5              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    TRAITY         999.000     999.000     999.000     999.000     999.000     999.000     999.000
+    ARY1             1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    SY1              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    SY2              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    SY3              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    SY4              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+    SY5              1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+ Residual Variances
+    X1A              0.252       0.258       0.261       0.276       0.291       0.294       0.299
+    X1B              0.259       0.265       0.268       0.283       0.298       0.301       0.307
+    X1C              0.254       0.259       0.262       0.277       0.292       0.295       0.301
+    X2A              0.252       0.257       0.260       0.275       0.290       0.293       0.299
+    X2B              0.259       0.264       0.267       0.282       0.298       0.300       0.306
+    X2C              0.253       0.259       0.262       0.277       0.292       0.295       0.300
+    X3A              0.251       0.257       0.260       0.275       0.290       0.293       0.298
+    X3B              0.258       0.264       0.267       0.282       0.297       0.300       0.306
+    X3C              0.253       0.259       0.261       0.276       0.291       0.294       0.300
+    X4A              0.251       0.257       0.259       0.274       0.289       0.292       0.298
+    X4B              0.258       0.264       0.267       0.282       0.297       0.300       0.305
+    X4C              0.253       0.258       0.261       0.276       0.291       0.294       0.299
+    X5A              0.251       0.256       0.259       0.274       0.289       0.292       0.298
+    X5B              0.258       0.263       0.266       0.281       0.296       0.299       0.305
+    X5C              0.252       0.258       0.261       0.276       0.291       0.294       0.299
+    X7A              0.244       0.252       0.256       0.275       0.295       0.299       0.306
+    X7B              0.251       0.259       0.262       0.282       0.302       0.306       0.314
+    X7C              0.246       0.253       0.257       0.277       0.296       0.300       0.308
+    X8A              0.259       0.267       0.271       0.291       0.312       0.316       0.323
+    X8B              0.266       0.274       0.278       0.299       0.319       0.323       0.331
+    X8C              0.261       0.268       0.272       0.293       0.314       0.318       0.325
+    X9A              0.265       0.273       0.277       0.298       0.319       0.323       0.331
+    X9B              0.273       0.281       0.285       0.306       0.327       0.331       0.339
+    X9C              0.267       0.275       0.279       0.300       0.321       0.325       0.333
+    X10A             0.255       0.263       0.267       0.287       0.307       0.311       0.319
+    X10B             0.262       0.270       0.274       0.294       0.315       0.319       0.326
+    X10C             0.257       0.264       0.268       0.288       0.309       0.313       0.320
+    Y1             999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    Y2             999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    Y3             999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    Y4             999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    Y5             999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    LX1            999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    LX2            999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    LX3            999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    LX4            999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    LX5            999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    ARX2             0.120       0.134       0.142       0.180       0.218       0.225       0.239
+    ARX3             0.120       0.134       0.141       0.179       0.217       0.225       0.239
+    ARX4             0.119       0.133       0.141       0.179       0.217       0.224       0.239
+    ARX5             0.118       0.133       0.140       0.178       0.217       0.224       0.238
+    LY1            999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    LY2            999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    LY3            999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    LY4            999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    LY5            999.000     999.000     999.000       0.000     999.000     999.000     999.000
+    ARY2             0.197       0.210       0.217       0.254       0.290       0.297       0.311
+    ARY3             0.197       0.210       0.217       0.254       0.290       0.297       0.311
+    ARY4             0.197       0.210       0.217       0.254       0.290       0.297       0.311
+    ARY5             0.197       0.210       0.217       0.254       0.290       0.297       0.311
+
+
+     Beginning Time:  23:15:38
+        Ending Time:  23:15:40
+       Elapsed Time:  00:00:02
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2014 Muthen & Muthen
