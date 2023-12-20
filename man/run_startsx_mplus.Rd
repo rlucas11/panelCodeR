@@ -51,8 +51,6 @@ Returns output from MplusAutomation::MplusModeler command, including
 estimates and fit statistics.
 }
 \description{
-\code{run_sts_mplus()} Wrapper function for \code{run_starts_mplus()}. Produces and
-runs Mplus code for the STS Model, which is a STARTS model where the
-autoregressive trait variance is set to 0. This is also known as a factor
-CLPM.
+\code{run_startsx_mplus()} Wrapper function for \code{run_starts_mplus()}. Produces and
+runs Mplus code for the univariate STARTS model (for variables names X).
 }

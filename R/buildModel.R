@@ -605,6 +605,8 @@ buildClXFromY_l <- function(wavesList, stationarity = TRUE) {
 #'   correlations. Defaults to TRUE.
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
+#' @param limits Logical value indicating whether to constrain variances and
+#'   correlations to possible values.
 #' @returns Character vector representing the Mplus code for the model statement.
 #' @export
 buildLavaan <- function(waves,
@@ -881,7 +883,6 @@ buildLavaan <- function(waves,
 #' `lavaanStartsX()` Wrapper function for `run_starts_mplus()`. Produces lavaan
 #' code for the univariate STARTS model (for variabes named X). 
 #'
-#' @param data Dataframe that contains variables for analysis.
 #' @param waves Numeric value indicating total number of waves.
 #' @param xWaves Vector of actual waves for X (omit if same as waves).
 #' @param stationarity logical value indicating whether to impose stationarity.
@@ -909,7 +910,6 @@ lavaanStartsX <- function(waves,
 #' `lavaanStartsY()` Wrapper function for `run_starts_mplus()`. Produces lavaan
 #' code for the univariate STARTS model (for variabes named Y). 
 #'
-#' @param data Dataframe that contains variables for analysis.
 #' @param waves Numeric value indicating total number of waves.
 #' @param yWaves Vector of actual waves for Y (omit if same as waves).
 #' @param stationarity logical value indicating whether to impose stationarity.
@@ -939,7 +939,6 @@ lavaanStartsY <- function(waves,
 #' `lavaanStarts2()` Wrapper function for `run_starts_mplus()`. Produces lavaan
 #' code for the standard bivariate STARTS model. 
 #'
-#' @param data Dataframe that contains variables for analysis.
 #' @param waves Numeric value indicating total number of waves.
 #' @param xWaves Vector of actual waves for X (omit if same as waves).
 #' @param yWaves Vector of actual waves for Y (omit if same as waves).
@@ -979,7 +978,6 @@ lavaanStarts2 <- function(waves,
 #' code for the standard Random-Intercept Cross-Lagged Panel Model. This is
 #' equivalent to a STARTS model without the state variance.
 #'
-#' @param data Dataframe that contains variables for analysis.
 #' @param waves Numeric value indicating total number of waves.
 #' @param xWaves Vector of actual waves for X (omit if same as waves).
 #' @param yWaves Vector of actual waves for Y (omit if same as waves).
@@ -995,6 +993,7 @@ lavaanStarts2 <- function(waves,
 lavaanRiclpm <- function(waves,
                         xWaves = NULL,
                         yWaves = NULL,
+                        stateCor = FALSE,
                         limits = TRUE,
                         stationarity = TRUE) {
     buildLavaan(
@@ -1002,6 +1001,7 @@ lavaanRiclpm <- function(waves,
         xWaves = xWaves,
         yWaves = yWaves,
         stationarity = stationarity,
+        stateCor = stateCor,
         state = FALSE,
         limits = limits
     )
@@ -1013,7 +1013,6 @@ lavaanRiclpm <- function(waves,
 #' code for the standard cross-lagged panel model. This is equivalent to the
 #' STARTS model with no stable trait or state variance.
 #'
-#' @param data Dataframe that contains variables for analysis.
 #' @param waves Numeric value indicating total number of waves.
 #' @param xWaves Vector of actual waves for X (omit if same as waves).
 #' @param yWaves Vector of actual waves for Y (omit if same as waves).
@@ -1045,7 +1044,6 @@ lavaanClpm <- function(waves,
 #' code for the autoregressive trait, state (ARTS) model. This is equivalent
 #' to the STARTS model with no stable trait variance.
 #'
-#' @param data Dataframe that contains variables for analysis.
 #' @param waves Numeric value indicating total number of waves.
 #' @param xWaves Vector of actual waves for X (omit if same as waves).
 #' @param yWaves Vector of actual waves for Y (omit if same as waves).

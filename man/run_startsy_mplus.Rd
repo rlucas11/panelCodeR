@@ -2,7 +2,7 @@
 % Please edit documentation in R/buildMplus.R
 \name{run_startsy_mplus}
 \alias{run_startsy_mplus}
-\title{Runs Univariate Starts Model for X in Mplus}
+\title{Runs Univariate Starts Model for Y in Mplus}
 \usage{
 run_startsy_mplus(
   data,
@@ -51,8 +51,7 @@ Returns output from MplusAutomation::MplusModeler command, including
 estimates and fit statistics.
 }
 \description{
-\code{run_sts_mplus()} Wrapper function for \code{run_starts_mplus()}. Produces and
-runs Mplus code for the STS Model, which is a STARTS model where the
-autoregressive trait variance is set to 0. This is also known as a factor
+\code{run_startsy_mplus()} Wrapper function for \code{run_starts_mplus()}. Produces and
+runs Mplus code for the univariate STARTS model (for variables names Y).
 CLPM.
 }
