@@ -13,8 +13,6 @@ run_arts_mplus(
   yIndicators = 1,
   stationarity = TRUE,
   constrainCor = TRUE,
-  trait = FALSE,
-  state = TRUE,
   limits = TRUE,
   dir = "mplus",
   title = "arts",
@@ -47,17 +45,17 @@ correlations to be the same.}
 correlations to valid values.}
 
 \item{dir}{Character vector listing directory for mplus files. Defaults to
-"mplus".}
+\code{mplus}.}
 
-\item{title}{Character vector. Defaults to "riclpm".}
+\item{title}{Character vector. Defaults to \code{arts}.}
 
 \item{analysis}{Character vector listing the analysis statement for Mplus.
-Separate options with semicolon and "\n". Defaults to
-"MODEL=NOCOVARIANCES;\nCOVERAGE=.001;" .}
+Separate options with semicolon and \verb{\\n}. Defaults to
+\verb{MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;} .}
 
 \item{output}{Character vector listing options for the output line in Mplus.
-Separate options with semicolon and "\n". Defaults to
-"stdyx; \n  cinterval; \n".}
+Separate options with semicolon and \verb{\\n}. Defaults to
+\verb{stdyx; \\n  cinterval; \\n}.}
 }
 \value{
 Returns output from MplusAutomation::MplusModeler command, including
@@ -66,5 +64,5 @@ estimates and fit statistics.
 \description{
 \code{run_arts_mplus()} Wrapper function for \code{run_starts_mplus()}. Produces and
 runs Mplus code for the ARTS Model, which is a STARTS model where the stable
-trait variance is set to 0. This is also known as a "factor CLPM".
+trait variance is set to 0. This is also known as a factor CLPM.
 }

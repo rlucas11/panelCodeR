@@ -78,8 +78,15 @@ summary(test)
 
 test <- run_startsx_mplus(data[1:1000,],
                           5,
+                          xWaves = c(1,2,3,5),
                           xIndicators = 3
-                         )
+                          )
+
+run_startsy_mplus(data[1:1000,],
+                  5,
+                  yWaves = c(1,2,3,5),
+                  yIndicators = 1
+                  )
 
 test$results$parameters$unstandardized
 summary(test)

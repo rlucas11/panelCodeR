@@ -71,15 +71,15 @@ correlations to be the same.}
 correlations to valid values.}
 
 \item{dir}{Character vector listing directory for mplus files. Defaults to
-"mplus".}
+`.#buildMplus.R.}
 
 \item{analysis}{Character vector listing the analysis statement for Mplus.
-Separate options with semicolon and "\n". Defaults to
-"MODEL=NOCOVARIANCES;\nCOVERAGE=.001;" .}
+Separate options with semicolon and \verb{\\n}. Defaults to
+\verb{MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;} .}
 
 \item{output}{Character vector listing options for the output line in Mplus.
-Separate options with semicolon and "\n". Defaults to
-"stdyx; \n  cinterval; \n".}
+Separate options with semicolon and \verb{\\n}. Defaults to
+\verb{stdyx; \\n  cinterval; \\n}.}
 }
 \value{
 Returns output from MplusAutomation::MplusModeler command, including

@@ -532,6 +532,7 @@ buildResidCorsY <- function(yWaves, yIndicators) {
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
 #' @returns Character vector representing the Mplus code for the model statement.
+#' @export
 buildMplus <- function(waves,
                        XVar = TRUE,
                        YVar = TRUE,
@@ -548,6 +549,9 @@ buildMplus <- function(waves,
     wavesList <- 1:waves
     if (is.null(xWaves)) xWaves <- wavesList
     if (is.null(yWaves)) yWaves <- wavesList
+    ## Makes sure xWaves and yWaves <= total waves
+    xWaves <- xWaves[xWaves <= waves]
+    yWaves <- yWaves[yWaves <= waves]
     if (XVar == FALSE | YVar == FALSE) {
         crossLag <- FALSE
         stateCor <- FALSE
@@ -669,6 +673,7 @@ buildMplus <- function(waves,
 #'   Defaults to TRUE.
 #' @returns Character vector representing the Mplus code for the constraints
 #'   statement.
+#' @export
 buildConstraints <- function(waves,
                              XVar = TRUE,
                              YVar = TRUE,
@@ -1114,6 +1119,7 @@ buildLimits <- function(XVar = TRUE,
 #'   `stdyx; \n  cinterval; \n`.
 #' @returns Returns output from MplusAutomation::MplusModeler command, including
 #'   estimates and fit statistics.
+#' @export
 run_starts_mplus <- function(data,
                              waves,
                              XVar = TRUE,
@@ -1242,6 +1248,7 @@ run_starts_mplus <- function(data,
 #'   `stdyx; \n  cinterval; \n`.
 #' @returns Returns output from MplusAutomation::MplusModeler command, including
 #'   estimates and fit statistics.
+#' @export
 run_riclpm_mplus <- function(data,
                              waves,
                              xWaves = NULL,
@@ -1306,6 +1313,7 @@ run_riclpm_mplus <- function(data,
 #'   `stdyx; \n  cinterval; \n`.
 #' @returns Returns output from MplusAutomation::MplusModeler command, including
 #'   estimates and fit statistics.
+#' @export
 run_arts_mplus <- function(data,
                            waves,
                            xWaves = NULL,
@@ -1369,6 +1377,7 @@ run_arts_mplus <- function(data,
 #'   `stdyx; \n  cinterval; \n`.
 #' @returns Returns output from MplusAutomation::MplusModeler command, including
 #'   estimates and fit statistics.
+#' @export
 run_sts_mplus <- function(data,
                           waves,
                           xWaves = NULL,
@@ -1433,6 +1442,7 @@ run_sts_mplus <- function(data,
 #'   `stdyx; \n  cinterval; \n`.
 #' @returns Returns output from MplusAutomation::MplusModeler command, including
 #'   estimates and fit statistics.
+#' @export
 run_clpm_mplus <- function(data,
                            waves,
                            xWaves = NULL,
@@ -1493,6 +1503,7 @@ run_clpm_mplus <- function(data,
 #'   `stdyx; \n  cinterval; \n`.
 #' @returns Returns output from MplusAutomation::MplusModeler command, including
 #'   estimates and fit statistics.
+#' @export
 run_startsx_mplus <- function(data,
                               waves,
                               xWaves = NULL,
@@ -1548,6 +1559,7 @@ run_startsx_mplus <- function(data,
 #'   `stdyx; \n  cinterval; \n`.
 #' @returns Returns output from MplusAutomation::MplusModeler command, including
 #'   estimates and fit statistics.
+#' @export
 run_startsy_mplus <- function(data,
                               waves,
                               yWaves = NULL,
