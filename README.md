@@ -16,6 +16,15 @@ Also note that if there is something that the Mplus code does that you want to d
 
 11/15/2023: I updated the code to allow for multiple indicators at each wave (only for Mplus). This is specified through two new arguments to the mplus functions: `xIndicators` and `yIndicators`. The default for these is `1`. If you set these to something greater than 1, the model will specify multiple indicators. You will need to make sure these are labeled with letters from 'a' to the letter corresponding to the maximum number of indicators (e.g., 'c' for 3 indicators). In other words, if you had three indicators, you need to have variables in your file labeled "x1a," "x1b," and "x1c" for Wave 1. I also added correlations between the same indicator at different wave, and these are constrained so that correlations across equally long lags are equal (e.g., x1a with x2a is the same as x3a with x4a). I may add an option to remove these constraints at some point. 
 
+## Installation
+
+You can install this package from from [GitHub](https://github.com/rlucas11/panelCodeR) with:
+      
+``` r
+# install.packages("devtools")
+devtools::install_github("rlucas11/panelCodeR")
+```
+
 ## Data
 
 The code that this generates is like any other lavaan or mplus model. However, it assumes that you have two sets of variables, named x1 through xw and y1 through yw, where 'w' is the number of waves. It is possible to have missing waves, in which case, the code generator creates phantom variables for missing waves. This is often only possible if stationarity is imposed. To specify that waves are missing, use `xWaves` and/or `yWaves` to indicate which waves exist (e.g., `xWaves = c(1:5, 7:10)`). If you have multiple indicators per wave, indicators should be labeled using letters starting from 'a' (e.g., "x1a", "x1b", and "x1c" for three indicators of the variable at Wave 1).
