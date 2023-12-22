@@ -1,6 +1,6 @@
 Package: panelCodeR
 Title: Produces Lavaan and Mplus Code for Various Models for Panel Data
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: 
     person("Richard", "Lucas", , "richard.e.lucas@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7995-3319"))
