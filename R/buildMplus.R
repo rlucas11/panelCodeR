@@ -446,52 +446,90 @@ buildStateCors <- function(wavesList) {
 }
 
 
-buildResidCorsX <- function(xWaves, xIndicators) {
+buildResidCorsX <- function(xWaves, xIndicators, constrainCors=TRUE) {
     residCors <- "!!! Residual Correlations \n"
     indLabels <- letters[1:xIndicators]
-    for (i in indLabels) {
-        for (j in 1:length(xWaves)) {
-            for (k in xWaves[-c(1:j)]) {
-                residCors <- paste0(
-                    residCors,
-                    "x",
-                    xWaves[j],
-                    i,
-                    " with x",
-                    k,
-                    i,
-                    " (x",
-                    i,
-                    "lag",
-                    k - xWaves[j],
-                    "); \n"
-                )
+    if (constrainCors == TRUE) {
+        for (i in indLabels) {
+            for (j in 1:length(xWaves)) {
+                for (k in xWaves[-c(1:j)]) {
+                    residCors <- paste0(
+                        residCors,
+                        "x",
+                        xWaves[j],
+                        i,
+                        " with x",
+                        k,
+                        i,
+                        " (x",
+                        i,
+                        "lag",
+                        k - xWaves[j],
+                        "); \n"
+                    )
+                }
+            }
+        }
+    } else {
+        for (i in indLabels) {
+            for (j in 1:length(xWaves)) {
+                for (k in xWaves[-c(1:j)]) {
+                    residCors <- paste0(
+                        residCors,
+                        "x",
+                        xWaves[j],
+                        i,
+                        " with x",
+                        k,
+                        i,
+                        "; \n"
+                    )
+                }
             }
         }
     }
     return(residCors)
 }
 
-buildResidCorsY <- function(yWaves, yIndicators) {
+buildResidCorsY <- function(yWaves, yIndicators, constrainCors=TRUE) {
     residCors <- "!!! Residual Correlations \n"
     indLabels <- letters[1:yIndicators]
-    for (i in indLabels) {
-        for (j in 1:length(yWaves)) {
-            for (k in yWaves[-c(1:j)]) {
-                residCors <- paste0(
-                    residCors,
-                    "y",
-                    yWaves[j],
-                    i,
-                    " with y",
-                    k,
-                    i,
-                    " (y",
-                    i,
-                    "lag",
-                    k - yWaves[j],
-                    "); \n"
-                )
+    if (constrainCors == TRUE) {
+        for (i in indLabels) {
+            for (j in 1:length(yWaves)) {
+                for (k in yWaves[-c(1:j)]) {
+                    residCors <- paste0(
+                        residCors,
+                        "y",
+                        yWaves[j],
+                        i,
+                        " with y",
+                        k,
+                        i,
+                        " (y",
+                        i,
+                        "lag",
+                        k - yWaves[j],
+                        "); \n"
+                    )
+                }
+            }
+        }
+    } else {
+        for (i in indLabels) {
+            for (j in 1:length(yWaves)) {
+                for (k in yWaves[-c(1:j)]) {
+                    residCors <- paste0(
+                        residCors,
+                        "y",
+                        yWaves[j],
+                        i,
+                        " with y",
+                        k,
+                        i,
+                        "; \n"
+                    )
+                }
             }
         }
     }
@@ -529,6 +567,9 @@ buildResidCorsY <- function(yWaves, yIndicators) {
 #'   paths. Defaults to TRUE.
 #' @param stateCor logical value indicating whether to include state
 #'   correlations. Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
 #' @returns Character vector representing the Mplus code for the model statement.
@@ -545,6 +586,7 @@ buildMplus <- function(waves,
                        state = TRUE,
                        crossLag = TRUE,
                        stateCor = FALSE,
+                       constrainCors = TRUE,
                        stationarity = TRUE) {
     wavesList <- 1:waves
     if (is.null(xWaves)) xWaves <- wavesList
@@ -632,7 +674,7 @@ buildMplus <- function(waves,
     if (XVar == TRUE & xIndicators > 1) {
         modelStatement <- paste(
             modelStatement,
-            buildResidCorsX(xWaves, xIndicators),
+            buildResidCorsX(xWaves, xIndicators, constrainCors),
             sep = " \n"
         )
     }
@@ -640,7 +682,7 @@ buildMplus <- function(waves,
     if (YVar == TRUE & yIndicators > 1) {
         modelStatement <- paste(
             modelStatement,
-            buildResidCorsY(yWaves, yIndicators),
+            buildResidCorsY(yWaves, yIndicators, constrainCors),
             sep = " \n"
         )
     }
@@ -683,7 +725,6 @@ buildConstraints <- function(waves,
                              crossLag = TRUE,                             
                              stateCor = TRUE,
                              stationarity = TRUE,
-                             constrainCor = stationarity,
                              limits = TRUE) {
     wavesList <- 1:waves
     if (XVar == FALSE | YVar == FALSE | AR == FALSE) {
@@ -959,8 +1000,7 @@ buildConstraints <- function(waves,
                     trait = trait,
                     AR = AR,
                     state = state,
-                    stationarity = stationarity,
-                    constrainCor = stationarity
+                    stationarity = stationarity
                 ),
                 sep = " \n"
             )
@@ -1002,8 +1042,7 @@ buildLimits <- function(XVar = TRUE,
                         trait = TRUE,
                         AR = TRUE,
                         state = TRUE,
-                        stationarity = TRUE,
-                        constrainCor = stationarity) {
+                        stationarity = TRUE) {
     limits <- " \n"
     if (trait == TRUE & XVar == TRUE) {
         limits <- paste(
@@ -1105,8 +1144,9 @@ buildLimits <- function(XVar = TRUE,
 #'   correlations. Defaults to TRUE.
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
-#' @param constrainCor logical value indicating whether to constrain state
-#'   correlations to be the same.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param limits Logical value indicating whether to limit variances and
 #'   correlations to valid values.
 #' @param dir Character vector listing directory for mplus files. Defaults to
@@ -1134,7 +1174,7 @@ run_starts_mplus <- function(data,
                              crossLag = TRUE,
                              stateCor = TRUE,
                              stationarity = TRUE,
-                             constrainCor = TRUE,
+                             constrainCors = TRUE,
                              limits = TRUE,
                              dir="mplus",
                              title="test",
@@ -1165,7 +1205,6 @@ run_starts_mplus <- function(data,
                                     AR = AR,
                                     state = state,
                                     stationarity = stationarity,
-                                    constrainCor = constrainCor,
                                     limits = limits)
     ## Clarify which waves exist
     if (is.null(xWaves)) xWaves <- 1:waves
@@ -1233,8 +1272,9 @@ run_starts_mplus <- function(data,
 #'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
-#' @param constrainCor logical value indicating whether to constrain state
-#'   correlations to be the same.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param limits Logical value indicating whether to limit variances and
 #'   correlations to valid values.
 #' @param dir Character vector listing directory for mplus files. Defaults to
@@ -1256,7 +1296,7 @@ run_riclpm_mplus <- function(data,
                              xIndicators = 1,
                              yIndicators = 1,
                              stationarity = TRUE,
-                             constrainCor = TRUE,
+                             constrainCors = TRUE,
                              limits = TRUE,
                              dir = "mplus",
                              title = "riclpm",
@@ -1272,7 +1312,7 @@ run_riclpm_mplus <- function(data,
         yIndicators = yIndicators,
         state = FALSE,
         stationarity = stationarity,
-        constrainCor = constrainCor,
+        constrainCors = constrainCors,
         limits = limits,
         dir = dir,
         title = title,
@@ -1298,8 +1338,9 @@ run_riclpm_mplus <- function(data,
 #'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
-#' @param constrainCor logical value indicating whether to constrain state
-#'   correlations to be the same.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param limits Logical value indicating whether to limit variances and
 #'   correlations to valid values.
 #' @param dir Character vector listing directory for mplus files. Defaults to
@@ -1321,7 +1362,7 @@ run_arts_mplus <- function(data,
                            xIndicators = 1,
                            yIndicators = 1,
                            stationarity = TRUE,
-                           constrainCor = TRUE,
+                           constrainCors = TRUE,
                            limits = TRUE,
                            dir = "mplus",
                            title = "arts",
@@ -1335,7 +1376,7 @@ run_arts_mplus <- function(data,
         xIndicators = xIndicators,
         yIndicators = yIndicators,
         stationarity = stationarity,
-        constrainCor = constrainCor,
+        constrainCors = constrainCors,
         trait = FALSE,
         state = TRUE,
         dir = dir,
@@ -1362,8 +1403,9 @@ run_arts_mplus <- function(data,
 #'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
-#' @param constrainCor logical value indicating whether to constrain state
-#'   correlations to be the same.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param limits Logical value indicating whether to limit variances and
 #'   correlations to valid values.
 #' @param dir Character vector listing directory for mplus files. Defaults to
@@ -1385,7 +1427,7 @@ run_sts_mplus <- function(data,
                           xIndicators = 1,
                           yIndicators = 1,
                           stationarity = TRUE,
-                          constrainCor = TRUE,
+                          constrainCors = TRUE,
                           limits = TRUE,
                           dir = "mplus",
                           title = "sts",
@@ -1402,7 +1444,7 @@ run_sts_mplus <- function(data,
         state = TRUE,
         AR = FALSE,
         stationarity = stationarity,
-        constrainCor = constrainCor,
+        constrainCors = constrainCors,
         dir = dir,
         title = title,
         output = output,
@@ -1427,8 +1469,9 @@ run_sts_mplus <- function(data,
 #'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
-#' @param constrainCor logical value indicating whether to constrain state
-#'   correlations to be the same.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param limits Logical value indicating whether to limit variances and
 #'   correlations to valid values.
 #' @param dir Character vector listing directory for mplus files. Defaults to
@@ -1450,7 +1493,7 @@ run_clpm_mplus <- function(data,
                            xIndicators = 1,
                            yIndicators = 1,
                            stationarity = TRUE,
-                           constrainCor = TRUE,
+                           constrainCors = TRUE,
                            limits = TRUE,
                            dir = "mplus",
                            title = "clpm",
@@ -1467,7 +1510,7 @@ run_clpm_mplus <- function(data,
         state = FALSE,
         AR = TRUE,
         stationarity = stationarity,
-        constrainCor = constrainCor,
+        constrainCors = constrainCors,
         limits = limits,
         dir = dir,
         title = title,

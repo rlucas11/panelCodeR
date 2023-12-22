@@ -1,6 +1,14 @@
-library(tidyverse)
+################################################################################
+## Setup
+################################################################################
 
+library(tidyverse)
+library(lavaan)
+
+## For creating new data
 source("~/Projects/code-generator/scripts/gen_starts.R")
+
+## Load sample data
 data <- read_csv("testData.csv")
 
 addIndicators <- function(df, var, indicators) {
@@ -21,11 +29,18 @@ for (i in names(data)) {
     data <- addIndicators(data, i, 3)
 }
 
+################################################################################
+## Mplus
+################################################################################
+
+
+
 test <- run_starts_mplus(data[1:1000,],
                          5,
 #                         xWaves = c(1:5, 7:10),
                          xIndicators = 3,
-                         yIndicators = 1
+                         yIndicators = 1,
+                         constrainCors = FALSE
                          )
 
 test <- run_arts_mplus(data[1:1000,],
@@ -135,3 +150,29 @@ artsFit <- lavaan(artsMod, data)
 summary(artsFit)
 
 
+################################################################################
+## DPM
+################################################################################
+
+test <- run_dpm_mplus(data[1:1000,],
+                      4,
+                      xIndicators = 3,
+                      constrainCors = FALSE
+                      )
+
+summary(test)
+test$results$parameters$unstandardized
+test$results$parameters$stdyx.standardized
+
+
+test <- run_dpm_mplus(data[1:1000,],
+                      5,
+                      xIndicators = 3,
+                      yIndicators = 1,
+                      state = TRUE,
+                      analysis = "MODEL=NOCOVARIANCES;\nCOVERAGE=.001; ITERATIONS=20000"
+                      )
+
+summary(test)
+test$results$parameters$unstandardized
+test$results$parameters$stdyx.standardized
