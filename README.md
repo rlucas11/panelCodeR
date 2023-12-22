@@ -1,10 +1,12 @@
-# Code Generator
+# panelCodeR Package
 
 This R package generates lavaan and mplus code for models for analyzing panel data. Currently, it can generate code for the bivariate STARTS model and a number of models nested under this more general model. Specifically, it is possible to set different variance components to zero, which results in a reduced model. For instance, omitting the state variance at each wave results in the RI-CLPM and removing both the state and stable-trait variance results in the CLPM. It is also possible to remove the lagged paths. There are also some wrapper functions that create code for these models using appropriate options (see below).
 
 **You should check the model code that is generated to make sure it is what you want!**
 
 ## Updates!
+
+12/22/2023: The code to run the DPM model in Mplus has been added to the package. 
 
 12/20/2023: I turned this into an R package. In doing this, I made a few naming changes, mostly to the lavaan functions. 
 
@@ -172,9 +174,6 @@ As with `buildLavaan()`, there are some wrapper functions that can be used to sp
 There is also one more function that can be used to compare a set of nested models for one variable (this is only available for Mplus right now). The function `compareUnivariate` takes three arguments: `data` (the data file) `waves` (the number of waves), and `actualWaves` (which waves actually exist). It then runs the univariate STARTS, ARTS, START, STS, and ART models. The univariate ART model corresponds to the bivariate CLPM; the univariate START model corresponds to the bivariate RI-CLPM model; the univariate ARTS model corresponds to the bivariate ARTS or factor CLPM model, and the univariate STARTS model corresponds to the bivariate STARTS model. The STS model is rarely used in a bivariate context, but it could be. The code for this function is in a separate file called ["compareModels"](scripts/compareModels.R), so you will need to run that code before the function is available. 
 
 ### Dynamic Panel Models
-
-> [!WARNING]
-> This is not implemented in the R package yet!
 
 You can now create code for and run dynamic panel models. Source the file ["buildMplusDpm.R"](buildMplusDpm.R) and there will be a new function available called `run_dpm_mplus()`. Because of some of the differences between the DPM and the STARTS-based models, certain options are not available. For instance, it does not make sense to run a DPM without a stable trait (this would just be an ART model that can be specified using the original code). In addition, most implementations of the DPM do not impose strict stationarity, so I removed that option here. This makes it difficult to use phantom variables, because the model is typically not identified with missing waves and no stationarity. Most DPM models do not include state variance, so that is the default; but I think it should be possible to do add this component. 
 

@@ -63,7 +63,7 @@ test <- run_arts_mplus(data[1:1000,],
                          xIndicators = 3,
                          yIndicators = 1
                          )
-
+summary(test)
 
 test <- run_sts_mplus(data[1:1000,],
                          5,
