@@ -19,10 +19,10 @@ run_starts_mplus(
   crossLag = TRUE,
   stateCor = TRUE,
   stationarity = TRUE,
-  constrainCor = TRUE,
+  constrainCors = TRUE,
   limits = TRUE,
   dir = "mplus",
-  title = "test",
+  title = "starts",
   analysis = "MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;",
   output = "stdyx; \\n  cinterval; \\n"
 )
@@ -64,14 +64,17 @@ correlations. Defaults to TRUE.}
 \item{stationarity}{logical value indicating whether to impose stationarity.
 Defaults to TRUE.}
 
-\item{constrainCor}{logical value indicating whether to constrain state
-correlations to be the same.}
+\item{constrainCors}{logical value indicating whether to constrain
+correlations between same indicator at different waves (when there are more
+than one indicator.}
 
 \item{limits}{Logical value indicating whether to limit variances and
 correlations to valid values.}
 
 \item{dir}{Character vector listing directory for mplus files. Defaults to
 `.#buildMplus.R.}
+
+\item{title}{Character vector. Defaults to \code{starts}.}
 
 \item{analysis}{Character vector listing the analysis statement for Mplus.
 Separate options with semicolon and \verb{\\n}. Defaults to

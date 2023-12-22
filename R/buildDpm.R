@@ -540,13 +540,11 @@ buildResidCorsY_d <- function(yWaves, yIndicators, constrainCors = TRUE) {
 #'   Defaults to 1. 
 #' @param crossLag logical value indicating whether to include cross-lagged
 #'   paths. Defaults to TRUE.
-#' @param stateCor logical value indicating whether to include state
+#' @param arCor logical value indicating whether to include autoregressive trait
 #'   correlations. Defaults to TRUE.
 #' @param constrainCors logical value indicating whether to constrain
 #'   correlations between same indicator at different waves (when there are more
 #'   than one indicator.
-#' @param stationarity logical value indicating whether to impose stationarity.
-#'   Defaults to TRUE.
 #' @returns Character vector representing the Mplus code for the model statement.
 #' @export
 buildDpm <- function(waves,
@@ -555,8 +553,6 @@ buildDpm <- function(waves,
                      xIndicators = 1,
                      yIndicators = 1,
                      crossLag = TRUE,
-                     state = FALSE, ## Default for now in DPM
-                     stateCor = FALSE,
                      arCor = TRUE,
                      constrainCors = TRUE) {
     xWaves <- 1:waves
@@ -564,10 +560,10 @@ buildDpm <- function(waves,
     wavesList <- 1:waves
     if (XVar == FALSE | YVar == FALSE) {
         crossLag <- FALSE
-        stateCor <- FALSE
         arCor <- FALSE
     }
-
+    ## Set state variance to false; consider implementing in future version.
+    state <- FALSE
     ## Start model statement
     modelStatement <- "!!! Automated Code for Mplus \n"
 
@@ -671,10 +667,10 @@ buildDpm <- function(waves,
 #' @param YVar logical. Include Y variable.
 #' @param crossLag logical value indicating whether to include cross-lagged
 #'   paths. Defaults to TRUE.
-#' @param stateCor logical value indicating whether to include state
-#'   correlations. Defaults to TRUE.
 #' @param arCor Logical value indicating whether to include within-wave
 #'   correlations for AR traits.
+#' @param limits Logical value indicating whether to constrain variances and
+#'   correlations to valid values. Defaults to TRUE.
 #' @returns Character vector representing the Mplus code for the constraints
 #'   statement.
 #' @export
@@ -682,14 +678,14 @@ buildConstraints_d <- function(waves,
                              XVar = TRUE,
                              YVar = TRUE,
                              crossLag = TRUE,
-                             state = FALSE,
-                             stateCor = FALSE,
                              arCor = TRUE,
                              limits = TRUE) {
     wavesList <- 1:waves
     if (XVar == FALSE | YVar == FALSE) {
         crossLag <- FALSE
     }
+    ## Consider implementing state variance; disabled for now.
+    state <- FALSE
     ## First make constraints for different models
     ## Variances and Covariances
     modelConstraints <- " \n!! Use constraints to specify Models; \n"
@@ -848,8 +844,7 @@ buildConstraints_d <- function(waves,
                 modelConstraints,
                 buildLimits_d(
                     XVar = XVar,
-                    YVar = YVar,
-                    state = state
+                    YVar = YVar
                 ),
                 sep = " \n"
             )
@@ -887,8 +882,8 @@ buildConstraints_d <- function(waves,
 
 
 buildLimits_d <- function(XVar = TRUE,
-                          YVar = TRUE,
-                          state = TRUE) {
+                          YVar = TRUE) {
+    state <- FALSE
     limits <- " \n"
     if (XVar == TRUE) {
         limits <- paste(
@@ -976,12 +971,8 @@ buildLimits_d <- function(XVar = TRUE,
 #'   Defaults to 1.
 #' @param yIndicators Numeric value indicatoring number of indicators for Y.
 #'   Defaults to 1.
-#' @param state logical value indicating whether to include state. Defaults to
-#'   TRUE.
 #' @param crossLag logical value indicating whether to include cross-lagged
 #'   paths. Defaults to TRUE.
-#' @param stateCor logical value indicating whether to include state
-#'   correlations. Defaults to TRUE.
 #' @param constrainCors logical value indicating whether to constrain
 #'   correlations between same indicator at different waves (when there are more
 #'   than one indicator.
@@ -989,6 +980,7 @@ buildLimits_d <- function(XVar = TRUE,
 #'   correlations to valid values.
 #' @param dir Character vector listing directory for mplus files. Defaults to
 #'   `.#buildMplus.R.
+#' @param title Character vector. Defaults to `riclpm`.
 #' @param analysis Character vector listing the analysis statement for Mplus.
 #'   Separate options with semicolon and `\n`. Defaults to
 #'   `MODEL=NOCOVARIANCES;\nCOVERAGE=.001;` .
@@ -1005,8 +997,6 @@ run_dpm_mplus <- function(data,
                           xIndicators = 1,
                           yIndicators = 1,
                           crossLag = TRUE,
-                          state = FALSE,
-                          stateCor = FALSE,
                           constrainCors = TRUE,
                           limits = TRUE,
                           dir = "mplus",
@@ -1024,8 +1014,6 @@ run_dpm_mplus <- function(data,
         XVar = XVar,
         YVar = YVar,
         crossLag = crossLag,
-        state = state,
-        stateCor = stateCor,
         constrainCors = constrainCors
     )
     constraints <- buildConstraints_d(
@@ -1033,7 +1021,6 @@ run_dpm_mplus <- function(data,
         XVar = XVar,
         YVar = YVar,
         crossLag = crossLag,
-        state = state,
         limits = limits
     )
     ## Clarify which waves exist

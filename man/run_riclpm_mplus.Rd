@@ -12,7 +12,7 @@ run_riclpm_mplus(
   xIndicators = 1,
   yIndicators = 1,
   stationarity = TRUE,
-  constrainCor = TRUE,
+  constrainCors = TRUE,
   limits = TRUE,
   dir = "mplus",
   title = "riclpm",
@@ -38,8 +38,9 @@ Defaults to 1.}
 \item{stationarity}{logical value indicating whether to impose stationarity.
 Defaults to TRUE.}
 
-\item{constrainCor}{logical value indicating whether to constrain state
-correlations to be the same.}
+\item{constrainCors}{logical value indicating whether to constrain
+correlations between same indicator at different waves (when there are more
+than one indicator.}
 
 \item{limits}{Logical value indicating whether to limit variances and
 correlations to valid values.}

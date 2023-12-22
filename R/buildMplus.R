@@ -713,6 +713,8 @@ buildMplus <- function(waves,
 #'   correlations. Defaults to TRUE.
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
+#' @param limits Logical value indicating whether to limit variances and
+#'   correlations to valid values.
 #' @returns Character vector representing the Mplus code for the constraints
 #'   statement.
 #' @export
@@ -1151,6 +1153,7 @@ buildLimits <- function(XVar = TRUE,
 #'   correlations to valid values.
 #' @param dir Character vector listing directory for mplus files. Defaults to
 #'   `.#buildMplus.R.
+#' @param title Character vector. Defaults to `starts`.
 #' @param analysis Character vector listing the analysis statement for Mplus.
 #'   Separate options with semicolon and `\n`. Defaults to
 #'   `MODEL=NOCOVARIANCES;\nCOVERAGE=.001;` .
@@ -1177,7 +1180,7 @@ run_starts_mplus <- function(data,
                              constrainCors = TRUE,
                              limits = TRUE,
                              dir="mplus",
-                             title="test",
+                             title="starts",
                              analysis = "MODEL=NOCOVARIANCES;\nCOVERAGE=.001;",
                              output = "stdyx; \n  cinterval; \n") {
     ## Set file name for output
@@ -1581,8 +1584,8 @@ run_startsx_mplus <- function(data,
 #'
 #' @param data Dataframe that contains variables for analysis.
 #' @param waves Numeric value indicating total number of waves.
-#' @param xWaves Vector of actual waves for X (omit if same as waves).
-#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
 #'   Defaults to 1.
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.

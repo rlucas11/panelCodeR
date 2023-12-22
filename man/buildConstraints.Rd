@@ -14,7 +14,6 @@ buildConstraints(
   crossLag = TRUE,
   stateCor = TRUE,
   stationarity = TRUE,
-  constrainCor = stationarity,
   limits = TRUE
 )
 }
@@ -42,6 +41,9 @@ correlations. Defaults to TRUE.}
 
 \item{stationarity}{logical value indicating whether to impose stationarity.
 Defaults to TRUE.}
+
+\item{limits}{Logical value indicating whether to limit variances and
+correlations to valid values.}
 }
 \value{
 Character vector representing the Mplus code for the constraints
