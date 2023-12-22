@@ -4,6 +4,7 @@
 
 library(tidyverse)
 library(lavaan)
+library(panelCodeR)
 
 ## For creating new data
 source("~/Projects/code-generator/scripts/gen_starts.R")
@@ -34,14 +35,27 @@ for (i in names(data)) {
 ################################################################################
 
 
+test <- run_starts_mplus(data[1:1000,],
+                         5)
+summary(test)
 
 test <- run_starts_mplus(data[1:1000,],
                          5,
-#                         xWaves = c(1:5, 7:10),
+                         xWaves = c(1:5, 7:10),
+                         xIndicators = 3,
+                         yIndicators = 3)
+summary(test)
+
+
+
+test <- run_starts_mplus(data[1:1000,],
+                         5,
+                         xWaves = c(1:5, 7:10),
                          xIndicators = 3,
                          yIndicators = 1,
                          constrainCors = FALSE
                          )
+summary(test)
 
 test <- run_arts_mplus(data[1:1000,],
                          5,

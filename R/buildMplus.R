@@ -1186,6 +1186,11 @@ run_starts_mplus <- function(data,
     ## Set file name for output
     outFile <- paste(dir, title, sep="/")
 
+    ## Make sure only valid waves are included
+    xWaves <- xWaves[xWaves <= waves]
+    yWaves <- yWaves[yWaves <= waves]
+
+
     ## Build Model and Constraints
     modelStatement <- buildMplus(waves = waves,
                                  xWaves = xWaves,
