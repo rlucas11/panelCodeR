@@ -51,7 +51,7 @@ TRUE.}
 paths. Defaults to TRUE.}
 
 \item{stateCor}{logical value indicating whether to include state
-correlations. Defaults to TRUE.}
+correlations. Defaults to FALSE.}
 
 \item{constrainCors}{logical value indicating whether to constrain
 correlations between same indicator at different waves (when there are more

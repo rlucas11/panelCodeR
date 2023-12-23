@@ -566,7 +566,7 @@ buildResidCorsY <- function(yWaves, yIndicators, constrainCors=TRUE) {
 #' @param crossLag logical value indicating whether to include cross-lagged
 #'   paths. Defaults to TRUE.
 #' @param stateCor logical value indicating whether to include state
-#'   correlations. Defaults to TRUE.
+#'   correlations. Defaults to FALSE.
 #' @param constrainCors logical value indicating whether to constrain
 #'   correlations between same indicator at different waves (when there are more
 #'   than one indicator.
@@ -710,7 +710,7 @@ buildMplus <- function(waves,
 #' @param crossLag logical value indicating whether to include cross-lagged
 #'   paths. Defaults to TRUE.
 #' @param stateCor logical value indicating whether to include state
-#'   correlations. Defaults to TRUE.
+#'   correlations. Defaults to FALSE.
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
 #' @param limits Logical value indicating whether to limit variances and
@@ -725,7 +725,7 @@ buildConstraints <- function(waves,
                              AR = TRUE,
                              state = TRUE,
                              crossLag = TRUE,                             
-                             stateCor = TRUE,
+                             stateCor = FALSE,
                              stationarity = TRUE,
                              limits = TRUE) {
     wavesList <- 1:waves
@@ -899,7 +899,7 @@ buildConstraints <- function(waves,
     }
     if (stationarity == TRUE | AR == FALSE) {
         ## X AR Variance
-        if (XVar == TRUE) {
+        if (XVar == TRUE & YVar == FALSE) {
             modelConstraints <- paste(
                 modelConstraints,
                 "arvx2 = arvx - arvx*a*a - 2*a*d*cov_xy; \n",
@@ -914,8 +914,23 @@ buildConstraints <- function(waves,
                 )
             }
         }
+        if (XVar == TRUE & YVar == TRUE) {
+            modelConstraints <- paste(
+                modelConstraints,
+                "arvx2 = arvx - arvx*a*a - 2*a*d*cov_xy - arvy*d*d; \n",
+                sep = " \n"
+            )
+            for (w in wavesList[-c(1,2)]) {
+                modelConstraints <- paste0(
+                    modelConstraints,
+                    "arvx",
+                    w,
+                    " = arvx2; \n"
+                )
+            }
+        }
         ## Y AR Variance
-        if (YVar == TRUE) {
+        if (YVar == TRUE & XVar == FALSE) {
             modelConstraints <- paste(
                 modelConstraints,
                 "arvy2 = arvy - arvy*b*b - 2*b*c*cov_xy; \n",
@@ -929,7 +944,22 @@ buildConstraints <- function(waves,
                     " = arvy2; \n"
                 )
             }
-        } 
+        }
+        if (YVar == TRUE & XVar == TRUE) {
+            modelConstraints <- paste(
+                modelConstraints,
+                "arvy2 = arvy - arvy*b*b - 2*b*c*cov_xy - arvx*c*c; \n",
+                sep = " \n"
+            )
+            for (w in wavesList[-c(1,2)]) {
+                modelConstraints <- paste0(
+                    modelConstraints,
+                    "arvy",
+                    w,
+                    " = arvy2; \n"
+                )
+            }
+        }
     }
     if (stationarity == TRUE | state == FALSE) {
         ## X state Variance
@@ -980,9 +1010,24 @@ buildConstraints <- function(waves,
     if (XVar == TRUE &
         YVar == TRUE &
         ((state == TRUE &
-          stationarity == TRUE) |
+          stationarity == TRUE &
+          stateCor == TRUE) |
          state == FALSE)) {
         modelConstraints <- paste0(modelConstraints, " \n")
+        for (w in wavesList[-c(1)]) {
+            modelConstraints <- paste0(
+                modelConstraints,
+                "cov_s",
+                w,
+                " = cov_s; \n"
+            )
+        }
+    }
+    if (XVar == TRUE &
+        YVar == TRUE &
+        (state == TRUE &
+         stateCor == FALSE)) {
+        modelConstraints <- paste0(modelConstraints, " \ncov_s = 0; \n")
         for (w in wavesList[-c(1)]) {
             modelConstraints <- paste0(
                 modelConstraints,
@@ -1011,11 +1056,11 @@ buildConstraints <- function(waves,
         modelConstraints <- paste0(
             modelConstraints,
             "\n",
-            "NEW(trait.p.x); \n",
+            "NEW(trait.x); \n",
             "NEW(ar.p.x); \n",
             "NEW(st.p.x); \n",
             "NEW(stab.x); \n",
-            "trait.p.x = tx/(tx + arvx + sx); \n",
+            "trait.x = tx/(tx + arvx + sx); \n",
             "ar.p.x = arvx/(tx + arvx + sx); \n",
             "st.p.x = sx/(tx + arvx + sx); \n",
             "stab.x = a; \n"
@@ -1025,11 +1070,11 @@ buildConstraints <- function(waves,
         modelConstraints <- paste0(
             modelConstraints,
             "\n",
-            "NEW(trait.p.y); \n",
+            "NEW(trait.y); \n",
             "NEW(ar.p.y); \n",
             "NEW(st.p.y); \n",
             "NEW(stab.y); \n",
-            "trait.p.y = ty/(ty + arvy + sy); \n",
+            "trait.y = ty/(ty + arvy + sy); \n",
             "ar.p.y = arvy/(ty + arvy + sy); \n",
             "st.p.y = sy/(ty + arvy + sy); \n",
             "stab.y = b; \n"
@@ -1143,7 +1188,7 @@ buildLimits <- function(XVar = TRUE,
 #' @param crossLag logical value indicating whether to include cross-lagged
 #'   paths. Defaults to TRUE.
 #' @param stateCor logical value indicating whether to include state
-#'   correlations. Defaults to TRUE.
+#'   correlations. Defaults to FALSE.
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
 #' @param constrainCors logical value indicating whether to constrain
@@ -1175,7 +1220,7 @@ run_starts_mplus <- function(data,
                              AR = TRUE,
                              state = TRUE,
                              crossLag = TRUE,
-                             stateCor = TRUE,
+                             stateCor = FALSE,
                              stationarity = TRUE,
                              constrainCors = TRUE,
                              limits = TRUE,
@@ -1212,6 +1257,7 @@ run_starts_mplus <- function(data,
                                     trait = trait,
                                     AR = AR,
                                     state = state,
+                                    stateCor = stateCor,
                                     stationarity = stationarity,
                                     limits = limits)
     ## Clarify which waves exist
@@ -1254,14 +1300,69 @@ run_starts_mplus <- function(data,
                        OUTPUT=output
                        )
     output <- MplusAutomation::mplusModeler(inp, modelout = paste0(outFile, ".inp"), run=1)
-    modelOutput <- MplusAutomation::readModels(target = paste0(dir, "/", title, ".out"))
+    outputList <- list(mplusOutput = output,
+                       xTrait = output$results$parameters$unstandardized[
+                                                              which(output$results$parameters$unstandardized$param == "TRAIT.X"),
+                                                              "est"
+                                                          ],
+                       xAr = output$results$parameters$unstandardized[
+                                                           which(output$results$parameters$unstandardized$param == "AR.P.X"),
+                                                           "est"
+                                                       ],
+                       xState = output$results$parameters$unstandardized[
+                                                              which(output$results$parameters$unstandardized$param == "ST.P.X"),
+                                                              "est"
+                                                          ],
+                       xStability = output$results$parameters$unstandardized[
+                                                                  which(output$results$parameters$unstandardized$param == "STAB.X"),
+                                                                  "est"
+                                                              ],
+                       yTrait = output$results$parameters$unstandardized[
+                                                              which(output$results$parameters$unstandardized$param == "TRAIT.Y"),
+                                                              "est"
+                                                          ],
+                       yAr = output$results$parameters$unstandardized[
+                                                           which(output$results$parameters$unstandardized$param == "AR.P.Y"),
+                                                           "est"
+                                                       ],
+                       yState = output$results$parameters$unstandardized[
+                                                              which(output$results$parameters$unstandardized$param == "ST.P.Y"),
+                                                              "est"
+                                                          ],
+                       yStability = output$results$parameters$unstandardized[
+                                                                  which(output$results$parameters$unstandardized$param == "STAB.Y"),
+                                                                  "est"
+                                                              ],
+                       traitCor = output$results$parameters$unstandardized[
+                                                                which(output$results$parameters$unstandardized$param == "COR_TXTY"),
+                                                                "est"
+                                                            ],
+                       arCor = output$results$parameters$unstandardized[
+                                                             which(output$results$parameters$unstandardized$param == "COR_ARXA"),
+                                                             "est"
+                                                         ],
+                       stateCor = output$results$parameters$unstandardized[
+                                                                which(output$results$parameters$unstandardized$param == "COR_SXSY"),
+                                                                "est"
+                                                            ],
+                       yOnX = output$results$parameters$unstandardized[
+                                                                which(output$results$parameters$unstandardized$paramHeader == "ARY2.ON" &
+output$results$parameters$unstandardized$param == "ARX1"), 
+                                                                "est"
+                                                            ],
+                       xOnY = output$results$parameters$unstandardized[
+                                                                which(output$results$parameters$unstandardized$paramHeader == "ARX2.ON" &
+output$results$parameters$unstandardized$param == "ARY1"), 
+                                                                "est"
+                                                            ]
+                       )
+    class(outputList) <- "pcmObject"
     print("Errors:")
     print(output$Errors)
     print("Warnings:")
     print(output$Warnings)
-    ##params <- modelOutput$parameters$unstandardized
-    ##print(params)
-    return(output)
+    summary(outputList)
+    return(outputList)
 }
 
 #' Runs RI-CLPM in Mplus
@@ -1636,3 +1737,36 @@ run_startsy_mplus <- function(data,
     )
 }
 
+#' Summarizes results from `run_starts_mplus()`
+#'
+#' @param obj Results from `run_starts_mplus()`.
+#'
+#' @export
+summary.pcmObject <- function(obj) {
+    cat("Model Summary: \n")
+    summary(obj$mplusOutput)
+    cat("\n")
+    cat("Variance Decomposition: \n")
+    cat("\n")
+    cat("X Variable: \n")
+    cat("Trait: ", obj$xTrait,
+        ", Autoregressive: ",obj$xAr,
+        ", State: ",obj$xState, "\n")
+    cat("Y Variable: \n")
+    cat("Trait: ", obj$yTrait,
+        ", Autoregressive: ", obj$yAr,
+        ", State: ", obj$yState, "\n")
+    cat("\n")
+    cat("Stability: \n")
+    cat("X: ", obj$xStab, "\n")
+    cat("Y: ", obj$yStab, "\n")
+    cat("\n")
+    cat("Cross-Lag Paths: \n")
+    cat("Y predicted from X: ", obj$yOnX ,"\n")
+    cat("X predicted from Y: ", obj$xOnY,"\n")
+    cat("Correlations: \n")
+    cat("\n")
+    cat("Stable Trait: ", obj$traitCor, "\n")
+    cat("Autoregressive Trait: ", obj$arCor, "\n")
+    cat("State: ", obj$stateCor, "\n")
+    }

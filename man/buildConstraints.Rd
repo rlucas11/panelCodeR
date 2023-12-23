@@ -12,7 +12,7 @@ buildConstraints(
   AR = TRUE,
   state = TRUE,
   crossLag = TRUE,
-  stateCor = TRUE,
+  stateCor = FALSE,
   stationarity = TRUE,
   limits = TRUE
 )
@@ -37,7 +37,7 @@ TRUE.}
 paths. Defaults to TRUE.}
 
 \item{stateCor}{logical value indicating whether to include state
-correlations. Defaults to TRUE.}
+correlations. Defaults to FALSE.}
 
 \item{stationarity}{logical value indicating whether to impose stationarity.
 Defaults to TRUE.}
