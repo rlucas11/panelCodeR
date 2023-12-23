@@ -10,4 +10,9 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
-    MplusAutomation
+    MplusAutomation,
+    mnormt,
+    magrittr,
+    rlang,
+    dplyr,
+    stats

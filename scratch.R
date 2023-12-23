@@ -9,18 +9,37 @@ library(panelCodeR)
 ## For creating new data
 source("~/Projects/code-generator/scripts/gen_starts.R")
 
+tempData <- gen_starts(
+    n = 500, # N to generate
+    nwaves = 10, # Number of waves
+    ri_x = 1, # Random intercept variance for X
+    ri_y = 1, # Random intercept variance for Y
+    cor_i = .5, # Correlation between intercepts (as correlation)
+    x = 1, # AR variance for X
+    y = 1, # AR variance for Y
+    stab_x = .5, # Stability of X
+    stab_y = .5, # Stability of Y
+    yx = .4, # Cross lag (Y regressed on X)
+    xy = .2, # Cross lag (X regressed on Y)
+    cor_xy = .5, # Correlation between X and Y (as correlation)
+    xr = 0, # Measurement error for X
+    yr = 0 # Measurement error for Y
+)
+
+
+
 ## Load sample data
 data <- read_csv("testData.csv")
 
 addIndicators <- function(df, var, indicators) {
-    var <- sym(var)
+    var <- rlang::sym(var)
     for (i in 1:indicators) {
         label <- letters[i]
-        var <- enquo(var)
-        prefix <- as_label(var)
+        var <- rlang::enquo(var)
+        prefix <- rlang::as_label(var)
         df <- df %>%
-            rowwise() %>%
-            mutate("{ prefix }{label}" := !!var + rnorm(1, 0, 1))
+            dplyr::rowwise() %>%
+            dplyr::mutate("{ prefix }{label}" := !!var + rnorm(1, 0, 1))
     }
     return(df)
 }
