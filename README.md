@@ -2,6 +2,8 @@
 
 This R package generates lavaan and mplus code for models for analyzing panel data. Currently, it can generate code for the bivariate STARTS model and a number of models nested under this more general model. Specifically, it is possible to set different variance components to zero, which results in a reduced model. For instance, omitting the state variance at each wave results in the RI-CLPM and removing both the state and stable-trait variance results in the CLPM. It is also possible to remove the lagged paths. There are also some wrapper functions that create code for these models using appropriate options (see below).
 
+![Diagram of STARTS Model](images/startsTransparent.png)
+
 > [!CAUTION]
 > This package is under development and changes frequently. **You should check the model code that is generated to make sure it is what you want!**
 

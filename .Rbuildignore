@@ -3,3 +3,4 @@
 ^mplus$
 ^testData\.csv$
 ^\.#scratch\.R$
+^images$
