@@ -4,10 +4,12 @@
 \alias{summary.pcmObject}
 \title{Summarizes results from \code{run_starts_mplus()}}
 \usage{
-\method{summary}{pcmObject}(obj, ...)
+\method{summary}{pcmObject}(object, ...)
 }
 \arguments{
-\item{obj}{Results from \code{run_starts_mplus()}.}
+\item{object}{Results from \code{run_starts_mplus()}.}
+
+\item{...}{Additional arguments to \code{summary()}.}
 }
 \description{
 Summarizes results from \code{run_starts_mplus()}

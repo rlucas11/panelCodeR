@@ -1,3 +1,18 @@
+#' Compares Univariate Variations of STARTS Model
+#'
+#' `compareUnivariate()` produces code, runs, and compares variations of the
+#' Stable Trait, Autoregressive Trait, State Model. Specifically, it
+#' sequentially drops each component (stable trait, autoregressive trait, and
+#' state) and then uses BIC to identify the best model. 
+#'
+#' @param data Dataframe with multiwave data. Variables should be names 'x1' to
+#'   'xw', where 'w' is the number of waves.
+#' @param waves Numeric value indicating the number of waves.
+#' @param xWaves Numeric vector indicating which waves actually exist (e.g.,
+#'   'c(1:3, 5:7)' if there are 7 waves but Wave 6 is missing.
+#' @returns Matrix of results for each model. This includes basic fit indices
+#'   as well as variance decomposition and stability estimates. 
+#' @export
 compareUnivariate <- function(data, waves, xWaves=NULL) {
     results <- data.frame(
         trait.p.starts = numeric(),
@@ -62,8 +77,8 @@ compareUnivariate <- function(data, waves, xWaves=NULL) {
             rmsea = numeric()
         )
         fit.est <- fit$results$parameters$unstandardized
-        if (!is.null(fit.est[[which(fit.est$param == "TRAIT.P."), "est"]])) {
-            singleModelResults[1, 1] <- fit.est[[which(fit.est$param == "TRAIT.P."), "est"]]
+        if (!is.null(fit.est[[which(fit.est$param == "TRAIT.X"), "est"]])) {
+            singleModelResults[1, 1] <- fit.est[[which(fit.est$param == "TRAIT.X"), "est"]]
         } else {
             singleModelResults[1, 1] <- NA
         }
@@ -102,58 +117,68 @@ compareUnivariate <- function(data, waves, xWaves=NULL) {
         } else {
             singleModelResults[1, 8] <- NA
         }
-        if (!is.null(fit$results$summaries$RMSEA_Estimate)) {
-            singleModelResults[1, 9] <- fit$results$summaries$RMSEA_Estimate
+        if (!is.null(fit$results$summaries$ChiSqM_Value)) {
+            singleModelResults[1, 7] <- fit$results$summaries$ChiSqM_Value
+        } else {
+            singleModelResults[1, 7] <- NA
+        }
+        if (!is.null(fit$results$summaries$CFI)) {
+            singleModelResults[1, 9] <- fit$results$summaries$CFI
         } else {
             singleModelResults[1, 9] <- NA
+        }
+        if (!is.null(fit$results$summaries$RMSEA_Estimate)) {
+            singleModelResults[1, 10] <- fit$results$summaries$RMSEA_Estimate
+        } else {
+            singleModelResults[1, 10] <- NA
         }
         return(singleModelResults)
     }
     if (is.null(xWaves)) xWaves <- 1:waves
     starts <- run_startsx_mplus(
-        data,
-        waves,
-        xWaves,
+        data = data,
+        waves = waves,
+        xWaves = xWaves,
         title="starts"
     )
-    results[1, 1:9] <- unlist(collectResults(starts)[1, 1:9])
+    results[1, 1:9] <- unlist(collectResults(starts$mplusOutput)[1, 1:9])
     st <- run_starts_mplus(
-        data,
-        waves,
-        xWaves,
+        data = data,
+        waves = waves,
+        xWaves = xWaves,
         AR = FALSE,
         YVar = FALSE,
         title = "st"
     )
-    results[1, 10:18] <- unlist(collectResults(st)[1, 1:9])
+    results[1, 10:18] <- unlist(collectResults(st$mplusOutput)[1, 1:9])
     arts <- run_starts_mplus(
-        data,
-        waves,
-        xWaves,
+        data = data,
+        waves = waves,
+        xWaves = xWaves,
         trait = FALSE,
         YVar = FALSE,
         title = "arts"
     )
-    results[1, 19:27] <- unlist(collectResults(arts)[1, 1:9])
+    results[1, 19:27] <- unlist(collectResults(arts$mplusOutput)[1, 1:9])
     start <- run_starts_mplus(
-        data,
-        waves,
-        xWaves,
+        data = data,
+        waves = waves,
+        xWaves = xWaves,
         YVar = FALSE,
         state = FALSE,
         title = "start"
     )
-    results[1, 28:36] <- unlist(collectResults(start)[1, 1:9])
+    results[1, 28:36] <- unlist(collectResults(start$mplusOutput)[1, 1:9])
     art <- run_starts_mplus(
-        data,
-        waves,
-        xWaves,
+        data = data,
+        waves = waves,
+        xWaves = xWaves,
         trait = FALSE,
         YVar = FALSE,
         state = FALSE,
         title = "art"
     )
-    results[1, 37:45] <- unlist(collectResults(art)[1, 1:9])
+    results[1, 37:45] <- unlist(collectResults(art$mplusOutput)[1, 1:9])
     aicCols <- paste("aic", c("starts", "st", "arts", "start", "art"), sep = ".")
     bicCols <- paste("bic", c("starts", "st", "arts", "start", "art"), sep = ".")
     results$best.aic <- colnames(results[, aicCols])[apply(results[, aicCols], 1, which.min)]

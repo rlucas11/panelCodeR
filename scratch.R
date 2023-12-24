@@ -2,8 +2,6 @@
 ## Setup
 ################################################################################
 
-source("~/Projects/code-generator/scripts/gen_starts.R")
-
 library(tidyverse)
 library(lavaan)
 library(panelCodeR)
@@ -24,10 +22,20 @@ data <- gen_starts(
     xr = 1, # Measurement error for X
     yr = 1 # Measurement error for Y
 )
+
+
 test <- run_starts_mplus(data,
                          5,
                          stateCor = TRUE
                          )
+
+test <- run_starts_mplus(data,
+                         5,
+                         YVar = FALSE,
+                         trait = FALSE,
+                         state = FALSE
+                         )
+
 summary(test)
 
 
@@ -285,3 +293,8 @@ summary.pcObject <- function(obj) {
     cat("State: ", obj$stateCor, "\n")
     }
     
+################################################################################
+## compareUnivariate
+################################################################################
+
+compareUnivariate(data, 10)

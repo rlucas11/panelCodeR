@@ -9,6 +9,8 @@ This R package generates lavaan and mplus code for models for analyzing panel da
 
 ## Updates!
 
+12/24/2023: The code to compare univariate models in Mplus has been added to the package.
+
 12/22/2023: The code to run the DPM model in Mplus has been added to the package. 
 
 12/20/2023: I turned this into an R package. In doing this, I made a few naming changes, mostly to the lavaan functions. 
@@ -30,7 +32,10 @@ devtools::install_github("rlucas11/panelCodeR")
 
 ## Data
 
-The code that this generates is like any other lavaan or mplus model. However, it assumes that you have two sets of variables, named x1 through xw and y1 through yw, where 'w' is the number of waves. It is possible to have missing waves, in which case, the code generator creates phantom variables for missing waves. This is often only possible if stationarity is imposed. To specify that waves are missing, use `xWaves` and/or `yWaves` to indicate which waves exist (e.g., `xWaves = c(1:5, 7:10)`). If you have multiple indicators per wave, indicators should be labeled using letters starting from 'a' (e.g., "x1a", "x1b", and "x1c" for three indicators of the variable at Wave 1). Multiple indicators is currently only implemented for Mplus code. 
+The code that this generates is like any other lavaan or mplus model. However, it assumes that you have two sets of variables, named x1 through xw and y1 through yw, where 'w' is the number of waves. It is possible to have missing waves, in which case, the code generator creates phantom variables for missing waves. This is often only possible if stationarity is imposed. To specify that waves are missing, use `xWaves` and/or `yWaves` to indicate which waves exist (e.g., `xWaves = c(1:5, 7:10)`). If you have multiple indicators per wave, indicators should be labeled using letters starting from 'a' (e.g., "x1a", "x1b", and "x1c" for three indicators of the variable at Wave 1). 
+
+> [!NOTE]
+> The use of multiple indicators is currently only implemented for Mplus code. 
 
 ## Lavaan Commands
 
@@ -184,12 +189,15 @@ As with `buildLavaan()`, there are some wrapper functions that can be used to sp
 
 ### Comparing Models
 
-> [!WARNING]
-> This is not implemented in the R package yet!
+> [!NOTE]
+> This only works for Mplus output.
 
 There is also one more function that can be used to compare a set of nested models for one variable (this is only available for Mplus right now; the function assumes that all variables are labelled "xw", where w is the wave number). The function `compareUnivariate` takes three arguments: `data` (the data file) `waves` (the number of waves), and `xWaves` (which waves actually exist). It then runs the univariate STARTS, ARTS, START, STS, and ART models. The univariate ART model corresponds to the bivariate CLPM; the univariate START model corresponds to the bivariate RI-CLPM model; the univariate ARTS model corresponds to the bivariate ARTS or factor CLPM model, and the univariate STARTS model corresponds to the bivariate STARTS model. The STS model is rarely used in a bivariate context, but it could be. 
 
 ### Dynamic Panel Models
+
+> [!NOTE]
+> This only works for Mplus output.
 
 You can also create code for and run dynamic panel models (this is only implemented for Mplus). Because of some of the differences between the DPM and the STARTS-based models, certain options are not available. For instance, it does not make sense to run a DPM without a stable trait (this would just be an ART model that can be specified using the original code). In addition, most implementations of the DPM do not impose strict stationarity, so I removed that option here. This makes it difficult to use phantom variables, because the model is typically not identified with missing waves and no stationarity. Most DPM models do not include state variance, so that is the default; but I think it should be possible to do add this component. 
 

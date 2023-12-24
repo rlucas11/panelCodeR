@@ -594,7 +594,7 @@ buildMplus <- function(waves,
     ## Makes sure xWaves and yWaves <= total waves
     xWaves <- xWaves[xWaves <= waves]
     yWaves <- yWaves[yWaves <= waves]
-    if (XVar == FALSE | YVar == FALSE) {
+    if (XVar == FALSE || YVar == FALSE) {
         crossLag <- FALSE
         stateCor <- FALSE
     }
@@ -1739,34 +1739,35 @@ run_startsy_mplus <- function(data,
 
 #' Summarizes results from `run_starts_mplus()`
 #'
-#' @param obj Results from `run_starts_mplus()`.
+#' @param object Results from `run_starts_mplus()`.
+#' @param ... Additional arguments to `summary()`.
 #'
 #' @export
-summary.pcmObject <- function(obj) {
+summary.pcmObject <- function(object, ...) {
     cat("Model Summary: \n")
-    summary(obj$mplusOutput)
+    summary(object$mplusOutput)
     cat("\n")
     cat("Variance Decomposition: \n")
     cat("\n")
     cat("X Variable: \n")
-    cat("Trait: ", obj$xTrait,
-        ", Autoregressive: ",obj$xAr,
-        ", State: ",obj$xState, "\n")
+    cat("Trait: ", object$xTrait,
+        ", Autoregressive: ",object$xAr,
+        ", State: ",object$xState, "\n")
     cat("Y Variable: \n")
-    cat("Trait: ", obj$yTrait,
-        ", Autoregressive: ", obj$yAr,
-        ", State: ", obj$yState, "\n")
+    cat("Trait: ", object$yTrait,
+        ", Autoregressive: ", object$yAr,
+        ", State: ", object$yState, "\n")
     cat("\n")
     cat("Stability: \n")
-    cat("X: ", obj$xStab, "\n")
-    cat("Y: ", obj$yStab, "\n")
+    cat("X: ", object$xStab, "\n")
+    cat("Y: ", object$yStab, "\n")
     cat("\n")
     cat("Cross-Lag Paths: \n")
-    cat("Y predicted from X: ", obj$yOnX ,"\n")
-    cat("X predicted from Y: ", obj$xOnY,"\n")
+    cat("Y predicted from X: ", object$yOnX ,"\n")
+    cat("X predicted from Y: ", object$xOnY,"\n")
     cat("Correlations: \n")
     cat("\n")
-    cat("Stable Trait: ", obj$traitCor, "\n")
-    cat("Autoregressive Trait: ", obj$arCor, "\n")
-    cat("State: ", obj$stateCor, "\n")
+    cat("Stable Trait: ", object$traitCor, "\n")
+    cat("Autoregressive Trait: ", object$arCor, "\n")
+    cat("State: ", object$stateCor, "\n")
     }
