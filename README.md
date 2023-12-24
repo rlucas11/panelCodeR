@@ -30,7 +30,7 @@ devtools::install_github("rlucas11/panelCodeR")
 
 ## Data
 
-The code that this generates is like any other lavaan or mplus model. However, it assumes that you have two sets of variables, named x1 through xw and y1 through yw, where 'w' is the number of waves. It is possible to have missing waves, in which case, the code generator creates phantom variables for missing waves. This is often only possible if stationarity is imposed. To specify that waves are missing, use `xWaves` and/or `yWaves` to indicate which waves exist (e.g., `xWaves = c(1:5, 7:10)`). If you have multiple indicators per wave, indicators should be labeled using letters starting from 'a' (e.g., "x1a", "x1b", and "x1c" for three indicators of the variable at Wave 1).
+The code that this generates is like any other lavaan or mplus model. However, it assumes that you have two sets of variables, named x1 through xw and y1 through yw, where 'w' is the number of waves. It is possible to have missing waves, in which case, the code generator creates phantom variables for missing waves. This is often only possible if stationarity is imposed. To specify that waves are missing, use `xWaves` and/or `yWaves` to indicate which waves exist (e.g., `xWaves = c(1:5, 7:10)`). If you have multiple indicators per wave, indicators should be labeled using letters starting from 'a' (e.g., "x1a", "x1b", and "x1c" for three indicators of the variable at Wave 1). Multiple indicators is currently only implemented for Mplus code. 
 
 ## Lavaan Commands
 
@@ -43,11 +43,11 @@ buildLavaan(waves,              # Number of total waves (e.g., 10)
            xWaves = NULL,       # The actual waves for X (leave blank if no missing waves)
            yWaves = NULL,       # The actual waves for Y (leave blank if no missing waves)
            stationarity = TRUE, # Stability, cross-lagged paths, and variances constrainted across waves)
-           trait = TRUE,
-           AR = TRUE,
-           state = FALSE,
-           crossLag = TRUE,
-           stateCor = FALSE,
+           trait = TRUE,        # Include trait component
+           AR = TRUE,           # Include AR component
+           state = FALSE,       # Include state component
+           crossLag = TRUE,     # Include cross-lagged paths
+           stateCor = FALSE,    # Include correlation between wave-specific state components
            limits = TRUE        # Limits variances > 0 and correlations < 1  
            )
 ```
@@ -61,7 +61,7 @@ There are also some wrapper functions that pre-specify these options to create c
 - `lavaanClpm`, which creates code for the CLPM. 
 - `lavaanArts`, which creates code for the bivariate ARTS model (i.e., CLPM with state component). 
 
-For each of these, the default is to set `stationarity = TRUE` which constrains the parameter estimates for the stabilities, cross-lagged paths, variances, and covariances to be equal across waves. This can be changed by setting `stationarity = FALSE`. For some models, this may lead to identification problems. 
+For each of these, the default is to set `stationarity = TRUE` which constrains the parameter estimates for the stabilities, cross-lagged paths, variances, and covariances to be equal across waves. This can be changed by setting `stationarity = FALSE`. For some models, this may lead to identification problems. If you have missing waves, you will need to assume (and impose) stationarity.
 
 ### Running the models
 
@@ -84,20 +84,20 @@ I think the easiest requires that you have the `MplusAutomation` package install
 
 ```R
 run_starts_mplus <- function(data,
-                             waves,            # Total number of waves (e.g., 10)
-                             XVar = TRUE,
-                             YVar = TRUE,
-                             xWaves = NULL,    # Which X waves exist (e.g., c(1:4, 6:10))
-                             yWaves = NULL,    # Which Y waves exist
-                             xIndicators = 1,  # How many indicators for X?
-                             yIndicators = 1,  # How many indicators for Y?
-                             trait = TRUE,
-                             AR = TRUE,
-                             state = TRUE,
-                             crossLag = TRUE,
-                             stateCor = FALSE,
-                             stationarity = TRUE,
-                             limits = TRUE,
+                             waves,               # Total number of waves (e.g., 10)
+                             XVar = TRUE,         # Include X variable
+                             YVar = TRUE,         # Include Y variable
+                             xWaves = NULL,       # Which X waves exist (e.g., c(1:4, 6:10))
+                             yWaves = NULL,       # Which Y waves exist
+                             xIndicators = 1,     # How many indicators for X?
+                             yIndicators = 1,     # How many indicators for Y?
+                             trait = TRUE,        # Include Stable Trait
+                             AR = TRUE,           # Include Autoregressive Trait
+                             state = TRUE,        # Include State
+                             crossLag = TRUE,     # Include cross-lagged paths
+                             stateCor = FALSE,    # Include correlations between wave-specific states
+                             stationarity = TRUE, # Impose stationarity
+                             limits = TRUE,       # Limit variances and correlations to plausible values
                              dir="mplus",
                              title="test",
                              analysis = "MODEL=NOCOVARIANCES;\nCOVERAGE=.001;",
@@ -132,7 +132,7 @@ buildMplus <- function(waves,
 
 If you want to do something that this code does not do, you can always call one of these two functions and then manually edit the resulting output/files. For instance, you can run `cat(buildMplus(waves=10))`, which prints the model. You can then use Mplus to run the .inp file, or you can use MplusAutomation to run the model. 
 
-If you want to do the latter, you have to do a couple other steps. First, you create an mplusObject. To do so, you can then write `modelStatement <- " {pasted model code} "`, where {pasted model code} is what you copied from the output of `buildMplus()`. 
+If you want to do the latter, you have to follow a couple other steps. First, you create an mplusObject. To do so, you can then write `modelStatement <- " {pasted model code} "`, where {pasted model code} is what you copied from the output of `buildMplus()`. 
 
 If you have constraints in your model, including stationarity constraints or limits on the variances and covariances, you will also have to separately create a constraints statement using the `buildConstraints()` function. It's options are also quite similar to `run_starts_mplus()`:
 
@@ -176,18 +176,18 @@ MplusAutomation::mplusModeler(inp, modelout = "mplus/title.inp", run=1)
 
 ### Wrapper Functions
 
-As with `buildLavaan()`, there are some wrapper functions that can be used to specify other models. Specifically, you can use `run_startsx_mplus()`, `run_startsy_mplus()`, `run_clpm_mplus()`, `run_riclpm_mplus()`, or `run_arts_mplus()` to get those variations on the STARTS model. I also created `run_sts_mplus()`, which runs a stable-trait + state model. These often have a limited set of options compared to `build_starts_mplus()`, given the constraints required to specify these models. For details, look at the code for these models. 
+As with `buildLavaan()`, there are some wrapper functions that can be used to specify other models. Specifically, you can use `run_startsx_mplus()`, `run_startsy_mplus()`, `run_clpm_mplus()`, `run_riclpm_mplus()`, or `run_arts_mplus()` to get those variations on the STARTS model. I also created `run_sts_mplus()`, which runs a stable-trait + state model. These often have a limited set of options compared to `build_starts_mplus()`, given the constraints required to specify these models. For details, look at the code or help files for these models. 
 
 ### Comparing Models
 
 > [!WARNING]
 > This is not implemented in the R package yet!
 
-There is also one more function that can be used to compare a set of nested models for one variable (this is only available for Mplus right now). The function `compareUnivariate` takes three arguments: `data` (the data file) `waves` (the number of waves), and `actualWaves` (which waves actually exist). It then runs the univariate STARTS, ARTS, START, STS, and ART models. The univariate ART model corresponds to the bivariate CLPM; the univariate START model corresponds to the bivariate RI-CLPM model; the univariate ARTS model corresponds to the bivariate ARTS or factor CLPM model, and the univariate STARTS model corresponds to the bivariate STARTS model. The STS model is rarely used in a bivariate context, but it could be. The code for this function is in a separate file called ["compareModels"](scripts/compareModels.R), so you will need to run that code before the function is available. 
+There is also one more function that can be used to compare a set of nested models for one variable (this is only available for Mplus right now; the function assumes that all variables are labelled "xw", where w is the wave number). The function `compareUnivariate` takes three arguments: `data` (the data file) `waves` (the number of waves), and `xWaves` (which waves actually exist). It then runs the univariate STARTS, ARTS, START, STS, and ART models. The univariate ART model corresponds to the bivariate CLPM; the univariate START model corresponds to the bivariate RI-CLPM model; the univariate ARTS model corresponds to the bivariate ARTS or factor CLPM model, and the univariate STARTS model corresponds to the bivariate STARTS model. The STS model is rarely used in a bivariate context, but it could be. 
 
 ### Dynamic Panel Models
 
-You can now create code for and run dynamic panel models. Source the file ["buildMplusDpm.R"](buildMplusDpm.R) and there will be a new function available called `run_dpm_mplus()`. Because of some of the differences between the DPM and the STARTS-based models, certain options are not available. For instance, it does not make sense to run a DPM without a stable trait (this would just be an ART model that can be specified using the original code). In addition, most implementations of the DPM do not impose strict stationarity, so I removed that option here. This makes it difficult to use phantom variables, because the model is typically not identified with missing waves and no stationarity. Most DPM models do not include state variance, so that is the default; but I think it should be possible to do add this component. 
+You can also create code for and run dynamic panel models (this is only implemented for Mplus). Because of some of the differences between the DPM and the STARTS-based models, certain options are not available. For instance, it does not make sense to run a DPM without a stable trait (this would just be an ART model that can be specified using the original code). In addition, most implementations of the DPM do not impose strict stationarity, so I removed that option here. This makes it difficult to use phantom variables, because the model is typically not identified with missing waves and no stationarity. Most DPM models do not include state variance, so that is the default; but I think it should be possible to do add this component. 
 
 The options for the DPM are:
 ```R
@@ -203,7 +203,7 @@ run_dpm_mplus <- function(data,
                           limits = TRUE,
                           dir = "mplus",
                           title = "dpm",
-                          analysis = "MODEL=NOCOVARIANCES;\nCOVERAGE=.001;\nPROCESSORS=8;",
+                          analysis = "MODEL=NOCOVARIANCES;\nCOVERAGE=.001;",
                           output = "stdyx; \n  cinterval; \n")
 ```
 
