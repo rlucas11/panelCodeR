@@ -97,6 +97,7 @@ run_starts_mplus <- function(data,
                              crossLag = TRUE,     # Include cross-lagged paths
                              stateCor = FALSE,    # Include correlations between wave-specific states
                              stationarity = TRUE, # Impose stationarity
+                             constrainCors = TRUE,# Constrain cross-wave indicators-specific cors to be equal
                              limits = TRUE,       # Limit variances and correlations to plausible values
                              dir="mplus",
                              title="test",
@@ -105,6 +106,8 @@ run_starts_mplus <- function(data,
 ```
 
 Like with `buildLavaan()`, `waves` is just the number of possible waves. The arguments `xWaves` and `yWaves` specify which of the possible waves you have data for. For example, in a 10-wave study where Wave 4 X variable is missing, you could specify `xWaves = c(1:3,5:10)`. If you don't enter anything for these arguments, the code generator assumes that all waves exist.
+
+The 'constrainCor' argument specifies whether to constrain correlations between the same indicator at different waves to be equal for equal-length intervals. The default is to make this constraint, but it can be removed with this argument.
 
 The 'limits' option specifies whether to constrain variances to be greater than 1 and correlations to be between 1 and -1. This is often necessary to get STARTS models to converge. 
 
@@ -127,6 +130,7 @@ buildMplus <- function(waves,
                        state = TRUE,
                        crossLag = TRUE,
                        stateCor = FALSE,
+                       constrainCors = TRUE,
                        stationarity = TRUE)
 ```
 
