@@ -8,6 +8,8 @@ lavaanArts(
   waves,
   xWaves = NULL,
   yWaves = NULL,
+  xIndicators = 1,
+  yIndicators = 1,
   stationarity = TRUE,
   stateCor = TRUE,
   limits = TRUE
@@ -19,6 +21,12 @@ lavaanArts(
 \item{xWaves}{Vector of actual waves for X (omit if same as waves).}
 
 \item{yWaves}{Vector of actual waves for Y (omit if same as waves).}
+
+\item{xIndicators}{Numeric value indicatoring number of indicators for X.
+Defaults to 1.}
+
+\item{yIndicators}{Numeric value indicatoring number of indicators for Y.
+Defaults to 1.}
 
 \item{stationarity}{logical value indicating whether to impose stationarity.
 Defaults to TRUE.}

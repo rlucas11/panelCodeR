@@ -8,6 +8,8 @@ lavaanRiclpm(
   waves,
   xWaves = NULL,
   yWaves = NULL,
+  xIndicators = xIndicators,
+  yIndicators = yIndicators,
   stateCor = FALSE,
   limits = TRUE,
   stationarity = TRUE
@@ -19,6 +21,12 @@ lavaanRiclpm(
 \item{xWaves}{Vector of actual waves for X (omit if same as waves).}
 
 \item{yWaves}{Vector of actual waves for Y (omit if same as waves).}
+
+\item{xIndicators}{Numeric value indicatoring number of indicators for X.
+Defaults to 1.}
+
+\item{yIndicators}{Numeric value indicatoring number of indicators for Y.
+Defaults to 1.}
 
 \item{stateCor}{Logical value indicating whether to constrain correlations
 between wave-specific state variances to be equal across waves. Defaults

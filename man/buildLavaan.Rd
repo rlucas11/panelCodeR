@@ -6,32 +6,38 @@
 \usage{
 buildLavaan(
   waves,
-  xWaves = NULL,
-  yWaves = NULL,
   XVar = TRUE,
   YVar = TRUE,
-  stationarity = TRUE,
+  xWaves = NULL,
+  yWaves = NULL,
+  xIndicators = 1,
+  yIndicators = 1,
   trait = TRUE,
   AR = TRUE,
   state = TRUE,
   crossLag = TRUE,
   stateCor = FALSE,
+  stationarity = TRUE,
+  constrainCors = TRUE,
   limits = TRUE
 )
 }
 \arguments{
 \item{waves}{Numeric value indicating total number of waves.}
 
-\item{xWaves}{Vector of actual waves for X (omit if same as waves).}
-
-\item{yWaves}{Vector of actual waves for Y (omit if same as waves).}
-
 \item{XVar}{Logical. Include X variable.}
 
 \item{YVar}{logical. Include Y variable.}
 
-\item{stationarity}{logical value indicating whether to impose stationarity.
-Defaults to TRUE.}
+\item{xWaves}{Vector of actual waves for X (omit if same as waves).}
+
+\item{yWaves}{Vector of actual waves for Y (omit if same as waves).}
+
+\item{xIndicators}{Numeric value indicatoring number of indicators for X.
+Defaults to 1.}
+
+\item{yIndicators}{Numeric value indicatoring number of indicators for Y.
+Defaults to 1.}
 
 \item{trait}{Logical value indicating whether to include a stable trait.
 Defaults to TRUE.}
@@ -47,6 +53,13 @@ paths. Defaults to TRUE.}
 
 \item{stateCor}{logical value indicating whether to include state
 correlations. Defaults to TRUE.}
+
+\item{stationarity}{logical value indicating whether to impose stationarity.
+Defaults to TRUE.}
+
+\item{constrainCors}{logical value indicating whether to constrain
+correlations between same indicator at different waves (when there are more
+than one indicator.}
 
 \item{limits}{Logical value indicating whether to constrain variances and
 correlations to possible values.}

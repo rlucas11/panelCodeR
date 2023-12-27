@@ -9,6 +9,8 @@ This R package generates lavaan and mplus code for models for analyzing panel da
 
 ## Updates!
 
+12/27/2023: Implemented latent occasion variables with multiple indicators for lavaan. I also added some utilities for testing these models. The function `gen_starts()` generates data based on the STARTS model and `addIndicators()` can take that generated data and add indicators for each variable at each wave. 
+
 12/24/2023: The code to compare univariate models in Mplus has been added to the package.
 
 12/22/2023: The code to run the DPM model in Mplus has been added to the package. 
@@ -34,8 +36,6 @@ devtools::install_github("rlucas11/panelCodeR")
 
 The code that this generates is like any other lavaan or mplus model. However, it assumes that you have two sets of variables, named x1 through xw and y1 through yw, where 'w' is the number of waves. It is possible to have missing waves, in which case, the code generator creates phantom variables for missing waves. This is often only possible if stationarity is imposed. To specify that waves are missing, use `xWaves` and/or `yWaves` to indicate which waves exist (e.g., `xWaves = c(1:5, 7:10)`). If you have multiple indicators per wave, indicators should be labeled using letters starting from 'a' (e.g., "x1a", "x1b", and "x1c" for three indicators of the variable at Wave 1). 
 
-> [!NOTE]
-> The use of multiple indicators is currently only implemented for Mplus code. 
 
 ## Lavaan Commands
 
@@ -47,12 +47,15 @@ buildLavaan(waves,              # Number of total waves (e.g., 10)
            YVar = TRUE,         # Include Y variables
            xWaves = NULL,       # The actual waves for X (leave blank if no missing waves)
            yWaves = NULL,       # The actual waves for Y (leave blank if no missing waves)
+           xIndicators = 1,     # How many indicators for X?
+           yIndicators = 1,     # How many indicators for Y?
            stationarity = TRUE, # Stability, cross-lagged paths, and variances constrainted across waves)
            trait = TRUE,        # Include trait component
            AR = TRUE,           # Include AR component
            state = FALSE,       # Include state component
            crossLag = TRUE,     # Include cross-lagged paths
            stateCor = FALSE,    # Include correlation between wave-specific state components
+           constrainCors = TRUE,# Constrain cross-wave indicators-specific cors to be equal
            limits = TRUE        # Limits variances > 0 and correlations < 1  
            )
 ```
@@ -219,6 +222,9 @@ run_dpm_mplus <- function(data,
                           output = "stdyx; \n  cinterval; \n")
 ```
 
+## Utilities
+
+I've included a few utilities that can help you better understand these models. The function `gen_starts()` can generate data based on the STARTS model. As with the functions to test these models, the function to generate data can include or exclude different variance components. See the documentation for details. There is also a function called `addIndicators()` that (as the name suggests) takes the data generated above and adds indicators so you can test the latent-variable models. 
 
 ## Issues?
 

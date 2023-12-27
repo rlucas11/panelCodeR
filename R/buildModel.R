@@ -1165,6 +1165,8 @@ buildLavaan <- function(waves,
 #'
 #' @param waves Numeric value indicating total number of waves.
 #' @param xWaves Vector of actual waves for X (omit if same as waves).
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
 #' @param limits Logical value indicating whether to limit variances and
@@ -1194,6 +1196,8 @@ lavaanStartsX <- function(waves,
 #'
 #' @param waves Numeric value indicating total number of waves.
 #' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
 #' @param limits Logical value indicating whether to limit variances and
@@ -1226,6 +1230,10 @@ lavaanStartsY <- function(waves,
 #' @param waves Numeric value indicating total number of waves.
 #' @param xWaves Vector of actual waves for X (omit if same as waves).
 #' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
 #' @param crossLag Logical value indicating whether to impose stationairty.
@@ -1269,6 +1277,10 @@ lavaanStarts2 <- function(waves,
 #' @param waves Numeric value indicating total number of waves.
 #' @param xWaves Vector of actual waves for X (omit if same as waves).
 #' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
 #' @param stateCor Logical value indicating whether to constrain correlations
@@ -1308,6 +1320,10 @@ lavaanRiclpm <- function(waves,
 #' @param waves Numeric value indicating total number of waves.
 #' @param xWaves Vector of actual waves for X (omit if same as waves).
 #' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
 #' @param limits Logical value indicating whether to limit variances and
@@ -1343,6 +1359,10 @@ lavaanClpm <- function(waves,
 #' @param waves Numeric value indicating total number of waves.
 #' @param xWaves Vector of actual waves for X (omit if same as waves).
 #' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
 #' @param stateCor Logical value indicating whether to include correlations

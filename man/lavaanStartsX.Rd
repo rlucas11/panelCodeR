@@ -4,12 +4,21 @@
 \alias{lavaanStartsX}
 \title{Runs Univariate Starts Model for X in Lavaan}
 \usage{
-lavaanStartsX(waves, xWaves, stationarity = TRUE, limits = TRUE)
+lavaanStartsX(
+  waves,
+  xWaves,
+  xIndicators = 1,
+  stationarity = TRUE,
+  limits = TRUE
+)
 }
 \arguments{
 \item{waves}{Numeric value indicating total number of waves.}
 
 \item{xWaves}{Vector of actual waves for X (omit if same as waves).}
+
+\item{xIndicators}{Numeric value indicatoring number of indicators for X.
+Defaults to 1.}
 
 \item{stationarity}{logical value indicating whether to impose stationarity.
 Defaults to TRUE.}
