@@ -24,10 +24,10 @@ data <- gen_starts(
 )
 
 
-test <- run_starts_mplus(data,
-                         5,
-                         stateCor = TRUE
-                         )
+test <- buildMplus(data,
+                   waves = 5,
+                   xWaves = c(1,2,4,5)
+                   )
 
 test <- run_starts_mplus(data,
                          5,
@@ -54,15 +54,15 @@ for (i in names(data)) {
 
 test <- run_starts_mplus(data,
                          5,
-                         stateCor = FALSE
+                         stateCor = TRUE
                          )
 summary(test)
 
-test <- run_starts_mplus(data[1:1000,],
+test <- run_starts_mplus(data,
                          5,
-                         xWaves = c(1:5, 7:10),
                          xIndicators = 3,
-                         yIndicators = 3)
+                         yIndicators = 3,
+                         stateCor = TRUE)
 summary(test)
 
 
@@ -139,6 +139,18 @@ summary(test)
 ################################################################################
 
 ## Bivariate STARTS
+
+startsModel <- buildLavaan(waves = 5,
+                           xWaves = 1:5,
+                           yWaves = 1:5,
+                           xIndicators = 3,
+                           yIndicators = 3,
+                           stateCor = TRUE
+                           )
+cat(startsModel)
+
+startsFit <- lavaan(startsModel, data)
+summary(startsFit)                             
 
 startsModel <- lavaanStarts2(5, 1:5, 1:5, stateCor = FALSE)
 startsFit <- lavaan(startsModel, data)
@@ -298,3 +310,4 @@ summary.pcObject <- function(obj) {
 ################################################################################
 
 compareUnivariate(data, 10)
+

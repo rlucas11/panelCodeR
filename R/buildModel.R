@@ -86,80 +86,184 @@ buildPhantomY_l <- function(waves, yWaves) {
 ## Build latent occasion/observed part of model
 ################################################################################
 
-buildObservedX_l <- function(waves, xWaves) {
+buildObservedX_l <- function(xWaves, xIndicators) {
     title <- "### Latent Occasion Variables for X \n"
     ## First do indicator statements
     observedModel <- title
-    for (w in xWaves) {
+    if (xIndicators == 1) {
+        for (w in xWaves) {
+            observedModel <- paste0(
+                observedModel,
+                "lx",
+                w,
+                " =~ 1*x",
+                w,
+                "\n"
+            )
+        }
+        ## Then constrain variances to 0
         observedModel <- paste0(
             observedModel,
-            "lx",
-            w,
-            " =~ 1*x",
-            w,
-            "\n"
+            "## Residual Variance Constrained to 0 \n"
         )
-    }
-    ## Then constrain variances to 0
-    observedModel <- paste0(
-        observedModel,
-        "## Latent Occasion Variance \n"
-    )
-    for (w in 1:waves) {
+        for (w in xWaves) {
+            observedModel <- paste0(
+                observedModel,
+                "x",
+                w,
+                " ~~ ",
+                0,
+                "*x",
+                w,
+                " \n"
+            )
+        }
+    } else {
+        indLabels <- letters[1:xIndicators]
+        for (w in xWaves) {
+            for (i in indLabels) {
+                if (i == "a") {
+                    observedModel <- (
+                        paste0(
+                            observedModel,
+                            "lx",
+                            w,
+                            " =~ 1*x",
+                            w,
+                            i,
+                            "\n"
+                        )
+                    )
+                } else {
+                    observedModel <- (
+                        paste0(
+                            observedModel,
+                            "lx",
+                            w,
+                            " =~ lx",
+                            i,
+                            "*x",
+                            w,
+                            i,
+                            "\n"
+                        )
+                    )
+                }
+            }
+        }
         observedModel <- paste0(
             observedModel,
-            "lx",
-            w,
-            " ~~ ",
-            0,
-            "*lx",
-            w,
-            " \n"
+            "## Residual Variance for Indicators \n"
         )
+        for (w in xWaves) {
+            for (i in indLabels) {
+                observedModel <- paste0(
+                    observedModel,
+                    "x", w, i,
+                    " ~~ ",
+                    "xr", i,
+                    "*x", w, i,
+                    " \n"
+                )
+            }
+        }
     }
     return(observedModel)
 }
 
-
-buildObservedY_l <- function(waves, yWaves) {
-    title <- "### Latent Occasions Variables for Y \n"
+buildObservedY_l <- function(yWaves, yIndicators) {
+    title <- "### Latent Occasion Variables for Y \n"
+    ## First do indicator statements
     observedModel <- title
-    for (w in yWaves) {
+    if (yIndicators == 1) {
+        for (w in yWaves) {
+            observedModel <- paste0(
+                observedModel,
+                "ly",
+                w,
+                " =~ 1*y",
+                w,
+                "\n"
+            )
+        }
+        ## Then constrain variances to 0
         observedModel <- paste0(
             observedModel,
-            "ly",
-            w,
-            " =~ 1*y",
-            w,
-            "\n"
+            "\n## Residual Variance Constrained to 0 \n"
         )
-    }
-    ## Then constrain variances to 0
-    observedModel <- paste0(
-        observedModel,
-        "## Latent Occasion Variance \n"
-    )
-    for (w in 1:waves) {
+        for (w in yWaves) {
+            observedModel <- paste0(
+                observedModel,
+                "y",
+                w,
+                " ~~ ",
+                0,
+                "*y",
+                w,
+                " \n"
+            )
+        }
+    } else {
+        indLabels <- letters[1:yIndicators]
+        for (w in yWaves) {
+            for (i in indLabels) {
+                if (i == "a") {
+                    observedModel <- (
+                        paste0(
+                            observedModel,
+                            "ly",
+                            w,
+                            " =~ 1*y",
+                            w,
+                            i,
+                            "\n"
+                        )
+                    )
+                } else {
+                    observedModel <- (
+                        paste0(
+                            observedModel,
+                            "ly",
+                            w,
+                            " =~ ly",
+                            i,
+                            "*y",
+                            w,
+                            i,
+                            "\n"
+                        )
+                    )
+                }
+            }
+        }
         observedModel <- paste0(
             observedModel,
-            "ly",
-            w,
-            " ~~ ",
-            0,
-            "*ly",
-            w,
-            " \n"
+            "\n## Residual Variance Constrained to 0 \n"
         )
+        for (w in yWaves) {
+            for (i in indLabels) {
+                observedModel <- paste0(
+                    observedModel,
+                    "y", w, i,
+                    " ~~ ",
+                    "yr", i,
+                    "*y", w, i,
+                    " \n"
+                )
+            }
+        }
     }
     return(observedModel)
 }
+
+
 
 ################################################################################
 ## Build State Variance
 ################################################################################
 
 buildStateX_l <- function(wavesList, stationarity = TRUE) {
-    title <- "\n### X States;\n"
+    title <- "\n### X States\n"
     stateModel <- title
     ## First do indicator statements
     for (w in wavesList) {
@@ -177,7 +281,7 @@ buildStateX_l <- function(wavesList, stationarity = TRUE) {
     ## Then add variances (constrained to be equal if stationarity = TRUE)
     stateModel <- paste0(
         stateModel,
-        "\n## State Variance;\n"
+        "\n## State Variance\n"
     )
     if (stationarity == TRUE) {
         for (w in wavesList) {
@@ -209,8 +313,11 @@ buildStateX_l <- function(wavesList, stationarity = TRUE) {
     return(stateModel)
 }
 
+
+
+
 buildStateY_l <- function(wavesList, stationarity = TRUE) {
-    title <- "\n### Y States;\n"
+    title <- "\n### Y States\n"
     stateModel <- title
     ## First do indicator statements
     for (w in wavesList) {
@@ -228,7 +335,7 @@ buildStateY_l <- function(wavesList, stationarity = TRUE) {
     ## Then add variances (constrained to be equal if stationarity = TRUE)
     stateModel <- paste0(
         stateModel,
-        "\n## State Variance;\n"
+        "\n## State Variance\n"
     )
     if (stationarity == TRUE) {
         for (w in wavesList) {
@@ -260,6 +367,48 @@ buildStateY_l <- function(wavesList, stationarity = TRUE) {
     return(stateModel)
 }
 
+################################################################################
+## latent occasion variance
+################################################################################
+
+buildLatentVarX_l <- function(waves) {
+    wavesList <- 1:waves
+    title <- "\n## Constrain Latent Occasion Residuals for X to 0\n"
+    latentVar <- paste0(title, "lx1 ~~ 0*lx1 \n")
+    for (w in wavesList[-1]) {
+        latentVar <- paste0(
+            latentVar,
+            paste0(
+                "lx",
+                w,
+                " ~~ 0*lx",
+                w,
+                " \n"
+            )
+        )
+    }
+    return(latentVar)
+}
+
+buildLatentVarY_l <- function(waves) {
+    wavesList <- 1:waves
+    title <- "\n## Constrain Latent Occasion Residuals for Y to 0\n"
+    latentVar <- paste0(title, "ly1 ~~ 0*ly1 \n")
+    for (w in wavesList[-1]) {
+        latentVar <- paste0(
+            latentVar,
+            paste0(
+                "ly",
+                w,
+                " ~~ 0*ly",
+                w,
+                " \n"
+            )
+        )
+    }
+    return(latentVar)
+}
+
 
 
 ################################################################################
@@ -268,8 +417,8 @@ buildStateY_l <- function(wavesList, stationarity = TRUE) {
 
 buildARX_l <- function(waves, stationarity = TRUE) {
     wavesList <- 1:waves
-    title <- "### Autoregressive Part for X;\n"
-    subtitle1 <- "## Indicator Statements;\n"
+    title <- "### Autoregressive Part for X\n"
+    subtitle1 <- "## Indicator Statements\n"
     ## First do X indicator statements linking AR to latent occasion variable
     arXModel <- paste0(
         title,
@@ -368,8 +517,8 @@ buildARX_l <- function(waves, stationarity = TRUE) {
 
 buildARY_l <- function(waves, stationarity = TRUE) {
     wavesList <- 1:waves
-    title <- "### Autoregressive Part for Y;\n"
-    subtitle1 <- "## Indicator Statements;\n"
+    title <- "### Autoregressive Part for Y\n"
+    subtitle1 <- "## Indicator Statements\n"
     ## First do Y indicator statements linking AR to latent occasion variable
     arYModel <- paste0(
         title,
@@ -521,6 +670,107 @@ buildStateCors_l <- function(wavesList, stationarity = TRUE) {
     return(sCors)
 }
 
+buildResidCorsX_l <- function(xWaves, xIndicators, constrainCors = TRUE) {
+    residCors <- "## Residual Correlations \n"
+    indLabels <- letters[1:xIndicators]
+    if (constrainCors == TRUE) {
+        for (i in indLabels) {
+            for (j in 1:length(xWaves)) {
+                for (k in xWaves[-c(1:j)]) {
+                    residCors <- paste0(
+                        residCors,
+                        "x",
+                        xWaves[j],
+                        i,
+                        " ~~ x",
+                        i,
+                        "lag",
+                        k - xWaves[j],
+                        " * x",
+                        k,
+                        i,
+                        " \n"
+                    )
+                }
+            }
+        }
+    } else {
+        for (i in indLabels) {
+            for (j in 1:length(xWaves)) {
+                for (k in xWaves[-c(1:j)]) {
+                    residCors <- paste0(
+                        residCors,
+                        "x",
+                        xWaves[j],
+                        i,
+                        " ~~ x",
+                        i,
+                        "lag",
+                        k - xWaves[j],
+                        "* x",
+                        k,
+                        i,
+                        " \n"
+                    )
+                }
+            }
+        }
+    }
+    return(residCors)
+}
+
+
+buildResidCorsY_l <- function(yWaves, yIndicators, constrainCors = TRUE) {
+    residCors <- "## Residual Correlations \n"
+    indLabels <- letters[1:yIndicators]
+    if (constrainCors == TRUE) {
+        for (i in indLabels) {
+            for (j in 1:length(yWaves)) {
+                for (k in yWaves[-c(1:j)]) {
+                    residCors <- paste0(
+                        residCors,
+                        "y",
+                        yWaves[j],
+                        i,
+                        " ~~ y",
+                        i,
+                        "lag",
+                        k - yWaves[j],
+                        " * y",
+                        k,
+                        i,
+                        " \n"
+                    )
+                }
+            }
+        }
+    } else {
+        for (i in indLabels) {
+            for (j in 1:length(yWaves)) {
+                for (k in yWaves[-c(1:j)]) {
+                    residCors <- paste0(
+                        residCors,
+                        "y",
+                        yWaves[j],
+                        i,
+                        " ~~ y",
+                        i,
+                        "lag",
+                        k - yWaves[j],
+                        "* y",
+                        k,
+                        i,
+                        " \n"
+                    )
+                }
+            }
+        }
+    }
+    return(residCors)
+}
+
+                        
+
 
 ################################################################################
 ## Build Cross-Lagged Paths
@@ -593,6 +843,10 @@ buildClXFromY_l <- function(wavesList, stationarity = TRUE) {
 #' @param YVar logical. Include Y variable.
 #' @param xWaves Vector of actual waves for X (omit if same as waves).
 #' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1. 
 #' @param trait Logical value indicating whether to include a stable trait.
 #'   Defaults to TRUE.
 #' @param AR logical value indicating whether to include autoregressive trait.
@@ -605,22 +859,28 @@ buildClXFromY_l <- function(wavesList, stationarity = TRUE) {
 #'   correlations. Defaults to TRUE.
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values.
 #' @returns Character vector representing the Mplus code for the model statement.
 #' @export
 buildLavaan <- function(waves,
-                       xWaves = NULL,
-                       yWaves = NULL,
-                       XVar = TRUE,
-                       YVar = TRUE,
-                       stationarity = TRUE,
-                       trait = TRUE,
-                       AR = TRUE,
-                       state = TRUE,
-                       crossLag = TRUE,
-                       stateCor = FALSE,
-                       limits = TRUE) {
+                        XVar = TRUE,
+                        YVar = TRUE,
+                        xWaves = NULL,
+                        yWaves = NULL,
+                        xIndicators = 1,
+                        yIndicators = 1,
+                        trait = TRUE,
+                        AR = TRUE,
+                        state = TRUE,
+                        crossLag = TRUE,
+                        stateCor = FALSE,
+                        stationarity = TRUE,
+                        constrainCors = TRUE,
+                        limits = TRUE) {
     if (is.null(xWaves)) xWaves <- 1:waves
     if (is.null(yWaves)) yWaves <- 1:waves
     xWaves <- xWaves[xWaves <= waves]
@@ -631,14 +891,16 @@ buildLavaan <- function(waves,
         startsModel <- paste(
             startsModel,
             buildPhantomX_l(waves, xWaves),
-            buildObservedX_l(waves, xWaves),
+            buildObservedX_l(xWaves, xIndicators),
+            buildLatentVarX_l(waves),
             sep=" \n")
     }
     if (YVar == TRUE) {
         startsModel <- paste(
             startsModel,
             buildPhantomY_l(waves, yWaves),
-            buildObservedY_l(waves, yWaves),
+            buildObservedY_l(yWaves, yIndicators),
+            buildLatentVarY_l(waves),
             sep = " \n"
         )
     }
@@ -711,6 +973,24 @@ buildLavaan <- function(waves,
         startsModel <- paste(
             startsModel,
             buildStateCors_l(wavesList, stationarity),
+            sep = " \n"
+        )
+    }
+
+    if (XVar == TRUE &
+        xIndicators > 1) {
+        startsModel <- paste(
+            startsModel,
+            buildResidCorsX_l(xWaves, xIndicators, constrainCors),
+            sep = " \n"
+        )
+    }
+
+    if (YVar == TRUE &
+        yIndicators > 1) {
+        startsModel <- paste(
+            startsModel,
+            buildResidCorsY_l(yWaves, yIndicators, constrainCors),
             sep = " \n"
         )
     }
@@ -892,12 +1172,14 @@ buildLavaan <- function(waves,
 #' @returns Returns character vector of code that can be run using lavaan.
 #' @export
 lavaanStartsX <- function(waves,
-                         xWaves,
-                         stationarity = TRUE,
-                         limits = TRUE) {
+                          xWaves,
+                          xIndicators = 1,
+                          stationarity = TRUE,
+                          limits = TRUE) {
     buildLavaan(
-        waves,
-        xWaves,
+        waves = waves,
+        xWaves = xWaves,
+        xIndicators = xIndicators,
         stationarity = stationarity,
         state = TRUE,
         YVar = FALSE,
@@ -919,12 +1201,14 @@ lavaanStartsX <- function(waves,
 #' @returns Returns character vector of code that can be run using lavaan.
 #' @export
 lavaanStartsY <- function(waves,
-                         yWaves,
-                         stationarity = TRUE,
-                         limits = TRUE) {
+                          yWaves,
+                          yIndicators = 1,
+                          stationarity = TRUE,
+                          limits = TRUE) {
     buildLavaan(
-        waves,
-        yWaves,
+        waves = waves,
+        yWaves = yWaves,
+        yIndicators = yIndicators,
         stationarity = stationarity,
         state = TRUE,
         XVar = FALSE,
@@ -953,16 +1237,20 @@ lavaanStartsY <- function(waves,
 #' @returns Returns character vector of code that can be run using lavaan.
 #' @export
 lavaanStarts2 <- function(waves,
-                         xWaves,
-                         yWaves,
-                         stationarity = TRUE,
-                         crossLag = TRUE,
-                         stateCor = TRUE,
-                         limits = TRUE) {
+                          xWaves,
+                          yWaves,
+                          xIndicators = 1,
+                          yIndicators = 1,
+                          stationarity = TRUE,
+                          crossLag = TRUE,
+                          stateCor = TRUE,
+                          limits = TRUE) {
     buildLavaan(
-        waves,
-        xWaves,
-        yWaves,
+        waves = waves,
+        xWaves = xWaves,
+        yWaves = yWaves,
+        xIndicators = xIndicators,
+        yIndicators = yIndicators,
         stationarity = stationarity,
         state = TRUE,
         crossLag = crossLag,
@@ -991,15 +1279,19 @@ lavaanStarts2 <- function(waves,
 #' @returns Returns character vector of code that can be run using lavaan.
 #' @export
 lavaanRiclpm <- function(waves,
-                        xWaves = NULL,
-                        yWaves = NULL,
-                        stateCor = FALSE,
-                        limits = TRUE,
-                        stationarity = TRUE) {
+                         xWaves = NULL,
+                         yWaves = NULL,
+                         xIndicators = xIndicators,
+                         yIndicators = yIndicators,
+                         stateCor = FALSE,
+                         limits = TRUE,
+                         stationarity = TRUE) {
     buildLavaan(
         waves = waves,
         xWaves = xWaves,
         yWaves = yWaves,
+        xIndicators = xIndicators,
+        yIndicators = yIndicators,
         stationarity = stationarity,
         stateCor = stateCor,
         state = FALSE,
@@ -1025,12 +1317,16 @@ lavaanRiclpm <- function(waves,
 lavaanClpm <- function(waves,
                       xWaves = NULL,
                       yWaves = NULL,
+                      xIndicators = 1,
+                      yIndicators = 1,
                       stationarity = TRUE,
                       limits = TRUE) {
     buildLavaan(
         waves = waves,
         xWaves = xWaves,
         yWaves = yWaves,
+        xIndicators = xIndicators,
+        yIndicators = yIndicators,
         trait = FALSE,
         state = FALSE,
         stationarity = stationarity,
@@ -1058,6 +1354,8 @@ lavaanClpm <- function(waves,
 lavaanArts <- function(waves,
                        xWaves = NULL,
                        yWaves = NULL,
+                       xIndicators = 1,
+                       yIndicators = 1,
                        stationarity = TRUE,
                        stateCor = TRUE,
                        limits = TRUE) {
@@ -1065,6 +1363,8 @@ lavaanArts <- function(waves,
         waves = waves,
         xWaves = xWaves,
         yWaves = yWaves,
+        xIndicators = xIndicators,
+        yIndicators = yIndicators,
         stationarity = stationarity,
         trait = FALSE,
         stateCor = stateCor,
