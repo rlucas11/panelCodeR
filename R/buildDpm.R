@@ -853,11 +853,11 @@ buildConstraints_d <- function(waves,
         modelConstraints <- paste0(
             modelConstraints,
             "\n",
-            "NEW(trait.p.x); \n",
+            "NEW(trait.x); \n",
             "NEW(ar.p.x); \n",
             "NEW(st.p.x); \n",
             "NEW(stab.x); \n",
-            "trait.p.x = tx/(tx + arvx + sx); \n",
+            "trait.x = tx/(tx + arvx + sx); \n",
             "ar.p.x = arvx/(tx + arvx + sx); \n",
             "st.p.x = sx/(tx + arvx + sx); \n",
             "stab.x = a; \n"
@@ -867,11 +867,11 @@ buildConstraints_d <- function(waves,
         modelConstraints <- paste0(
             modelConstraints,
             "\n",
-            "NEW(trait.p.y); \n",
+            "NEW(trait.y); \n",
             "NEW(ar.p.y); \n",
             "NEW(st.p.y); \n",
             "NEW(stab.y); \n",
-            "trait.p.y = ty/(ty + arvy + sy); \n",
+            "trait.y = ty/(ty + arvy + sy); \n",
             "ar.p.y = arvy/(ty + arvy + sy); \n",
             "st.p.y = sy/(ty + arvy + sy); \n",
             "stab.y = b; \n"
@@ -1067,14 +1067,116 @@ run_dpm_mplus <- function(data,
         MODELCONSTRAINT = constraints,
         OUTPUT = output
     )
-    output <- MplusAutomation::mplusModeler(inp,
-        modelout = paste0(outFile, ".inp"),
-        run = 1
-    )
+
+    output <- MplusAutomation::mplusModeler(inp, modelout = paste0(outFile, ".inp"), run=1)
+    outputList <- list(mplusOutput = output,
+                       xTrait = output$results$parameters$unstandardized[
+                                                              which(output$results$parameters$unstandardized$param == "TRAIT.X"),
+                                                              "est"
+                                                          ],
+                       xAr = output$results$parameters$unstandardized[
+                                                           which(output$results$parameters$unstandardized$param == "AR.P.X"),
+                                                           "est"
+                                                       ],
+                       xStability = output$results$parameters$unstandardized[
+                                                                  which(output$results$parameters$unstandardized$param == "STAB.X"),
+                                                                  "est"
+                                                              ],
+                       yTrait = output$results$parameters$unstandardized[
+                                                              which(output$results$parameters$unstandardized$param == "TRAIT.Y"),
+                                                              "est"
+                                                          ],
+                       yAr = output$results$parameters$unstandardized[
+                                                           which(output$results$parameters$unstandardized$param == "AR.P.Y"),
+                                                           "est"
+                                                       ],
+                       yStability = output$results$parameters$unstandardized[
+                                                                  which(output$results$parameters$unstandardized$param == "STAB.Y"),
+                                                                  "est"
+                                                              ],
+                       traitCor = output$results$parameters$unstandardized[
+                                                                which(output$results$parameters$unstandardized$param == "COR_TXTY"),
+                                                                "est"
+                                                            ],
+                       arCor = output$results$parameters$unstandardized[
+                                                             which(output$results$parameters$unstandardized$param == "COR_ARXA"),
+                                                             "est"
+                                                         ],
+                       tXarX = output$results$parameters$stdyx.standardized[
+                                                             which(output$results$parameters$stdyx.standardized$paramHeader == "TRAITX.WITH" &
+                                                                   output$results$parameters$stdyx.standardized$param == "ARX1"),
+                                                             "est"
+                                                         ],
+                       tXarY = output$results$parameters$stdyx.standardized[
+                                                             which(output$results$parameters$stdyx.standardized$paramHeader == "TRAITX.WITH" &
+                                                                   output$results$parameters$stdyx.standardized$param == "ARY1"),
+                                                             "est"
+                                                         ],
+                       tYarY = output$results$parameters$stdyx.standardized[
+                                                             which(output$results$parameters$stdyx.standardized$paramHeader == "TRAITY.WITH" & output$results$parameters$stdyx.standardized$param == "ARY1"),
+                                                             "est"
+                                                         ],
+                       tYarX = output$results$parameters$stdyx.standardized[
+                                                             which(output$results$parameters$stdyx.standardized$paramHeader == "TRAITY.WITH" &
+                                                                   output$results$parameters$stdyx.standardized$param == "ARX1"),
+                                                             "est"
+                                                         ],
+                       yOnX = output$results$parameters$unstandardized[
+                                                                which(output$results$parameters$unstandardized$paramHeader == "ARY2.ON" &
+output$results$parameters$unstandardized$param == "ARX1"), 
+                                                                "est"
+                                                            ],
+                       xOnY = output$results$parameters$unstandardized[
+                                                                which(output$results$parameters$unstandardized$paramHeader == "ARX2.ON" &
+output$results$parameters$unstandardized$param == "ARY1"), 
+                                                                "est"
+                                                            ]
+                       )
+    class(outputList) <- "pcmdObject"
     print("Errors:")
     print(output$Errors)
     print("Warnings:")
     print(output$Warnings)
-    return(output)
+    summary(outputList)
+    return(outputList)
 }
+
+
+#' Summarizes results from `run_dpm_mplus()`
+#'
+#' @param object Results from `run_dpm_mplus()`.
+#' @param ... Additional arguments to `summary()`.
+#'
+#' @export
+summary.pcmdObject <- function(object, ...) {
+    cat("Model Summary: \n")
+    summary(object$mplusOutput)
+    cat("\n")
+    cat("Variance Decomposition (First Wave): \n")
+    cat("\n")
+    cat("X Variable: \n")
+    cat("Trait: ", object$xTrait,
+        ", Autoregressive: ",object$xAr, "\n")
+    cat("Y Variable: \n")
+    cat("Trait: ", object$yTrait,
+        ", Autoregressive: ", object$yAr, "\n")
+    cat("\n")
+    cat("Stability: \n")
+    cat("X: ", object$xStab, "\n")
+    cat("Y: ", object$yStab, "\n")
+    cat("\n")
+    cat("Cross-Lag Paths: \n")
+    cat("Y predicted from X: ", object$yOnX ,"\n")
+    cat("X predicted from Y: ", object$xOnY,"\n")
+    cat("\n")
+    cat("Correlations: \n")
+    cat("Stable Trait: ", object$traitCor, "\n")
+    cat("Autoregressive Trait: ", object$arCor, "\n")
+    cat("X Trait with X AR: ", object$tXarX, "\n")
+    cat("X Trait with Y AR: ", object$tXarY, "\n")
+    cat("Y Trait with Y AR: ", object$tYarY, "\n")
+    cat("Y Trait with X AR: ", object$tYarX, "\n")
+    }
+
+
     
