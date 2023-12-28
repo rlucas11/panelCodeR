@@ -201,10 +201,8 @@ summary(artsFit)
 ## DPM
 ################################################################################
 
-test <- run_dpm_mplus(data[1:1000,],
-                      4,
-                      xIndicators = 3,
-                      constrainCors = FALSE
+test <- run_dpm_mplus(data,
+                      5
                       )
 
 summary(test)
@@ -311,3 +309,12 @@ summary.pcObject <- function(obj) {
 
 compareUnivariate(data, 10)
 
+################################################################################
+## Lavaan DPM
+################################################################################
+
+dpmModel <- buildLavaanDpm(waves = 5)
+cat(dpmModel)
+
+dpmFit <- lavaan(dpmModel, data)
+summary(dpmFit)                             
