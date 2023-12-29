@@ -7,7 +7,7 @@ library(lavaan)
 library(panelCodeR)
 
 data <- gen_starts(
-    n = 50000, # N to generate
+    n = 10000, # N to generate
     nwaves = 10, # Number of waves
     ri_x = 1, # Random intercept variance for X
     ri_y = 1, # Random intercept variance for Y
@@ -16,12 +16,17 @@ data <- gen_starts(
     y = 1, # AR variance for Y
     stab_x = .5, # Stability of X
     stab_y = .5, # Stability of Y
-    yx = .1, # Cross lag (Y regressed on X)
-    xy = .05, # Cross lag (X regressed on Y)
+    yx = 0, # Cross lag (Y regressed on X)
+    xy = 0, # Cross lag (X regressed on Y)
     cor_xy = .5, # Correlation between X and Y (as correlation)
     xr = 1, # Measurement error for X
     yr = 1 # Measurement error for Y
 )
+
+test <- run_dpm_mplus(data,
+                      10
+                      )
+
 
 
 test <- buildMplus(data,
@@ -52,11 +57,10 @@ for (i in names(data)) {
 ################################################################################
 
 
-test <- run_starts_mplus(data,
-                         5,
-                         stateCor = TRUE
+testM <- run_starts_mplus(data,
+                         5
                          )
-summary(test)
+summary(testM)
 
 test <- run_starts_mplus(data,
                          5,
@@ -138,6 +142,8 @@ summary(test)
 ## lavaan
 ################################################################################
 
+testLavaan <- run_starts_lavaan(data = data, waves = 5, state = FALSE)
+
 ## Bivariate STARTS
 
 startsModel <- buildLavaan(waves = 5,
@@ -149,6 +155,8 @@ startsModel <- buildLavaan(waves = 5,
                            )
 cat(startsModel)
 
+
+startsModel <- buildLavaan(waves = 5)
 startsFit <- lavaan(startsModel, data)
 summary(startsFit)                             
 
@@ -202,7 +210,7 @@ summary(artsFit)
 ################################################################################
 
 test <- run_dpm_mplus(data,
-                      5
+                      10
                       )
 
 summary(test)

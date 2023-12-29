@@ -46,8 +46,6 @@ correlations to possible values.}
 Character vector representing the Mplus code for the model statement.
 }
 \description{
-\code{buildLavaan()} produces lavaan code for variations of the general Stable Trait,
-Autoregressive Trait, State Model. Univariate and bivariate versions can
-be specified. Reduced versions of the model can be specified by setting
-variance components for trait, AR, or state to be \code{FALSE}.
+\code{buildLavaanDpm()} produces lavaan code for variations of the Dynamic Panel
+Model. Univariate and bivariate versions can be specified.
 }

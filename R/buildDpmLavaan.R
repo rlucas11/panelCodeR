@@ -711,10 +711,8 @@ buildClXFromY_ld <- function(wavesList, stationarity = TRUE) {
 
 #' Build Dynamic Panel Model Lavaan Code
 #'
-#' `buildLavaan()` produces lavaan code for variations of the general Stable Trait,
-#' Autoregressive Trait, State Model. Univariate and bivariate versions can
-#' be specified. Reduced versions of the model can be specified by setting
-#' variance components for trait, AR, or state to be `FALSE`.
+#' `buildLavaanDpm()` produces lavaan code for variations of the Dynamic Panel
+#' Model. Univariate and bivariate versions can be specified. 
 #'
 #' @param waves Numeric value indicating total number of waves.
 #' @param XVar Logical. Include X variable.
@@ -746,6 +744,7 @@ buildLavaanDpm <- function(waves,
     xWaves <- 1:waves
     yWaves <- 1:waves
     wavesList <- 1:waves
+    stationarity <- TRUE ## Not used, but included to reuse old code
     if (XVar == FALSE | YVar == FALSE) {
         crossLag <- FALSE
         arCor <- FALSE

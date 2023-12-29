@@ -1391,3 +1391,195 @@ lavaanArts <- function(waves,
         limits = limits
         )
 }
+
+
+#' Build and Run Lavaan Code
+#'
+#' `run_starts_lavaan()` produces and runs lavaan code for variations of the
+#' general Stable Trait, Autoregressive Trait, State Model. Univariate and
+#' bivariate versions can be specified. Reduced versions of the model can be
+#' specified by setting variance components for trait, AR, or state to be
+#' `FALSE`.
+#'
+#' @param data Dataframe with all variables.
+#' @param waves Numeric value indicating total number of waves.
+#' @param XVar Logical. Include X variable.
+#' @param YVar logical. Include Y variable.
+#' @param xWaves Vector of actual waves for X (omit if same as waves).
+#' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1. 
+#' @param trait Logical value indicating whether to include a stable trait.
+#'   Defaults to TRUE.
+#' @param AR logical value indicating whether to include autoregressive trait.
+#'   Defaults to TRUE.
+#' @param state logical value indicating whether to include state. Defaults to
+#'   TRUE.
+#' @param crossLag logical value indicating whether to include cross-lagged
+#'   paths. Defaults to TRUE.
+#' @param stateCor logical value indicating whether to include state
+#'   correlations. Defaults to TRUE.
+#' @param stationarity logical value indicating whether to impose stationarity.
+#'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
+#' @param limits Logical value indicating whether to constrain variances and
+#'   correlations to possible values.
+#' @param ... Additional arguments to the `lavaan()` command.
+#' @returns Character vector representing the Mplus code for the model statement.
+#' @export
+run_starts_lavaan <- function(data,
+                              waves,
+                              XVar = TRUE,
+                              YVar = TRUE,
+                              xWaves = NULL,
+                              yWaves = NULL,
+                              xIndicators = 1,
+                              yIndicators = 1,
+                              trait = TRUE,
+                              AR = TRUE,
+                              state = TRUE,
+                              crossLag = TRUE,
+                              stateCor = FALSE,
+                              stationarity = TRUE,
+                              constrainCors = TRUE,
+                              limits = TRUE,
+                              ...) {
+    startsModel <- buildLavaan(waves = waves,
+                               XVar = XVar,
+                               YVar = YVar,
+                               xWaves = xWaves,
+                               yWaves = yWaves,
+                               xIndicators = xIndicators,
+                               yIndicators = yIndicators,
+                               trait = trait,
+                               AR = AR,
+                               state = state,
+                               crossLag = crossLag,
+                               stateCor = stateCor,
+                               stationarity = stationarity,
+                               constrainCors = constrainCors,
+                               limits = limits)
+    startsFit <- lavaan::lavaan(startsModel, data, ...)
+    ## Calculate values for summary
+    parEst <- lavaan::parameterEstimates(startsFit)
+    stdEst <- lavaan::standardizedSolution(startsFit)
+    fit <- lavaan::fitMeasures(startsFit)
+    ## Variance Decomp
+    trait.x <- parEst[which(parEst$lhs=="ri_x" & parEst$rhs=="ri_x"), "est"]
+    trait.y <- parEst[which(parEst$lhs=="ri_y" & parEst$rhs=="ri_y"), "est"]
+    ar.x <- parEst[which(parEst$lhs=="arx1" & parEst$rhs=="arx1"), "est"]
+    ar.y <- parEst[which(parEst$lhs=="ary1" & parEst$rhs=="ary1"), "est"]
+    state.x <- parEst[which(parEst$lhs=="sx1" & parEst$rhs=="sx1"), "est"]
+    state.y <- parEst[which(parEst$lhs=="sy1" & parEst$rhs=="sy1"), "est"]
+    trait.x.p <- trait.x/(sum(trait.x, ar.x, state.x))
+    trait.y.p <- trait.y/(sum(trait.y, ar.y, state.y))
+    ar.x.p <- ar.x/(sum(trait.x, ar.x, state.x))
+    ar.y.p <- ar.y/(sum(trait.y, ar.y, state.y))
+    state.x.p <- state.x/(sum(trait.x, ar.x, state.x))
+    state.y.p <- state.y/(sum(trait.y, ar.y, state.y))
+    ## Correlations
+    trait.cor <- stdEst[which(stdEst$lhs=="ri_x" & stdEst$rhs=="ri_y"), "est.std"]
+    ar.cor <- stdEst[which(stdEst$lhs=="arx1" & stdEst$rhs=="ary1"), "est.std"]
+    state.cor <- stdEst[which(stdEst$lhs=="sx1" & stdEst$rhs=="sy1"), "est.std"]
+    ## Stability
+    x.stab <- parEst[which(parEst$lhs=="arx2" & parEst$rhs=="arx1"), "est"]
+    y.stab <- parEst[which(parEst$lhs=="ary2" & parEst$rhs=="ary1"), "est"]
+    ## Cross-lags
+    yOnX <- parEst[which(parEst$lhs=="ary2" & parEst$rhs=="arx1"), "est"]
+    xOnY <- parEst[which(parEst$lhs=="arx2" & parEst$rhs=="ary1"), "est"]
+    ## Fit
+    chi2 <- fit[["chisq"]]
+    chi2df <- fit[["df"]]
+    chi2p <- fit[["pvalue"]]
+    cfi <- fit[["cfi"]]
+    tli <- fit[["tli"]]
+    srmr <- fit[["srmr"]]
+    rmsea <- fit[["rmsea"]]
+    outputList <- list(
+        modelStatement = startsModel,
+        lavaanFit = startsFit,
+        trait.x = trait.x.p,
+        trait.y = trait.y.p,
+        ar.x = ar.x.p,
+        ar.y = ar.y.p,
+        state.x = state.x.p,
+        state.y = state.y.p,
+        trait.cor = trait.cor,
+        ar.cor = ar.cor,
+        state.cor = state.cor,
+        x.stab = x.stab,
+        y.stab = y.stab,
+        yOnX = yOnX,
+        xOnY = xOnY,
+        chi2 = chi2,
+        chi2df = chi2df,
+        chi2p = chi2p,
+        cfi = cfi,
+        tli = tli,
+        srmr = srmr,
+        rmsea = rmsea)
+    class(outputList) <- "pclObject"
+    return(outputList)
+}
+
+
+#' Summarizes results from `run_starts_lavaan()`
+#'
+#' @param object Results from `run_starts_lavaan()`.
+#' @param ... Additional arguments to `summary()`.
+#'
+#' @export
+summary.pclObject <- function(object, ...) {
+    cat("Model Summary: \n")
+    cat("Model: Chi2 (df = ",
+        sprintf("%i", object$chi2df), ") = ",
+        sprintf("%.3f", object$chi2), "p = ",
+        sprintf("%.3f", object$chi2p), "\n")
+    cat("\n")
+    cat("Fit Indices:")
+    cat("\n")
+    cat("CFI = ",
+        sprintf("%.3f", object$cfi),
+        ", TLI = ",
+        sprintf("%.3f", object$tli),
+        "SRMR = ",
+        sprintf("%.3f", object$srmr), "\n")
+    cat("RMSEA = ",
+        sprintf("%.3f", object$rmsea),
+        "\n")
+    cat("\n")
+    cat("Variance Decomposition: \n")
+    cat("\n")
+    cat("X Variable: \n")
+    cat("Trait: ",
+        sprintf("%.3f", object$trait.x),
+        ", Autoregressive: ",
+        sprintf("%.3f", object$ar.x),
+        ", State: ",
+        sprintf("%.3f", object$state.x),
+        "\n")
+    cat("Y Variable: \n")
+    cat("Trait: ",
+        sprintf("%.3f", object$trait.y),
+        ", Autoregressive: ",
+        sprintf("%.3f", object$ar.y),
+        ", State: ",
+        sprintf("%.3f", object$state.y), "\n")
+    cat("\n")
+    cat("Stability: \n")
+    cat("X: ", sprintf("%.3f", object$x.stab), "\n")
+    cat("Y: ", sprintf("%.3f", object$y.stab), "\n")
+    cat("\n")
+    cat("Cross-Lag Paths: \n")
+    cat("Y predicted from X: ", sprintf("%.3f", object$yOnX) ,"\n")
+    cat("X predicted from Y: ", sprintf("%.3f", object$xOnY),"\n")
+    cat("Correlations: \n")
+    cat("\n")
+    cat("Stable Trait: ", sprintf("%.3f", object$trait.cor), "\n")
+    cat("Autoregressive Trait: ", sprintf("%.3f", object$ar.cor), "\n")
+    cat("State: ", sprintf("%.3f", object$state.cor), "\n")
+    }

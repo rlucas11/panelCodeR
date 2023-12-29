@@ -15,4 +15,5 @@ Imports:
     magrittr,
     rlang,
     dplyr,
-    stats
+    stats,
+    lavaan
