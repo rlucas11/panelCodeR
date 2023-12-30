@@ -87,7 +87,7 @@ startsFit <- lavaan(startsModel, data) ## Run lavaan on the model
 summary(startsFit) ## Check your results!
 ```
 
-### Commands to run the models
+#### Commands to run the models
 
 The basic command to simultaneously build and run Lavaan code is `run_starts_lavaan()`. It has the same options as `buildLavaan()`, but with two additional options: One to specify the dataframe to use and one to pass any additional options on to the `lavaan()` command (such as different estimators or specifying how to handle missing data). So the syntax for `run_starts_lavaan()` is:
 
@@ -114,8 +114,8 @@ run_starts_lavaan <- function(data,
 
 The wrapper functions available are:
 
-- `run_startsXlavaan()`
-- `run_startsYlavaan()`
+- `run_startsX_lavaan()`
+- `run_startsY_lavaan()`
 - `run_riclpm_lavaan()`
 - `run_clpm_lavaan()`
 - `run_arts_lavaan()`
