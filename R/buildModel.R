@@ -831,7 +831,7 @@ buildClXFromY_l <- function(wavesList, stationarity = TRUE) {
 ## Build Final Model
 ################################################################################
 
-#' Build Lavaan Code
+#' Build Lavaan Code for STARTS Model
 #'
 #' `buildLavaan()` produces lavaan code for variations of the general Stable Trait,
 #' Autoregressive Trait, State Model. Univariate and bivariate versions can
@@ -1158,7 +1158,7 @@ buildLavaan <- function(waves,
 }
 
 
-#' Runs Univariate Starts Model for X in Lavaan
+#' Builds Univariate Starts Model for X in Lavaan
 #'
 #' `lavaanStartsX()` Wrapper function for `run_starts_mplus()`. Produces lavaan
 #' code for the univariate STARTS model (for variabes named X). 
@@ -1169,6 +1169,9 @@ buildLavaan <- function(waves,
 #'   Defaults to 1.
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param limits Logical value indicating whether to limit variances and
 #'   correlations to valid values.
 #' @returns Returns character vector of code that can be run using lavaan.
@@ -1177,19 +1180,21 @@ lavaanStartsX <- function(waves,
                           xWaves,
                           xIndicators = 1,
                           stationarity = TRUE,
+                          constrainCors = TRUE,
                           limits = TRUE) {
     buildLavaan(
         waves = waves,
         xWaves = xWaves,
         xIndicators = xIndicators,
         stationarity = stationarity,
+        constrainCors = constrainCors,
         state = TRUE,
         YVar = FALSE,
         limits = limits
     )
 }
 
-#' Runs Univariate Starts Model for Y in Lavaan
+#' Builds Univariate Starts Model for Y in Lavaan
 #'
 #' `lavaanStartsY()` Wrapper function for `run_starts_mplus()`. Produces lavaan
 #' code for the univariate STARTS model (for variabes named Y). 
@@ -1200,6 +1205,9 @@ lavaanStartsX <- function(waves,
 #'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param limits Logical value indicating whether to limit variances and
 #'   correlations to valid values.
 #' @returns Returns character vector of code that can be run using lavaan.
@@ -1208,12 +1216,14 @@ lavaanStartsY <- function(waves,
                           yWaves,
                           yIndicators = 1,
                           stationarity = TRUE,
+                          constrainCors = TRUE,
                           limits = TRUE) {
     buildLavaan(
         waves = waves,
         yWaves = yWaves,
         yIndicators = yIndicators,
         stationarity = stationarity,
+        constrainCors = constrainCors,
         state = TRUE,
         XVar = FALSE,
         limits = limits,
@@ -1222,7 +1232,7 @@ lavaanStartsY <- function(waves,
 
 
 
-#' Runs Bivariate Starts Model in Lavaan
+#' Builds Bivariate Starts Model in Lavaan
 #'
 #' `lavaanStarts2()` Wrapper function for `run_starts_mplus()`. Produces lavaan
 #' code for the standard bivariate STARTS model. 
@@ -1236,6 +1246,9 @@ lavaanStartsY <- function(waves,
 #'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param crossLag Logical value indicating whether to impose stationairty.
 #'   Defaults to TRUE.
 #' @param stateCor Logical value indicating whether to constrain correlations
@@ -1250,6 +1263,7 @@ lavaanStarts2 <- function(waves,
                           xIndicators = 1,
                           yIndicators = 1,
                           stationarity = TRUE,
+                          constrainCors = TRUE,
                           crossLag = TRUE,
                           stateCor = TRUE,
                           limits = TRUE) {
@@ -1260,7 +1274,7 @@ lavaanStarts2 <- function(waves,
         xIndicators = xIndicators,
         yIndicators = yIndicators,
         stationarity = stationarity,
-        state = TRUE,
+        constrainCors = constrainCors,
         crossLag = crossLag,
         stateCor = stateCor,
         limits = limits
@@ -1268,7 +1282,7 @@ lavaanStarts2 <- function(waves,
 }
 
 
-#' Runs RI-CLPM Model in Lavaan
+#' Builds RI-CLPM Model in Lavaan
 #'
 #' `lavaanRiclpm()` Wrapper function for `run_starts_mplus()`. Produces lavaan
 #' code for the standard Random-Intercept Cross-Lagged Panel Model. This is
@@ -1283,9 +1297,9 @@ lavaanStarts2 <- function(waves,
 #'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
-#' @param stateCor Logical value indicating whether to constrain correlations
-#'   between wave-specific state variances to be equal across waves. Defaults
-#'   to FALSE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param limits Logical value indicating whether to limit variances and
 #'   correlations to valid values.
 #' @returns Returns character vector of code that can be run using lavaan.
@@ -1295,9 +1309,9 @@ lavaanRiclpm <- function(waves,
                          yWaves = NULL,
                          xIndicators = xIndicators,
                          yIndicators = yIndicators,
-                         stateCor = FALSE,
-                         limits = TRUE,
-                         stationarity = TRUE) {
+                         stationarity = TRUE,
+                         constrainCors = TRUE,
+                         limits = TRUE) {
     buildLavaan(
         waves = waves,
         xWaves = xWaves,
@@ -1305,13 +1319,13 @@ lavaanRiclpm <- function(waves,
         xIndicators = xIndicators,
         yIndicators = yIndicators,
         stationarity = stationarity,
-        stateCor = stateCor,
+        constrainCors = constrainCors,
         state = FALSE,
         limits = limits
     )
 }
 
-#' Create Code for CLPM Model in Lavaan
+#' Builds CLPM Model in Lavaan
 #'
 #' `lavaanjclpm()` Wrapper function for `run_starts_mplus()`. Produces lavaan
 #' code for the standard cross-lagged panel model. This is equivalent to the
@@ -1326,6 +1340,9 @@ lavaanRiclpm <- function(waves,
 #'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param limits Logical value indicating whether to limit variances and
 #'   correlations to valid values.
 #' @returns Returns character vector of code that can be run using lavaan.
@@ -1336,6 +1353,7 @@ lavaanClpm <- function(waves,
                       xIndicators = 1,
                       yIndicators = 1,
                       stationarity = TRUE,
+                      constrainCors = TRUE,
                       limits = TRUE) {
     buildLavaan(
         waves = waves,
@@ -1345,12 +1363,14 @@ lavaanClpm <- function(waves,
         yIndicators = yIndicators,
         trait = FALSE,
         state = FALSE,
+        stateCor = FALSE,
         stationarity = stationarity,
+        constrainCors = constrainCors,
         limits = limits
     )
 }
 
-#' Create Code for ARTS Model in Lavaan
+#' Builds ARTS Model in Lavaan
 #'
 #' `lavaanArts()` Wrapper function for `run_starts_mplus()`. Produces lavaan
 #' code for the autoregressive trait, state (ARTS) model. This is equivalent
@@ -1365,6 +1385,9 @@ lavaanClpm <- function(waves,
 #'   Defaults to 1. 
 #' @param stationarity logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
 #' @param stateCor Logical value indicating whether to include correlations
 #'   between state components.
 #' @param limits Logical value indicating whether to limit variances and
@@ -1377,7 +1400,8 @@ lavaanArts <- function(waves,
                        xIndicators = 1,
                        yIndicators = 1,
                        stationarity = TRUE,
-                       stateCor = TRUE,
+                       constrainCors = TRUE,
+                       stateCor = FALSE,
                        limits = TRUE) {
     buildLavaan(
         waves = waves,
@@ -1386,14 +1410,80 @@ lavaanArts <- function(waves,
         xIndicators = xIndicators,
         yIndicators = yIndicators,
         stationarity = stationarity,
+        constrainCors = constrainCors,
         trait = FALSE,
         stateCor = stateCor,
         limits = limits
         )
 }
 
+summarizeLavaan <- function(modelStatement, fitObject) {
+    ## Calculate values for summary
+    parEst <- lavaan::parameterEstimates(fitObject)
+    stdEst <- lavaan::standardizedSolution(fitObject)
+    fit <- lavaan::fitMeasures(fitObject)
+    ## Variance Decomp
+    trait.x <- parEst[which(parEst$lhs=="ri_x" & parEst$rhs=="ri_x"), "est"]
+    trait.y <- parEst[which(parEst$lhs=="ri_y" & parEst$rhs=="ri_y"), "est"]
+    ar.x <- parEst[which(parEst$lhs=="arx1" & parEst$rhs=="arx1"), "est"]
+    ar.y <- parEst[which(parEst$lhs=="ary1" & parEst$rhs=="ary1"), "est"]
+    state.x <- parEst[which(parEst$lhs=="sx1" & parEst$rhs=="sx1"), "est"]
+    state.y <- parEst[which(parEst$lhs=="sy1" & parEst$rhs=="sy1"), "est"]
+    trait.x.p <- trait.x/(sum(trait.x, ar.x, state.x))
+    trait.y.p <- trait.y/(sum(trait.y, ar.y, state.y))
+    ar.x.p <- ar.x/(sum(trait.x, ar.x, state.x))
+    ar.y.p <- ar.y/(sum(trait.y, ar.y, state.y))
+    state.x.p <- state.x/(sum(trait.x, ar.x, state.x))
+    state.y.p <- state.y/(sum(trait.y, ar.y, state.y))
+    ## Correlations
+    trait.cor <- stdEst[which(stdEst$lhs=="ri_x" & stdEst$rhs=="ri_y"), "est.std"]
+    ar.cor <- stdEst[which(stdEst$lhs=="arx1" & stdEst$rhs=="ary1"), "est.std"]
+    state.cor <- stdEst[which(stdEst$lhs=="sx1" & stdEst$rhs=="sy1"), "est.std"]
+    ## Stability
+    x.stab <- parEst[which(parEst$lhs=="arx2" & parEst$rhs=="arx1"), "est"]
+    y.stab <- parEst[which(parEst$lhs=="ary2" & parEst$rhs=="ary1"), "est"]
+    ## Cross-lags
+    yOnX <- parEst[which(parEst$lhs=="ary2" & parEst$rhs=="arx1"), "est"]
+    xOnY <- parEst[which(parEst$lhs=="arx2" & parEst$rhs=="ary1"), "est"]
+    ## Fit
+    chi2 <- fit[["chisq"]]
+    chi2df <- fit[["df"]]
+    chi2p <- fit[["pvalue"]]
+    cfi <- fit[["cfi"]]
+    tli <- fit[["tli"]]
+    srmr <- fit[["srmr"]]
+    rmsea <- fit[["rmsea"]]
+    outputList <- list(
+        modelStatement = modelStatement,
+        lavaanFit = fitObject,
+        trait.x = trait.x.p,
+        trait.y = trait.y.p,
+        ar.x = ar.x.p,
+        ar.y = ar.y.p,
+        state.x = state.x.p,
+        state.y = state.y.p,
+        trait.cor = trait.cor,
+        ar.cor = ar.cor,
+        state.cor = state.cor,
+        x.stab = x.stab,
+        y.stab = y.stab,
+        yOnX = yOnX,
+        xOnY = xOnY,
+        chi2 = chi2,
+        chi2df = chi2df,
+        chi2p = chi2p,
+        cfi = cfi,
+        tli = tli,
+        srmr = srmr,
+        rmsea = rmsea)
+    class(outputList) <- "pclObject"
+    return(outputList)
+}
 
-#' Build and Run Lavaan Code
+
+
+
+#' Build and Run Lavaan Code for STARTS Model
 #'
 #' `run_starts_lavaan()` produces and runs lavaan code for variations of the
 #' general Stable Trait, Autoregressive Trait, State Model. Univariate and
@@ -1464,67 +1554,240 @@ run_starts_lavaan <- function(data,
                                constrainCors = constrainCors,
                                limits = limits)
     startsFit <- lavaan::lavaan(startsModel, data, ...)
-    ## Calculate values for summary
-    parEst <- lavaan::parameterEstimates(startsFit)
-    stdEst <- lavaan::standardizedSolution(startsFit)
-    fit <- lavaan::fitMeasures(startsFit)
-    ## Variance Decomp
-    trait.x <- parEst[which(parEst$lhs=="ri_x" & parEst$rhs=="ri_x"), "est"]
-    trait.y <- parEst[which(parEst$lhs=="ri_y" & parEst$rhs=="ri_y"), "est"]
-    ar.x <- parEst[which(parEst$lhs=="arx1" & parEst$rhs=="arx1"), "est"]
-    ar.y <- parEst[which(parEst$lhs=="ary1" & parEst$rhs=="ary1"), "est"]
-    state.x <- parEst[which(parEst$lhs=="sx1" & parEst$rhs=="sx1"), "est"]
-    state.y <- parEst[which(parEst$lhs=="sy1" & parEst$rhs=="sy1"), "est"]
-    trait.x.p <- trait.x/(sum(trait.x, ar.x, state.x))
-    trait.y.p <- trait.y/(sum(trait.y, ar.y, state.y))
-    ar.x.p <- ar.x/(sum(trait.x, ar.x, state.x))
-    ar.y.p <- ar.y/(sum(trait.y, ar.y, state.y))
-    state.x.p <- state.x/(sum(trait.x, ar.x, state.x))
-    state.y.p <- state.y/(sum(trait.y, ar.y, state.y))
-    ## Correlations
-    trait.cor <- stdEst[which(stdEst$lhs=="ri_x" & stdEst$rhs=="ri_y"), "est.std"]
-    ar.cor <- stdEst[which(stdEst$lhs=="arx1" & stdEst$rhs=="ary1"), "est.std"]
-    state.cor <- stdEst[which(stdEst$lhs=="sx1" & stdEst$rhs=="sy1"), "est.std"]
-    ## Stability
-    x.stab <- parEst[which(parEst$lhs=="arx2" & parEst$rhs=="arx1"), "est"]
-    y.stab <- parEst[which(parEst$lhs=="ary2" & parEst$rhs=="ary1"), "est"]
-    ## Cross-lags
-    yOnX <- parEst[which(parEst$lhs=="ary2" & parEst$rhs=="arx1"), "est"]
-    xOnY <- parEst[which(parEst$lhs=="arx2" & parEst$rhs=="ary1"), "est"]
-    ## Fit
-    chi2 <- fit[["chisq"]]
-    chi2df <- fit[["df"]]
-    chi2p <- fit[["pvalue"]]
-    cfi <- fit[["cfi"]]
-    tli <- fit[["tli"]]
-    srmr <- fit[["srmr"]]
-    rmsea <- fit[["rmsea"]]
-    outputList <- list(
-        modelStatement = startsModel,
-        lavaanFit = startsFit,
-        trait.x = trait.x.p,
-        trait.y = trait.y.p,
-        ar.x = ar.x.p,
-        ar.y = ar.y.p,
-        state.x = state.x.p,
-        state.y = state.y.p,
-        trait.cor = trait.cor,
-        ar.cor = ar.cor,
-        state.cor = state.cor,
-        x.stab = x.stab,
-        y.stab = y.stab,
-        yOnX = yOnX,
-        xOnY = xOnY,
-        chi2 = chi2,
-        chi2df = chi2df,
-        chi2p = chi2p,
-        cfi = cfi,
-        tli = tli,
-        srmr = srmr,
-        rmsea = rmsea)
-    class(outputList) <- "pclObject"
+    outputList <- summarizeLavaan(startsModel, startsFit)
+    summary(outputList)
     return(outputList)
 }
+
+
+#' Build and Run Lavaan Code for RI-CLPM Model
+#'
+#' `run_riclpm_lavaan()` produces and runs lavaan code for the random-intercept
+#' cross-lagged panel model. 
+#'
+#' @param data Dataframe with all variables.
+#' @param waves Numeric value indicating total number of waves.
+#' @param xWaves Vector of actual waves for X (omit if same as waves).
+#' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1. 
+#' @param stationarity logical value indicating whether to impose stationarity.
+#'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
+#' @param limits Logical value indicating whether to constrain variances and
+#'   correlations to possible values.
+#' @param ... Additional arguments to the `lavaan()` command.
+#' @returns Character vector representing the Mplus code for the model statement.
+#' @export
+run_riclpm_lavaan <- function(data,
+                              waves,
+                              xWaves = NULL,
+                              yWaves = NULL,
+                              xIndicators = 1,
+                              yIndicators = 1,
+                              stationarity = TRUE,
+                              constrainCors = TRUE,
+                              limits = TRUE,
+                              ...) {
+    startsModel <- lavaanRiclpm(waves = waves,
+                                xWaves = xWaves,
+                                yWaves = yWaves,
+                                xIndicators = xIndicators,
+                                yIndicators = yIndicators,
+                                stationarity = stationarity,
+                                constrainCors = constrainCors,
+                                limits = limits)
+    startsFit <- lavaan::lavaan(startsModel, data, ...)
+    outputList <- summarizeLavaan(startsModel, startsFit)
+    summary(outputList)
+    return(outputList)
+}
+
+#' Build and Run Lavaan Code for CLPM Model
+#'
+#' `run_clpm_lavaan()` produces and runs lavaan code for the standard lag-1
+#' cross-lagged panel model.
+#'
+#' @param data Dataframe with all variables.
+#' @param waves Numeric value indicating total number of waves.
+#' @param xWaves Vector of actual waves for X (omit if same as waves).
+#' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1. 
+#' @param stationarity logical value indicating whether to impose stationarity.
+#'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
+#' @param limits Logical value indicating whether to constrain variances and
+#'   correlations to possible values.
+#' @param ... Additional arguments to the `lavaan()` command.
+#' @returns Character vector representing the Mplus code for the model statement.
+#' @export
+run_clpm_lavaan <- function(data,
+                              waves,
+                              xWaves = NULL,
+                              yWaves = NULL,
+                              xIndicators = 1,
+                              yIndicators = 1,
+                              stationarity = TRUE,
+                              constrainCors = TRUE,
+                              limits = TRUE,
+                              ...) {
+    startsModel <- lavaanClpm(waves = waves,
+                              xWaves = xWaves,
+                              yWaves = yWaves,
+                              xIndicators = xIndicators,
+                              yIndicators = yIndicators,
+                              stationarity = stationarity,
+                              constrainCors = constrainCors,
+                              limits = limits)
+    startsFit <- lavaan::lavaan(startsModel, data, ...)
+    outputList <- summarizeLavaan(startsModel, startsFit)
+    summary(outputList)
+    return(outputList)
+}
+
+#' Build and Run Lavaan Code for ARTS Model
+#'
+#' `run_arts_lavaan()` produces and runs lavaan code for the ARTS model, which
+#' includes autoregressive and state variance, but no trait variance. This is
+#' equivalent to a 'factor CLPM'.
+#'
+#' @param data Dataframe with all variables.
+#' @param waves Numeric value indicating total number of waves.
+#' @param xWaves Vector of actual waves for X (omit if same as waves).
+#' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1. 
+#' @param stateCor logical value indicating whether to include state
+#'   correlations. Defaults to TRUE.
+#' @param stationarity logical value indicating whether to impose stationarity.
+#'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
+#' @param limits Logical value indicating whether to constrain variances and
+#'   correlations to possible values.
+#' @param ... Additional arguments to the `lavaan()` command.
+#' @returns Character vector representing the Mplus code for the model statement.
+#' @export
+run_arts_lavaan <- function(data,
+                            waves,
+                            xWaves = NULL,
+                            yWaves = NULL,
+                            xIndicators = 1,
+                            yIndicators = 1,
+                            stateCor = FALSE,
+                            stationarity = TRUE,
+                            constrainCors = TRUE,
+                            limits = TRUE,
+                            ...) {
+    startsModel <- lavaanArts(waves = waves,
+                              xWaves = xWaves,
+                              yWaves = yWaves,
+                              xIndicators = xIndicators,
+                              yIndicators = yIndicators,
+                              stateCor = stateCor,
+                              stationarity = stationarity,
+                              constrainCors = constrainCors,
+                              limits = limits)
+    startsFit <- lavaan::lavaan(startsModel, data, ...)
+    outputList <- summarizeLavaan(startsModel, startsFit)
+    summary(outputList)
+    return(outputList)
+}
+
+
+#' Build and Run Lavaan Code for Univariate STARTS Model
+#'
+#' `run_startsX_lavaan()` produces and runs lavaan code for the univariate
+#' STARTS models (for X variables). 
+#'
+#' @param data Dataframe with all variables.
+#' @param waves Numeric value indicating total number of waves.
+#' @param xWaves Vector of actual waves for X (omit if same as waves).
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
+#' @param stationarity logical value indicating whether to impose stationarity.
+#'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
+#' @param limits Logical value indicating whether to constrain variances and
+#'   correlations to possible values.
+#' @param ... Additional arguments to the `lavaan()` command.
+#' @returns Character vector representing the Mplus code for the model statement.
+#' @export
+run_startsX_lavaan <- function(data,
+                              waves,
+                              xWaves = NULL,
+                              xIndicators = 1,
+                              stationarity = TRUE,
+                              constrainCors = TRUE,
+                              limits = TRUE,
+                              ...) {
+    startsModel <- lavaanStartsX(waves = waves,
+                                 xWaves = xWaves,
+                                 xIndicators = xIndicators,
+                                 stationarity = stationarity,
+                                 constrainCors = constrainCors,
+                                 limits = limits)
+    startsFit <- lavaan::lavaan(startsModel, data, ...)
+    outputList <- summarizeLavaan(startsModel, startsFit)
+    summary(outputList)
+    return(outputList)
+}
+
+
+#' Build and Run Lavaan Code for Univariate STARTS Model
+#'
+#' `run_startsY_lavaan()` produces and runs lavaan code for the univariate
+#' STARTS models (for Y variables). 
+#'
+#' @param data Dataframe with all variables.
+#' @param waves Numeric value indicating total number of waves.
+#' @param yWaves Vector of actual waves for Y (omit if same as waves).
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1.
+#' @param stationarity logical value indicating whether to impose stationarity.
+#'   Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
+#' @param limits Logical value indicating whether to constrain variances and
+#'   correlations to possible values.
+#' @param ... Additional arguments to the `lavaan()` command.
+#' @returns Character vector representing the Mplus code for the model statement.
+#' @export
+run_startsY_lavaan <- function(data,
+                              waves,
+                              yWaves = NULL,
+                              yIndicators = 1,
+                              stationarity = TRUE,
+                              constrainCors = TRUE,
+                              limits = TRUE,
+                              ...) {
+    startsModel <- lavaanStartsY(waves = waves,
+                                 yWaves = yWaves,
+                                 yIndicators = yIndicators,
+                                 stationarity = stationarity,
+                                 constrainCors = constrainCors,
+                                 limits = limits)
+    startsFit <- lavaan::lavaan(startsModel, data, ...)
+    outputList <- summarizeLavaan(startsModel, startsFit)
+    summary(outputList)
+    return(outputList)
+}
+
 
 
 #' Summarizes results from `run_starts_lavaan()`
@@ -1537,7 +1800,7 @@ summary.pclObject <- function(object, ...) {
     cat("Model Summary: \n")
     cat("Model: Chi2 (df = ",
         sprintf("%i", object$chi2df), ") = ",
-        sprintf("%.3f", object$chi2), "p = ",
+        sprintf("%.3f", object$chi2), ", p = ",
         sprintf("%.3f", object$chi2p), "\n")
     cat("\n")
     cat("Fit Indices:")
@@ -1546,7 +1809,7 @@ summary.pclObject <- function(object, ...) {
         sprintf("%.3f", object$cfi),
         ", TLI = ",
         sprintf("%.3f", object$tli),
-        "SRMR = ",
+        ", SRMR = ",
         sprintf("%.3f", object$srmr), "\n")
     cat("RMSEA = ",
         sprintf("%.3f", object$rmsea),

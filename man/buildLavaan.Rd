@@ -2,7 +2,7 @@
 % Please edit documentation in R/buildModel.R
 \name{buildLavaan}
 \alias{buildLavaan}
-\title{Build Lavaan Code}
+\title{Build Lavaan Code for STARTS Model}
 \usage{
 buildLavaan(
   waves,

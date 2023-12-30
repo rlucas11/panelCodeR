@@ -2,7 +2,7 @@
 % Please edit documentation in R/buildModel.R
 \name{lavaanClpm}
 \alias{lavaanClpm}
-\title{Create Code for CLPM Model in Lavaan}
+\title{Builds CLPM Model in Lavaan}
 \usage{
 lavaanClpm(
   waves,
@@ -11,6 +11,7 @@ lavaanClpm(
   xIndicators = 1,
   yIndicators = 1,
   stationarity = TRUE,
+  constrainCors = TRUE,
   limits = TRUE
 )
 }
@@ -29,6 +30,10 @@ Defaults to 1.}
 
 \item{stationarity}{logical value indicating whether to impose stationarity.
 Defaults to TRUE.}
+
+\item{constrainCors}{logical value indicating whether to constrain
+correlations between same indicator at different waves (when there are more
+than one indicator.}
 
 \item{limits}{Logical value indicating whether to limit variances and
 correlations to valid values.}

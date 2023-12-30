@@ -2,7 +2,7 @@
 % Please edit documentation in R/buildModel.R
 \name{lavaanArts}
 \alias{lavaanArts}
-\title{Create Code for ARTS Model in Lavaan}
+\title{Builds ARTS Model in Lavaan}
 \usage{
 lavaanArts(
   waves,
@@ -11,7 +11,8 @@ lavaanArts(
   xIndicators = 1,
   yIndicators = 1,
   stationarity = TRUE,
-  stateCor = TRUE,
+  constrainCors = TRUE,
+  stateCor = FALSE,
   limits = TRUE
 )
 }
@@ -30,6 +31,10 @@ Defaults to 1.}
 
 \item{stationarity}{logical value indicating whether to impose stationarity.
 Defaults to TRUE.}
+
+\item{constrainCors}{logical value indicating whether to constrain
+correlations between same indicator at different waves (when there are more
+than one indicator.}
 
 \item{stateCor}{Logical value indicating whether to include correlations
 between state components.}

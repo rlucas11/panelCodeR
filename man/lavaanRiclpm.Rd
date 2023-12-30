@@ -2,7 +2,7 @@
 % Please edit documentation in R/buildModel.R
 \name{lavaanRiclpm}
 \alias{lavaanRiclpm}
-\title{Runs RI-CLPM Model in Lavaan}
+\title{Builds RI-CLPM Model in Lavaan}
 \usage{
 lavaanRiclpm(
   waves,
@@ -10,9 +10,9 @@ lavaanRiclpm(
   yWaves = NULL,
   xIndicators = xIndicators,
   yIndicators = yIndicators,
-  stateCor = FALSE,
-  limits = TRUE,
-  stationarity = TRUE
+  stationarity = TRUE,
+  constrainCors = TRUE,
+  limits = TRUE
 )
 }
 \arguments{
@@ -28,15 +28,15 @@ Defaults to 1.}
 \item{yIndicators}{Numeric value indicatoring number of indicators for Y.
 Defaults to 1.}
 
-\item{stateCor}{Logical value indicating whether to constrain correlations
-between wave-specific state variances to be equal across waves. Defaults
-to FALSE.}
+\item{stationarity}{logical value indicating whether to impose stationarity.
+Defaults to TRUE.}
+
+\item{constrainCors}{logical value indicating whether to constrain
+correlations between same indicator at different waves (when there are more
+than one indicator.}
 
 \item{limits}{Logical value indicating whether to limit variances and
 correlations to valid values.}
-
-\item{stationarity}{logical value indicating whether to impose stationarity.
-Defaults to TRUE.}
 }
 \value{
 Returns character vector of code that can be run using lavaan.

@@ -16,12 +16,17 @@ data <- gen_starts(
     y = 1, # AR variance for Y
     stab_x = .5, # Stability of X
     stab_y = .5, # Stability of Y
-    yx = 0, # Cross lag (Y regressed on X)
-    xy = 0, # Cross lag (X regressed on Y)
+    yx = .2, # Cross lag (Y regressed on X)
+    xy = .1, # Cross lag (X regressed on Y)
     cor_xy = .5, # Correlation between X and Y (as correlation)
     xr = 1, # Measurement error for X
     yr = 1 # Measurement error for Y
 )
+
+
+testL <- run_starts_lavaan(data,5)
+
+testL <- run_startsY_lavaan(data[1:1000,],5)
 
 test <- run_dpm_mplus(data,
                       10
@@ -175,9 +180,9 @@ cat(startsModelX)
 startsFitX <- lavaan(startsModelX, data)
 summary(startsFitX)
 
-startsModelY <- lavaanStartsY(10, 1:10)
+startsModelY <- lavaanStartsY(5, 1:5)
 cat(startsModelY)
-startsFitY <- lavaan(startsModelY, data)
+startsFitY <- lavaan(startsModelY, data[1:1000,])
 summary(startsFitY)
 fitMeasures(startsFitY)
 
