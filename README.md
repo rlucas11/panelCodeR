@@ -9,6 +9,8 @@ This R package generates lavaan and mplus code for models for analyzing panel da
 
 ## Updates!
 
+12/29/2023: Wrote new functions and summary method for lavaan code. Now you can use `run_starts_lavaan()` and related wrapper functions to build and run code for lavaan. Also prints nice summary of most important results. 
+
 12/27/2023: Implemented latent occasion variables with multiple indicators for lavaan. I also added some utilities for testing these models. The function `gen_starts()` generates data based on the STARTS model and `addIndicators()` can take that generated data and add indicators for each variable at each wave. 
 
 12/24/2023: The code to compare univariate models in Mplus has been added to the package.
@@ -36,6 +38,9 @@ devtools::install_github("rlucas11/panelCodeR")
 
 The code that this generates is like any other lavaan or mplus model. However, it assumes that you have two sets of variables, named x1 through xw and y1 through yw, where 'w' is the number of waves. It is possible to have missing waves, in which case, the code generator creates phantom variables for missing waves. This is often only possible if stationarity is imposed. To specify that waves are missing, use `xWaves` and/or `yWaves` to indicate which waves exist (e.g., `xWaves = c(1:5, 7:10)`). If you have multiple indicators per wave, indicators should be labeled using letters starting from 'a' (e.g., "x1a", "x1b", and "x1c" for three indicators of the variable at Wave 1). 
 
+## Commands
+
+For both Lavaan and Mplus, there are functions just to build the model code or to build and run the code. It is often easiest to do the latter, but the former functions are especially useful if you want to build and then modify code. 
 
 ## Lavaan Commands
 
@@ -73,7 +78,7 @@ For each of these, the default is to set `stationarity = TRUE` which constrains 
 
 ### Running the models
 
-The code generates the lavaan model code, but you still have to run the model. My recommendation is to generate the code using this script, save it to a model object, check the code, and then run it. Because the lavaan `sem()` command has some defaults that don't work with these models (e.g., allowing all latent variables to correlate), you should usually use the `lavaan()` command instead (or specify options when running the command). Note that you can always generate the lavaan code and then modify it if the script doesn't handle certain things you want to do. So you might use the following code:
+The code generates the lavaan model code, but you still have to run the model. There are two options: Using the wrapper functions to run the code or generating the code using this script, saving it to a model object, checking the code, and then running it. Because the lavaan `sem()` command has some defaults that don't work with these models (e.g., allowing all latent variables to correlate), you should usually use the `lavaan()` command instead (or specify options when running the command). So you might use the following code:
 
 ```r
 startsModel <- lavaanStarts2(10) ## Generate the lavaan model
@@ -81,6 +86,41 @@ cat(startsModel) ## Check the model code
 startsFit <- lavaan(startsModel, data) ## Run lavaan on the model
 summary(startsFit) ## Check your results!
 ```
+
+### Commands to run the models
+
+The basic command to simultaneously build and run Lavaan code is `run_starts_lavaan()`. It has the same options as `buildLavaan()`, but with two additional options: One to specify the dataframe to use and one to pass any additional options on to the `lavaan()` command (such as different estimators or specifying how to handle missing data). So the syntax for `run_starts_lavaan()` is:
+
+```r
+run_starts_lavaan <- function(data,
+                              waves,
+                              XVar = TRUE,
+                              YVar = TRUE,
+                              xWaves = NULL,
+                              yWaves = NULL,
+                              xIndicators = 1,
+                              yIndicators = 1,
+                              trait = TRUE,
+                              AR = TRUE,
+                              state = TRUE,
+                              crossLag = TRUE,
+                              stateCor = FALSE,
+                              stationarity = TRUE,
+                              constrainCors = TRUE,
+                              limits = TRUE,
+                              ...)
+
+```
+
+The wrapper functions available are:
+
+- `run_startsXlavaan()`
+- `run_startsYlavaan()`
+- `run_riclpm_lavaan()`
+- `run_clpm_lavaan()`
+- `run_arts_lavaan()`
+
+I may add additional wrapper functions in the future.
 
 ## Mplus commands
 
