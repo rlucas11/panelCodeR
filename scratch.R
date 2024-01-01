@@ -331,3 +331,7 @@ cat(dpmModel)
 
 dpmFit <- lavaan(dpmModel, data)
 summary(dpmFit)                             
+
+
+testDpm <- run_dpm_lavaan(data,
+                          waves = 5)

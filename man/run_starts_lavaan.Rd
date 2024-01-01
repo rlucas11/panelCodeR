@@ -71,7 +71,8 @@ correlations to possible values.}
 \item{...}{Additional arguments to the \code{lavaan()} command.}
 }
 \value{
-Character vector representing the Mplus code for the model statement.
+Returns pclObject, which includes the model statement, the lavaan
+object, plus extracted data for printing useful summaries.
 }
 \description{
 \code{run_starts_lavaan()} produces and runs lavaan code for variations of the

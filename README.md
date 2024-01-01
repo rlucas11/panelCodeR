@@ -239,28 +239,27 @@ There is also one more function that can be used to compare a set of nested mode
 
 ### Dynamic Panel Models
 
-> [!NOTE]
-> This only works for Mplus output.
-
-You can also create code for and run dynamic panel models (this is only implemented for Mplus). Because of some of the differences between the DPM and the STARTS-based models, certain options are not available. For instance, it does not make sense to run a DPM without a stable trait (this would just be an ART model that can be specified using the original code). In addition, most implementations of the DPM do not impose strict stationarity, so I removed that option here. This makes it difficult to use phantom variables, because the model is typically not identified with missing waves and no stationarity. Most DPM models do not include state variance, so that is the default; but I think it should be possible to do add this component. 
+You can also create code for and run dynamic panel models. Because of some of the differences between the DPM and the STARTS-based models, certain options are not available. For instance, it does not make sense to run a DPM without a stable trait (this would just be an ART model that can be specified using the original code). In addition, most implementations of the DPM do not impose strict stationarity, so I removed that option here (though stabilities and cross-lagged paths are constrained to be equal across waves; it is only the variance that is freed). This makes it difficult to use phantom variables because the model is typically not identified with missing waves and no stationarity. Most DPM models do not include state variance, so that component is not included. 
 
 The options for the DPM are:
 ```R
 run_dpm_mplus <- function(data,
                           waves,
-                          xIndicators = 1,
-                          yIndicators = 1,
                           XVar = TRUE,
                           YVar = TRUE,
+                          xIndicators = 1,
+                          yIndicators = 1,
                           crossLag = TRUE,
-                          state = FALSE,
-                          stateCor = FALSE,
+                          constrainCors = TRUE,
                           limits = TRUE,
                           dir = "mplus",
                           title = "dpm",
                           analysis = "MODEL=NOCOVARIANCES;\nCOVERAGE=.001;",
                           output = "stdyx; \n  cinterval; \n")
 ```
+
+For lavaan, the commands are `buildLavaanDpm()` or `run_dpm_lavaan()` (with similar options to the above; see R documentation for details).
+
 
 ## Utilities
 

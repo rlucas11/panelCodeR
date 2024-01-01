@@ -935,3 +935,164 @@ buildLavaanDpm <- function(waves,
     return(modelCode)
 }
 
+#' Build and Run Lavaan Code for Dynamic Panel Model
+#'
+#' `buildLavaanDpm()` produces lavaan code for variations of the Dynamic Panel
+#' Model. Univariate and bivariate versions can be specified. 
+#'
+#' @param data Dataframe with all variables
+#' @param waves Numeric value indicating total number of waves.
+#' @param XVar Logical. Include X variable.
+#' @param YVar logical. Include Y variable.
+#' @param xIndicators Numeric value indicatoring number of indicators for X.
+#'   Defaults to 1.
+#' @param yIndicators Numeric value indicatoring number of indicators for Y.
+#'   Defaults to 1. 
+#' @param crossLag logical value indicating whether to include cross-lagged
+#'   paths. Defaults to TRUE.
+#' @param arCor Logical value indicating whether to include autoregresive trait
+#'   correlations. Defaults to TRUE.
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator.
+#' @param limits Logical value indicating whether to constrain variances and
+#'   correlations to possible values.
+#' @param ... Additional arguments to the `lavaan()` command.
+#' @returns Returns pcldObject, which includes the model statement, the lavaan
+#'   object, plus extracted data for printing useful summaries.
+#' @export
+run_dpm_lavaan <- function(data,
+                           waves,
+                           XVar = TRUE,
+                           YVar = TRUE,
+                           xIndicators = 1,
+                           yIndicators = 1,
+                           crossLag = TRUE,
+                           arCor = TRUE,
+                           constrainCors = TRUE,
+                           limits = TRUE,
+                           ...) {
+    dpmModel <- buildLavaanDpm(waves = waves,
+                               XVar = XVar,
+                               YVar = YVar,
+                               xIndicators = xIndicators,
+                               yIndicators = yIndicators,
+                               crossLag = crossLag,
+                               arCor = arCor,
+                               constrainCors = constrainCors,
+                               limits = TRUE)
+    dpmFit <- lavaan::lavaan(dpmModel, data, ...)
+    outputList <- summarizeLavaanD(dpmModel, dpmFit)
+    summary(outputList)
+    return(outputList)
+}
+
+
+
+summarizeLavaanD <- function(modelStatement, fitObject) {
+    ## Calculate values for summary
+    parEst <- lavaan::parameterEstimates(fitObject)
+    stdEst <- lavaan::standardizedSolution(fitObject)
+    fit <- lavaan::fitMeasures(fitObject)
+    ## Variance Decomp
+    trait.x <- parEst[which(parEst$lhs=="ri_x" & parEst$rhs=="ri_x"), "est"]
+    trait.y <- parEst[which(parEst$lhs=="ri_y" & parEst$rhs=="ri_y"), "est"]
+    ar.x <- parEst[which(parEst$lhs=="arx1" & parEst$rhs=="arx1"), "est"]
+    ar.y <- parEst[which(parEst$lhs=="ary1" & parEst$rhs=="ary1"), "est"]
+    trait.x.p <- trait.x/(sum(trait.x, ar.x))
+    trait.y.p <- trait.y/(sum(trait.y, ar.y))
+    ar.x.p <- ar.x/(sum(trait.x, ar.x))
+    ar.y.p <- ar.y/(sum(trait.y, ar.y))
+    ## Correlations
+    trait.cor <- stdEst[which(stdEst$lhs=="ri_x" & stdEst$rhs=="ri_y"), "est.std"]
+    ar.cor <- stdEst[which(stdEst$lhs=="arx1" & stdEst$rhs=="ary1"), "est.std"]
+    ## Stability
+    x.stab <- parEst[which(parEst$lhs=="arx2" & parEst$rhs=="arx1"), "est"]
+    y.stab <- parEst[which(parEst$lhs=="ary2" & parEst$rhs=="ary1"), "est"]
+    ## Cross-lags
+    yOnX <- parEst[which(parEst$lhs=="ary2" & parEst$rhs=="arx1"), "est"]
+    xOnY <- parEst[which(parEst$lhs=="arx2" & parEst$rhs=="ary1"), "est"]
+    ## Fit
+    chi2 <- fit[["chisq"]]
+    chi2df <- fit[["df"]]
+    chi2p <- fit[["pvalue"]]
+    cfi <- fit[["cfi"]]
+    tli <- fit[["tli"]]
+    srmr <- fit[["srmr"]]
+    rmsea <- fit[["rmsea"]]
+    outputList <- list(
+        modelStatement = modelStatement,
+        lavaanFit = fitObject,
+        trait.x = trait.x.p,
+        trait.y = trait.y.p,
+        ar.x = ar.x.p,
+        ar.y = ar.y.p,
+        trait.cor = trait.cor,
+        ar.cor = ar.cor,
+        x.stab = x.stab,
+        y.stab = y.stab,
+        yOnX = yOnX,
+        xOnY = xOnY,
+        chi2 = chi2,
+        chi2df = chi2df,
+        chi2p = chi2p,
+        cfi = cfi,
+        tli = tli,
+        srmr = srmr,
+        rmsea = rmsea)
+    class(outputList) <- "pcldObject"
+    return(outputList)
+}
+
+#' Summarizes results from `run_dpm_lavaan()`
+#'
+#' @param object Results from `run_dpm_lavaan()`.
+#' @param ... Additional arguments to `summary()`.
+#'
+#' @export
+summary.pcldObject <- function(object, ...) {
+    cat("Model Summary: \n")
+    cat("Model: Chi2 (df = ",
+        sprintf("%i", object$chi2df), ") = ",
+        sprintf("%.3f", object$chi2), ", p = ",
+        sprintf("%.3f", object$chi2p), "\n")
+    cat("\n")
+    cat("Fit Indices:")
+    cat("\n")
+    cat("CFI = ",
+        sprintf("%.3f", object$cfi),
+        ", TLI = ",
+        sprintf("%.3f", object$tli),
+        ", SRMR = ",
+        sprintf("%.3f", object$srmr), "\n")
+    cat("RMSEA = ",
+        sprintf("%.3f", object$rmsea),
+        "\n")
+    cat("\n")
+    cat("Variance Decomposition: \n")
+    cat("\n")
+    cat("X Variable: \n")
+    cat("Trait: ",
+        sprintf("%.3f", object$trait.x),
+        ", Autoregressive: ",
+        sprintf("%.3f", object$ar.x),
+        "\n")
+    cat("Y Variable: \n")
+    cat("Trait: ",
+        sprintf("%.3f", object$trait.y),
+        ", Autoregressive: ",
+        sprintf("%.3f", object$ar.y), "\n")
+    cat("\n")
+    cat("Stability: \n")
+    cat("X: ", sprintf("%.3f", object$x.stab), "\n")
+    cat("Y: ", sprintf("%.3f", object$y.stab), "\n")
+    cat("\n")
+    cat("Cross-Lag Paths: \n")
+    cat("Y predicted from X: ", sprintf("%.3f", object$yOnX) ,"\n")
+    cat("X predicted from Y: ", sprintf("%.3f", object$xOnY),"\n")
+    cat("Correlations: \n")
+    cat("\n")
+    cat("Stable Trait: ", sprintf("%.3f", object$trait.cor), "\n")
+    cat("Autoregressive Trait: ", sprintf("%.3f", object$ar.cor), "\n")
+    }
+

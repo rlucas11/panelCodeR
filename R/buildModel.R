@@ -1519,7 +1519,8 @@ summarizeLavaan <- function(modelStatement, fitObject) {
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values.
 #' @param ... Additional arguments to the `lavaan()` command.
-#' @returns Character vector representing the Mplus code for the model statement.
+#' @returns Returns pclObject, which includes the model statement, the lavaan
+#'   object, plus extracted data for printing useful summaries.
 #' @export
 run_starts_lavaan <- function(data,
                               waves,

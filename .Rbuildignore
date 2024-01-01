@@ -4,3 +4,4 @@
 ^testData\.csv$
 ^\.#scratch\.R$
 ^images$
+^testTidySem\.R$
