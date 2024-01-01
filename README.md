@@ -5,7 +5,7 @@ This R package generates lavaan and mplus code for models for analyzing panel da
 ![Diagram of STARTS Model](images/startsTransparent.png)
 
 > [!CAUTION]
-> This package is under development and changes frequently. **You should check the model code that is generated to make sure it is what you want!**
+> This package is under development and changes frequently. It is likely that the naming of functions will change substantially in future versions!  **You should also check the model code that is generated to make sure it is what you want!**
 
 ## Updates!
 
