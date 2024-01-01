@@ -34,9 +34,8 @@ test <- run_dpm_mplus(data,
 
 
 
-test <- buildMplus(data,
-                   waves = 5,
-                   xWaves = c(1,2,4,5)
+test <- buildMplus(
+                   waves = 5
                    )
 
 test <- run_starts_mplus(data,
