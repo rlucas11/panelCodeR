@@ -4,7 +4,8 @@
 
 library(tidyverse)
 library(lavaan)
-library(panelCodeR)
+load_all()
+#library(panelCodeR)
 
 data <- gen_starts(
     n = 10000, # N to generate
@@ -146,15 +147,15 @@ summary(test)
 ## lavaan
 ################################################################################
 
-testLavaan <- run_starts_lavaan(data = data, waves = 5, state = FALSE)
+testLavaan <- run_starts_lavaan(data = data, waves = 10)
 
 ## Bivariate STARTS
 
 startsModel <- buildLavaan(waves = 5,
-                           xWaves = 1:5,
+                           xWaves = c(1,2,4,5),
                            yWaves = 1:5,
-                           xIndicators = 3,
-                           yIndicators = 3,
+                           xIndicators = 1,
+                           yIndicators = 1,
                            stateCor = TRUE
                            )
 cat(startsModel)
@@ -334,3 +335,121 @@ summary(dpmFit)
 
 testDpm <- run_dpm_lavaan(data,
                           waves = 5)
+
+
+################################################################################
+## rewrite
+################################################################################
+
+startsModel <- buildLavaan(waves = 5)
+oldParTable <- lavaanify(startsModel)
+
+## Create data frame with correctly labeled variables
+data2 <- data
+names(data2) <- paste(rep(c("X", "Y"), each = 10),
+                      rep(1:10, 2),
+                      sep="_")
+info <- getInfo(data2[1:1000, c(1:6, 11:16)])
+
+
+for (i in names(data2)) {
+    data2 <- addIndicators(data2, i, 3)
+}
+
+dataI <- data2[,21:80]
+data2 <- data2[,1:20]
+
+
+
+## Testing
+infoI <- getInfo(data3)
+info <- getInfo(data2)
+
+
+model <- .buildTable(info)
+lavModel <- model$model
+
+lavModel <- .constrainStability(model$model, info)
+lavModel <- .constrainCl(lavModel, info)
+lavModel <- .arStationarity(lavModel, info)
+lavModel <- .constrainStateVar(lavModel, info)
+lavModel <- .constrainStateCors(lavModel, info, zero = TRUE)
+
+temp <- lavaan(model = lavModel, data = data2)
+summary(temp)
+
+################################################################################
+## Test simple model
+################################################################################
+
+simpleData <- data2[1:500, c(1:5, 11:15)]
+simpleDataO <- data[1:500, c(1:5, 11:15)]
+
+simpleInfo <- getInfo(simpleData)
+
+
+simple <- .buildTable(simpleInfo, trait = TRUE, state = FALSE, stateCors = FALSE)
+simple <- lavaan(simple$model, simpleData)
+
+out <- run_riclpm_lavaan(simpleDataO, 3, stationarity = FALSE)
+
+lavExport(simple, target = "mplus", prefix = "test")
+
+
+
+testTable <- .buildConstraint(simple$model,
+                              "a2",
+                              "==",
+                              "a3")
+testTable <- .buildConstraint(testTable,
+                              "b2",
+                              "==",
+                              "b3")
+testTable <- .buildConstraint(testTable,
+                              "c2",
+                              "==",
+                              "c3")
+testTable <- .buildConstraint(testTable,
+                              "d2",
+                              "==",
+                              "d3")
+
+
+testTable2 <- .buildConstraint(testTable,
+                               "xvar2",
+                               "==",
+                               "xvar1 - a2*a2*xvar1 - d2*d2*yvar1 - 2*a2*d2*cov_ar1")
+testTable2 <- .buildConstraint(testTable2,
+                               "yvar2",
+                               "==",
+                               "yvar1 - b2*b2*yvar1 - c2*c2*xvar1 - 2*b2*c2*cov_ar1")
+testTable2 <- .buildConstraint(testTable2,
+                              "xvar2",
+                              "==",
+                              "xvar3")
+testTable2 <- .buildConstraint(testTable2,
+                              "yvar2",
+                              "==",
+                              "yvar3")
+
+
+
+
+
+simple <- .buildTable(simpleInfo, trait = TRUE, state = TRUE, stateCors = FALSE)
+
+testTable <- .constrainStability(simple$model, simpleInfo)
+testTable <- .constrainCl(testTable, simpleInfo)
+testTable <- .arStationarity(testTable, simpleInfo)
+testTable <- .buildLimits(testTable, simpleInfo)
+testTable <- .constrainStateVar(testTable, simpleInfo)
+
+test <- lavaan(testTable, simpleData)
+summary(test)
+
+lavExport(test, target="mplus")
+
+test2 <- run_riclpm_lavaan(simpleDataO, 5)
+test2 <- run_starts_lavaan(simpleDataO, 5)
+
+test3 <- run_starts_mplus(simpleDataO, 5)
