@@ -366,7 +366,7 @@ infoI <- getInfo(data3)
 info <- getInfo(data2)
 
 
-model <- .buildTable(info)
+model <- .buildTable(info, stateCors = FALSE)
 lavModel <- model$model
 
 lavModel <- .constrainStability(model$model, info)
@@ -374,6 +374,8 @@ lavModel <- .constrainCl(lavModel, info)
 lavModel <- .arStationarity(lavModel, info)
 lavModel <- .constrainStateVar(lavModel, info)
 lavModel <- .constrainStateCors(lavModel, info, zero = TRUE)
+lavModel <- .buildLimits(lavModel, info)
+
 
 temp <- lavaan(model = lavModel, data = data2)
 summary(temp)
