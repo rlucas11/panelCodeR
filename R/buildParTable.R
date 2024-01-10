@@ -823,7 +823,7 @@
         stability = .buildStability(info),
         cl = .buildCrossLag(info),
         state = .buildState(info),
-        cors = .buildCors(info, ar = arCors, trait = traitCors, state = stateCors),
+        cors = .buildCors(info, ar = ar, trait = trait, state = stateCors),
         residCors = .buildResidCors(info)
     )
 

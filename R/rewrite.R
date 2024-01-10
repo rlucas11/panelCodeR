@@ -1,4 +1,4 @@
-panelCode <- function(data,
+panelCodeR <- function(data,
                       panelModel = "starts",
                       program = "lavaan",
                       crossLag = TRUE,
@@ -68,11 +68,11 @@ panelCode <- function(data,
         cl <- FALSE
         state <- TRUE
         traitCors <- TRUE
-        arCors <- TRUE
+        arCors <- FALSE
         stateCors <- stateCors
         residCors <- residCors
     }
-    
+
     modelInfo <- .buildTable(info,
         ar = ar,
         trait = trait,
@@ -89,22 +89,54 @@ panelCode <- function(data,
     model <- modelInfo$model
 
     ## Build final model based on options
-    model <- .constrainStability(model, info)
+    if (ar == TRUE) {
+        model <- .constrainStability(model, info)
+    }
 
     ## Constrain cross-lagged paths if necessary
     if (info$gen$yVar == TRUE &
+        ar == TRUE &
         crossLag == TRUE) {
         model <- .constrainCl(model, info)
     }
 
-    ## Impose stationairty if requested
-    if (stationarity == TRUE) {
+    ## Impose stationarity if requested
+    if (stationarity == TRUE &
+        ar == TRUE) {
         model <- .arStationarity(model, info)
     }
 
-    ## A
+    ## Constrain state variances
+    if (state == TRUE) {
+        model <- .constrainStateVar(model, info)
+    }
+
+    ## Constrain state correlations
+    if (state == TRUE & stateCors == TRUE) {
+        model <- .constrainStateCors(model, info)
+    }
+
+    ## Impose limits on variances and covariances
+    ## Eventually change to allow for no correlations
+    if (limits == TRUE) {
+        model <- .buildLimits(model,
+            info,
+            ar = ar,
+            trait = trait,
+            stability = stability,
+            cl = cl,
+            state = state,
+            traitCors = TRUE,
+            arCors = TRUE,
+            stateCors = stateCors,
+            residCors = residCors
+        )
+    }
+
+    ## Run model in lavaan if requested
+    modelFit <- lavaan::lavaan(model = model, data = data)
+    return(modelFit)
 }
-    
-    
+
                       
 
