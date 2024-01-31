@@ -19,9 +19,9 @@
     for (w in 3:(waves)) {
         cVals <- list(
             parTable,
-            paste0("a", 2),
+            paste0("a", w),
             "==",
-            paste0("a", w)
+            paste0("a", 2)
         )
         parTable <- do.call(.buildConstraint, cVals)
     }
@@ -29,9 +29,9 @@
         for (w in 3:(waves)) {
             cVals <- list(
                 parTable,
-                paste0("b", 2),
+                paste0("b", w),
                 "==",
-                paste0("b", w)
+                paste0("b", 2)
             )
             parTable <- do.call(.buildConstraint, cVals)
         }
@@ -45,18 +45,18 @@
     for (w in 3:waves) {
         cVals <- list(
             parTable,
-            paste0("c", 2),
+            paste0("c", w),
             "==",
-            paste0("c", w)
+            paste0("c", 2)
         )
         parTable <- do.call(.buildConstraint, cVals)
     }
     for (w in 3:waves) {
         cVals <- list(
             parTable,
-            paste0("d", 2),
+            paste0("d", w),
             "==",
-            paste0("d", w)
+            paste0("d", 2)
         )
         parTable <- do.call(.buildConstraint, cVals)
     }
@@ -88,9 +88,9 @@
                 .buildConstraint,
                 list(
                     parTable,
-                    "xvar2",
+                    paste0("xvar", i),
                     "==",
-                    paste0("xvar", i)
+                    "xvar2"
                 )
             )
         }
@@ -112,9 +112,9 @@
                     .buildConstraint,
                     list(
                         parTable,
-                        "yvar2",
+                        paste0("yvar", i),
                         "==",
-                        paste0("yvar", i)
+                        "yvar2"
                     )
                 )
             }
@@ -150,9 +150,9 @@
                         .buildConstraint,
                         list(
                             parTable,
-                            "cov_ar2",
+                            paste0("cov_ar", i),
                             "==",
-                            paste0("cov_ar", i)
+                            "cov_ar2"
                         )
                     )
                 }
@@ -168,9 +168,9 @@
     for (w in 2:waves) {
         cVals <- list(
             parTable,
-            "sx1",
+            paste0("sx", w),
             "==",
-            paste0("sx", w)
+            "sx1"
         )
         parTable <- do.call(.buildConstraint, cVals)
     }
@@ -178,9 +178,9 @@
         for (w in 2:waves) {
             cVals <- list(
                 parTable,
-                "sy1",
+                paste0("sy", w),
                 "==",
-                paste0("sy", w)
+                "sy1"
             )
             parTable <- do.call(.buildConstraint, cVals)
         }
@@ -211,9 +211,9 @@
     for (w in 2:waves) {
         cVals <- list(
             parTable,
-            "cov_s1",
+            paste0("cov_s", w),
             "==",
-            paste0("cov_s", w)
+            "cov_s1"
         )
         parTable <- do.call(.buildConstraint, cVals)
     }

@@ -1,10 +1,6 @@
 .buildObserved <- function(info) {
     ## Check if bivariate or univariate
-    if (is.null(info$y)) {
-        yVar <- FALSE
-    } else {
-        yVar <- TRUE
-    }
+    yVar <- info$gen$yVar
 
     xName <- info$x$name
     if (yVar == TRUE) {
@@ -192,11 +188,7 @@
 
 .buildAr <- function(info) {
     ## Check if bivariate or univariate
-    if (is.null(info$y)) {
-        yVar <- FALSE
-    } else {
-        yVar <- TRUE
-    }
+    yVar <- info$gen$yVar
     
     xName <- info$x$name
     if (yVar == TRUE) {
@@ -291,11 +283,7 @@
 
 .buildTrait <- function(info) {
     ## Check if bivariate or univariate
-    if (is.null(info$y)) {
-        yVar <- FALSE
-    } else {
-        yVar <- TRUE
-    }
+    yVar <- info$gen$yVar
 
     xName <- info$x$name
     if (yVar == TRUE) {
@@ -400,11 +388,7 @@
 
 .buildStability <- function(info) {
     ## Check if bivariate or univariate
-    if (is.null(info$y)) {
-        yVar <- FALSE
-    } else {
-        yVar <- TRUE
-    }
+    yVar <- info$gen$yVar
 
     xName <- info$x$name
     if (yVar == TRUE) {
@@ -471,76 +455,68 @@
 
 .buildCrossLag <- function(info) {
     ## Check if bivariate or univariate
-    if (is.null(info$y)) {
-        yVar <- FALSE
-    } else {
-        yVar <- TRUE
-    }
+    yVar <- info$gen$yVar
     
     xName <- info$x$name
     if (yVar == TRUE) {
         yName <- info$y$name
     }
 
+    if (yVar == TRUE) {
+        ## Create initial table
+        initialParTable <- data.frame(
+            lhs = character(),
+            op = character(),
+            rhs = character(),
+            user = integer(),
+            block = integer(),
+            group = integer(),
+            free = integer(),
+            ustart = numeric(),
+            exo = integer(),
+            label = character()
+        )
 
-    
-    ## Create initial table
-    initialParTable <- data.frame(
-        lhs = character(),
-        op = character(),
-        rhs = character(),
-        user = integer(),
-        block = integer(),
-        group = integer(),
-        free = integer(),
-        ustart = numeric(),
-        exo = integer(),
-        label = character()
-    )
-    
-    for (w in info$x$waves[-1]) {
-        cl1ParTable <- data.frame(
-            lhs = paste("a", xName, w, sep = "_"),
-            op = "~",
-            rhs = paste("a", yName, (w - 1), sep = "_"),
-            user = 1,
-            block = 1,
-            group = 1,
-            free = 1,
-            ustart = NA,
-            exo = 0,
-            label = paste0("d", w)
-        )
-        cl2ParTable <- data.frame(
-            lhs = paste("a", yName, w, sep = "_"),
-            op = "~",
-            rhs = paste("a", xName, (w - 1), sep = "_"),
-            user = 1,
-            block = 1,
-            group = 1,
-            free = 1,
-            ustart = NA,
-            exo = 0,
-            label = paste0("c", w)
-        )
-        initialParTable <- rbind(
-            initialParTable,
-            cl1ParTable,
-            cl2ParTable
-        )
+        for (w in info$x$waves[-1]) {
+            cl1ParTable <- data.frame(
+                lhs = paste("a", xName, w, sep = "_"),
+                op = "~",
+                rhs = paste("a", yName, (w - 1), sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = paste0("d", w)
+            )
+            cl2ParTable <- data.frame(
+                lhs = paste("a", yName, w, sep = "_"),
+                op = "~",
+                rhs = paste("a", xName, (w - 1), sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = paste0("c", w)
+            )
+            initialParTable <- rbind(
+                initialParTable,
+                cl1ParTable,
+                cl2ParTable
+            )
+        }
+        finalParTable <- initialParTable[order(initialParTable$op), ]
+        finalParTable$from <- "cl"
+        return(finalParTable)
     }
-    finalParTable <- initialParTable[order(initialParTable$op), ]
-    finalParTable$from <- "cl"
-    return(finalParTable)  
 }
 
 .buildState <- function(info) {
     ## Check if bivariate or univariate
-    if (is.null(info$y)) {
-        yVar <- FALSE
-    } else {
-        yVar <- TRUE
-    }
+    yVar <- info$gen$yVar
     
     xName <- info$x$name
     if (yVar == TRUE) {
@@ -635,66 +611,96 @@
 
 .buildCors <- function(info, ar = TRUE, trait = TRUE, state = TRUE) {
     ## Check if bivariate or univariate
-    if (is.null(info$y)) {
-        yVar <- FALSE
-    } else {
-        yVar <- TRUE
-    }
-
+    yVar <- info$gen$yVar
     xName <- info$x$name
+    
     if (yVar == TRUE) {
         yName <- info$y$name
-    }
 
-    if (trait==TRUE) {
-        corParTable <- data.frame(
-            lhs = paste("t", xName, sep = "_"),
-            op = "~~",
-            rhs = paste("t", yName, sep = "_"),
-            user = 1,
-            block = 1,
-            group = 1,
-            free = 1,
-            ustart = NA,
-            exo = 0,
-            label = "cov_txty"
-        ) 
-    } else {
-        corParTable <- NULL
-    }
-    
-
-    
-    for (w in info$x$waves) {
-        if (ar == TRUE) {
-            arCorParTable <- data.frame(
-                lhs = paste("a", xName, w, sep = "_"),
+        if (trait==TRUE) {
+            corParTable <- data.frame(
+                lhs = paste("t", xName, sep = "_"),
                 op = "~~",
-                rhs = paste("a", yName, w, sep = "_"),
+                rhs = paste("t", yName, sep = "_"),
                 user = 1,
                 block = 1,
                 group = 1,
                 free = 1,
                 ustart = NA,
                 exo = 0,
-                label = paste0("cov_ar", w)
+                label = "cov_txty"
+            ) 
+        } else {
+            corParTable <- NULL
+        }
+        
+        if (ar == TRUE) {
+            ## Create initial table
+            arCorParTable <- data.frame(
+                lhs = character(),
+                op = character(),
+                rhs = character(),
+                user = integer(),
+                block = integer(),
+                group = integer(),
+                free = integer(),
+                ustart = numeric(),
+                exo = integer(),
+                label = character()
             )
+            for (w in 1:info$gen$maxWaves) {
+                newCorParTable <- data.frame(
+                    lhs = paste("a", xName, w, sep = "_"),
+                    op = "~~",
+                    rhs = paste("a", yName, w, sep = "_"),
+                    user = 1,
+                    block = 1,
+                    group = 1,
+                    free = 1,
+                    ustart = NA,
+                    exo = 0,
+                    label = paste0("cov_ar", w)
+                )
+                arCorParTable <- rbind(
+                    arCorParTable,
+                    newCorParTable
+                )
+            }
         } else {
             arCorParTable <- NULL
         }
+        
         if (state == TRUE) {
             stateCorParTable <- data.frame(
-                lhs = paste("s", xName, w, sep = "_"),
-                op = "~~",
-                rhs = paste("s", yName, w, sep = "_"),
-                user = 1,
-                block = 1,
-                group = 1,
-                free = 1,
-                ustart = NA,
-                exo = 0,
-                label = paste0("cov_s", w)
+                lhs = character(),
+                op = character(),
+                rhs = character(),
+                user = integer(),
+                block = integer(),
+                group = integer(),
+                free = integer(),
+                ustart = numeric(),
+                exo = integer(),
+                label = character()
             )
+            for (w in 1:info$gen$maxWaves) {
+                newStateCorParTable <- data.frame(
+                    lhs = paste("s", xName, w, sep = "_"),
+                    op = "~~",
+                    rhs = paste("s", yName, w, sep = "_"),
+                    user = 1,
+                    block = 1,
+                    group = 1,
+                    free = 1,
+                    ustart = NA,
+                    exo = 0,
+                    label = paste0("cov_s", w)
+                )
+                stateCorParTable <- rbind(
+                    stateCorParTable,
+                    newStateCorParTable
+                )
+            }
         } else {
             stateCorParTable <- NULL
         }
@@ -706,19 +712,15 @@
                 stateCorParTable
             )
         )
+        corParTable <- corParTable[order(corParTable$lhs), ]
+        corParTable$from <- "cors"
+        return(corParTable)
     }
-    corParTable <- corParTable[order(corParTable$lhs), ]
-    corParTable$from <- "cors"
-    return(corParTable)
 }
 
 .buildResidCors <- function(info) {
     ## Check if bivariate or univariate
-    if (is.null(info$y)) {
-        yVar <- FALSE
-    } else {
-        yVar <- TRUE
-    }
+    yVar <- info$gen$yVar
     
     xName <- info$x$name
     xInd <- info$x$indicators
@@ -773,34 +775,35 @@
         }
     }
 
-    if (yVar == TRUE & yInd > 1) {
-        for (i in 1:yInd) {
-            for (j in 1:length(yWaves)) {
-                for (k in yWaves[j:length(yWaves)]) {
-                    rCorTable <- data.frame(
-                        lhs = paste(yName, j, i, sep = "_"),
-                        op = "~~",
-                        rhs = paste(yName, k, i, sep = "_"),
-                        user = 1,
-                        block = 1,
-                        group = 1,
-                        free = 1,
-                        ustart = NA,
-                        exo = 0,
-                        label = paste0("x",
-                                       i,
-                                       "l_",
-                                       xWaves[k]-xWaves[j]),
-                        from = "residCors"
-                    )
-                    initialParTable <- rbind(
-                        initialParTable,
-                        rCorTable
-                    )
+    if (yVar == TRUE) {
+        if(yInd > 1) {
+            for (i in 1:yInd) {
+                for (j in 1:length(yWaves)) {
+                    for (k in yWaves[j:length(yWaves)]) {
+                        rCorTable <- data.frame(
+                            lhs = paste(yName, j, i, sep = "_"),
+                            op = "~~",
+                            rhs = paste(yName, k, i, sep = "_"),
+                            user = 1,
+                            block = 1,
+                            group = 1,
+                            free = 1,
+                            ustart = NA,
+                            exo = 0,
+                            label = paste0("x",
+                                           i,
+                                           "l_",
+                                           xWaves[k]-xWaves[j]),
+                            from = "residCors"
+                        )
+                        initialParTable <- rbind(
+                            initialParTable,
+                            rCorTable
+                        )
+                    }
                 }
             }
         }
-        initialParTable$from <- "residCors"
     }
     return(initialParTable)
 }
@@ -816,6 +819,7 @@
                         arCors = TRUE,
                         stateCors = TRUE,
                         residCors = TRUE) {
+
     components <- list(
         obs = .buildObserved(info),
         ar = .buildAr(info),
@@ -874,8 +878,12 @@
         varNamesInfo$varName1 == "s"), ]
     names(latentVarInfo) <- c("varName", "component", "variable", "wave")
     latentVarInfo$indicator <- NA
-    observedVarInfo <- varNamesInfo[which(varNamesInfo$varName1 == info$x$name |
-                                          varNamesInfo$varName1 == info$y$name), ]
+    if(info$gen$yVar==TRUE) {
+        observedVarInfo <- varNamesInfo[which(varNamesInfo$varName1 == info$x$name |
+                                              varNamesInfo$varName1 == info$y$name), ]
+    } else {
+        observedVarInfo <- varNamesInfo[which(varNamesInfo$varName1 == info$x$name),]
+    }
     names(observedVarInfo) <- c("varName", "variable", "wave", "indicator")
     observedVarInfo$component <- NA
     varInfo <- rbind(
@@ -888,9 +896,9 @@
             "indicator"
         )]
     )
-    model <- left_join(model, varInfo, by = c("lhs" = "varName"))
+    model <- dplyr::left_join(model, varInfo, by = c("lhs" = "varName"))
     names(model)[13:16] <- c("lhs_c", "lhs_v", "lhs_w", "lhs_i")
-    model <- left_join(model, varInfo, by = c("rhs" = "varName"))
+    model <- dplyr::left_join(model, varInfo, by = c("rhs" = "varName"))
     names(model)[17:20] <- c("rhs_c", "rhs_v", "rhs_w", "rhs_i")
 
     keepVars <- c(
@@ -952,58 +960,6 @@
         "plabel"
     )]
 
-    ## ## List important parameters
-
-    ## importantParams <- list(
-    ##     x_stab = stabParams[which(
-    ##         stabParams$lhs_c == "a" &
-    ##         stabParams$lhs_v == info$x$name &
-    ##         stabParams$lhs_w == 2),
-    ##         "plabel"],
-    ##     y_stab = stabParams[which(
-    ##         stabParams$lhs_c == "a" &
-    ##         stabParams$lhs_v == info$y$name &
-    ##         stabParams$lhs_w == 2),
-    ##         "plabel"],
-    ##     arxv1 = varParams[which(
-    ##         varParams$lhs_c == "a" &
-    ##         varParams$lhs_v == info$x$name &
-    ##         varParams$lhs_w == 1),
-    ##         "plabel"],
-    ##     arxv2 = varParams[which(
-    ##         varParams$lhs_c == "a" &
-    ##         varParams$lhs_v == info$x$name &
-    ##         varParams$lhs_w == 2),
-    ##         "plabel"],
-    ##     aryv1 = varParams[which(
-    ##         varParams$lhs_c == "a" &
-    ##         varParams$lhs_v == info$y$name &
-    ##         varParams$lhs_w == 1),
-    ##         "plabel"],
-    ##     aryv2 = varParams[which(
-    ##         varParams$lhs_c == "a" &
-    ##         varParams$lhs_v == info$y$name &
-    ##         varParams$lhs_w == 2),
-    ##         "plabel"],
-    ##     xOnY = clParams[which(
-    ##         clParams$lhs_v == info$x$name &
-    ##         clParams$lhs_w == 2),
-    ##         "plabel"],
-    ##     yOnX = clParams[which(
-    ##         clParams$lhs_v == info$y$name &
-    ##         clParams$lhs_w == 2),
-    ##         "plabel"],
-    ##     xy_cov1 = corParams[which(
-    ##         corParams$lhs_c == "a" &
-    ##         corParams$lhs_v != corParams$rhs_v &
-    ##         corParams$lhs_w == 1),
-    ##         "plabel"],
-    ##     xy_cov2 = corParams[which(
-    ##         corParams$lhs_c == "a" &
-    ##         corParams$lhs_v != corParams$rhs_v &
-    ##         corParams$lhs_w == 2),
-    ##         "plabel"]
-    ##     )
 
 
     ## Combine Info

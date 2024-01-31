@@ -1,4 +1,4 @@
-panelCodeR <- function(data,
+panelcoder <- function(data,
                       panelModel = "starts",
                       program = "lavaan",
                       crossLag = TRUE,
@@ -13,6 +13,14 @@ panelCodeR <- function(data,
     ## Collect basic info
     info <- getInfo(data)
 
+    if ((panelModel %in% c("starts",
+                          "riclpm",
+                          "arts",
+                          "clpm",
+                          "sts")) == FALSE) {
+        stop("No model with that name")
+    }
+    
     if (panelModel == "starts") {
         ar <- TRUE
         trait <- TRUE
@@ -135,7 +143,7 @@ panelCodeR <- function(data,
 
     ## Run model in lavaan if requested
     modelFit <- lavaan::lavaan(model = model, data = data)
-    return(modelFit)
+    return(list(model,modelFit))
 }
 
                       

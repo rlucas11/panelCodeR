@@ -92,6 +92,7 @@ getInfo <- function(df) {
             x = list(
                 name = variableNames[1],
                 waves = xWaves,
+                actualWaves = xWaves,
                 indicators = xIndicators
             ),
             y = NULL
