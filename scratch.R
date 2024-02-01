@@ -107,11 +107,9 @@ data2 <- data
 names(data2) <- paste(rep(c("X", "Y"), each = 10),
                       rep(1:10, 2),
                       sep="_")
-
 for (i in names(data2)) {
     data2 <- addIndicators(data2, i, 3)
 }
-
 dataI <- data2[,21:80]
 data2 <- data2[,1:20]
 
@@ -147,9 +145,28 @@ mplusModeler(mplusStatement, modelout = "testPc.inp", run=1)
 ## Latent vars
 info <- getInfo(dataI)
 
-latent <- panelcoder(dataI)
+latent <- panelcoder(dataI[,c(1:15,31:45)])
+testL <- lav2mplus(latent[[1]])
+
+mplusStatement <- mplusObject(TITLE="test",
+                              rdata=dataI[,c(1:15, 31:45)],
+                              ANALYSIS="MODEL=NOCOVARIANCES;",
+                              MODEL=testL)
+
+mplusModeler(mplusStatement, modelout = "testPcL.inp", run=1)
 
 
+## Mix of latent and observed
+
+testMix <- panelcoder(data2[,c(1:5, 51:65)])
+testMixM <- lav2mplus(testMix[[1]])
+
+mplusStatement <- mplusObject(TITLE="test",
+                              rdata=data2[,c(1:5, 51:65)],
+                              ANALYSIS="MODEL=NOCOVARIANCES;",
+                              MODEL=testMixM)
+
+mplusModeler(mplusStatement, modelout = "testPcL.inp", run=1)
 
 
 ################################################################################

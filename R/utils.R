@@ -9,21 +9,11 @@ getInfo <- function(df) {
         warning("Variable names are longer than 8 characters. This could be a problem if using Mplus",
                 call. = FALSE)
     }
-    
+
+    ## Collect basic info
     namesList <- strsplit(dfNames, split = "_")
     nSplits <- sapply(namesList, length)
 
-    ## Check whether splits make sense
-    if (any(nSplits > 3)) {
-        stop("Too may splits. Check variable names", call. = FALSE)
-    }
-    if (length(unique(sapply(namesList, length))) > 1) {
-        stop("Variable names cannot be split in the same way for each variable. Check variable names.",
-             call. = FALSE)
-    }
-    if (any(nSplits == 1)) {
-        stop("Not able to identify number of waves. Check variable names.", call.=FALSE)
-    }
     variableNames <- unique(sapply(namesList, "[[",1))
     if (length(variableNames) == 1) {
         yVar <- FALSE
@@ -34,34 +24,57 @@ getInfo <- function(df) {
              call. = FALSE)
     }
 
-    ## Collect basic info
+
     xNames <- namesList[sapply(namesList, "[[",1) == variableNames[[1]]]
     xWaves <- as.numeric(unique(sapply(xNames, "[[", 2)))
+    xSplits <- sapply(xNames, length)
     maxWaves <- max(xWaves)
     if (yVar == TRUE) {
         yNames <- namesList[sapply(namesList, "[[", 1) == variableNames[[2]]]
+        ySplits <- sapply(yNames, length)
         yWaves <- as.numeric(unique(sapply(yNames, "[[", 2)))
         maxWaves <- max(xWaves, yWaves)
     }
 
+
+    ## Check whether splits make sense
+    if (any(nSplits > 3)) {
+        stop("Too may splits. Check variable names", call. = FALSE)
+    }
+    if (length(unique(sapply(xNames, length))) > 1) {
+        stop("X variable names cannot be split in the same way for each variable. Check variable names.",
+             call. = FALSE)
+    }
+    if (length(unique(sapply(yNames, length))) > 1) {
+        stop("Y variable names cannot be split in the same way for each variable. Check variable names.",
+             call. = FALSE)
+    }
+    if (any(nSplits == 1)) {
+        stop("Not able to identify number of waves. Check variable names.", call.=FALSE)
+    }
+    
+    
+
     ## Check number of indicators
-    if (max(nSplits) == 3) {
+    if (max(xSplits) == 3) {
         if (length(unique(table(sapply(xNames, "[[", 2)))) > 1) {
             stop("Different number of indicators per wave. Check data.", call. = FALSE)
         }
         xIndicators <- as.numeric(max(unique(sapply(xNames, "[[", 3))))
-        if (yVar == TRUE) {
+    } else {
+        xIndicators <- 1
+    }
+    
+    if (yVar == TRUE) {
+        if (max(ySplits) == 3) {
             if (length(unique(table(sapply(yNames, "[[", 2)))) > 1) {
                 stop("Different number of indicators per wave. Check data.", call. = FALSE)
             }
             yIndicators <- as.numeric(max(unique(sapply(yNames, "[[", 3))))
-        }
-    } else {
-        xIndicators <- 1
-        if (yVar == TRUE) {
+        } else {
             yIndicators <- 1
         }
-    }
+    } 
 
     ## Create list of info
     if (yVar == TRUE) {

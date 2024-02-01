@@ -256,7 +256,7 @@
                         free = 1,
                         ustart = NA,
                         exo = 0,
-                        label = paste0("x",
+                        label = paste0("y",
                                        j,
                                        "_",
                                        i,
@@ -274,11 +274,7 @@
     finalParTable <- initialParTable[order(initialParTable$op), ]
     finalParTable$from <- "ar"
     return(finalParTable)  
-
 }
-
-
-
 
 
 .buildAr <- function(info) {

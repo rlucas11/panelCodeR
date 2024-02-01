@@ -288,6 +288,24 @@
                 0
             )
         }
+        if (info$x$indicators > 1) {
+            parTable <- .buildConstraint(
+                parTable,
+                "x1_1v",
+                ">",
+                0
+            )
+        }
+        if (info$gen$yVar==TRUE) {
+            if (info$y$indicators > 1) {
+                parTable <- .buildConstraint(
+                    parTable,
+                    "y1_1v",
+                    ">",
+                    0
+                )
+            }
+        }
     }
     return(parTable)
 }
