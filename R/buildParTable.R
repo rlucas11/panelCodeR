@@ -180,11 +180,106 @@
         }
 
     }
-    finalParTable <- initialParTable[order(initialParTable$op), ]
-    finalParTable$from <- "observed"
+    finalParTable <- initialParTable
+    finalParTable$from <- "residVar"
     return(finalParTable)
 }
     
+
+.buildResidVar <- function(info) {
+    ## Check if bivariate or univariate
+    yVar <- info$gen$yVar
+    
+    xName <- info$x$name
+    xInd <- info$x$indicators
+    xWaves <- info$x$actualWaves
+    if (yVar == TRUE) {
+        yName <- info$y$name
+        yInd <- info$y$indicators
+        yWaves <- info$y$actualWaves
+    }
+
+    ## Create initial table
+    initialParTable <- data.frame(
+        lhs = character(),
+        op = character(),
+        rhs = character(),
+        user = integer(),
+        block = integer(),
+        group = integer(),
+        free = integer(),
+        ustart = numeric(),
+        exo = integer(),
+        label = character()
+    )
+
+    if (xInd > 1) {
+        for (i in 1:xInd) {
+            for (j in 1:length(xWaves)) {
+                rCorTable <- data.frame(
+                    lhs = paste(xName, j, i, sep = "_"),
+                    op = "~~",
+                    rhs = paste(xName, j, i, sep = "_"),
+                    user = 1,
+                    block = 1,
+                    group = 1,
+                    free = 1,
+                    ustart = NA,
+                    exo = 0,
+                    label = paste0("x",
+                                   j,
+                                   "_",
+                                   i,
+                                   "v"),
+                    from = "residCors"
+                )
+                initialParTable <- rbind(
+                    initialParTable,
+                    rCorTable
+                )
+            }
+        }
+    }
+
+
+    if (yVar == TRUE) {
+        if(yInd > 1) {
+            for (i in 1:yInd) {
+                for (j in 1:length(yWaves)) {
+                    rCorTable <- data.frame(
+                        lhs = paste(yName, j, i, sep = "_"),
+                        op = "~~",
+                        rhs = paste(yName, j, i, sep = "_"),
+                        user = 1,
+                        block = 1,
+                        group = 1,
+                        free = 1,
+                        ustart = NA,
+                        exo = 0,
+                        label = paste0("x",
+                                       j,
+                                       "_",
+                                       i,
+                                       "v"),
+                        from = "residCors"
+                    )
+                    initialParTable <- rbind(
+                        initialParTable,
+                        rCorTable
+                    )
+                }
+            }
+        }
+    }
+    finalParTable <- initialParTable[order(initialParTable$op), ]
+    finalParTable$from <- "ar"
+    return(finalParTable)  
+
+}
+
+
+
+
 
 .buildAr <- function(info) {
     ## Check if bivariate or univariate
@@ -207,7 +302,7 @@
         ustart = numeric(),
         exo = integer(),
         label = character()
-    )
+    ) 
     
     for (w in info$x$waves) {
         loadingParTable <- data.frame(
@@ -748,8 +843,8 @@
 
     if (xInd > 1) {
         for (i in 1:xInd) {
-            for (j in 1:length(xWaves)) {
-                for (k in xWaves[j:length(xWaves)]) {
+            for (j in 1:(length(xWaves) - 1)) {
+                for (k in xWaves[(j + 1):length(xWaves)]) {
                     rCorTable <- data.frame(
                         lhs = paste(xName, j, i, sep = "_"),
                         op = "~~",
@@ -778,7 +873,7 @@
     if (yVar == TRUE) {
         if(yInd > 1) {
             for (i in 1:yInd) {
-                for (j in 1:length(yWaves)) {
+                for (j in 1:(length(yWaves) - 1)) {
                     for (k in yWaves[j:length(yWaves)]) {
                         rCorTable <- data.frame(
                             lhs = paste(yName, j, i, sep = "_"),
@@ -823,6 +918,7 @@
     components <- list(
         obs = .buildObserved(info),
         ar = .buildAr(info),
+        residVar = .buildResidVar(info),
         trait = .buildTrait(info),
         stability = .buildStability(info),
         cl = .buildCrossLag(info),
@@ -834,6 +930,7 @@
     if (ar == FALSE) {
         components$ar <- NULL
     }
+    ## Fix resid var stuff here
     if (trait == FALSE) {
         components$trait  <- NULL
     }
