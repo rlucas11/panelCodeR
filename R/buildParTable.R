@@ -160,7 +160,7 @@
                 )
             }
         }
-        for (w in info$y$actualWaves) {
+        for (w in info$y$waves) {
             var2ParTable <- data.frame(
                 lhs = paste("l", yName, w, sep = "_"),
                 op = "~~",
@@ -181,7 +181,7 @@
 
     }
     finalParTable <- initialParTable
-    finalParTable$from <- "residVar"
+    finalParTable$from <- "observed"
     return(finalParTable)
 }
     
@@ -210,7 +210,8 @@
         free = integer(),
         ustart = numeric(),
         exo = integer(),
-        label = character()
+        label = character(),
+        from = character()
     )
 
     if (xInd > 1) {
@@ -272,7 +273,6 @@
         }
     }
     finalParTable <- initialParTable[order(initialParTable$op), ]
-    finalParTable$from <- "ar"
     return(finalParTable)  
 }
 

@@ -141,6 +141,8 @@ mplusModeler(mplusStatement, modelout = "testPc.inp", run=1)
 
 ## Phantom vars
 
+panelcoder(data2[,c(1:5,11,12,14,15)])
+
 
 ## Latent vars
 info <- getInfo(dataI)
