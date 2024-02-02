@@ -1,15 +1,11 @@
-panelcoder <- function(data,
-                      panelModel = "starts",
-                      program = "lavaan",
-                      crossLag = TRUE,
-                      stateCors = FALSE,
-                      residCors = FALSE,
-                      limits = TRUE,
-                      stationarity = TRUE,
-                      mplusOptions = NULL,
-                      mplusOutput = NULL,
-                      mplusDirectory = "mplus",
-                      lavaanOptions = NULL) {
+.buildModel <- function(data,
+                        panelModel = "starts",
+                        crossLag = TRUE,
+                        stateCors = FALSE,
+                        residCors = FALSE,
+                        limits = TRUE,
+                        stationarity = TRUE
+                        ) {
     ## Collect basic info
     info <- getInfo(data)
 
@@ -142,9 +138,52 @@ panelcoder <- function(data,
     }
 
     ## Run model in lavaan if requested
-    modelFit <- lavaan::lavaan(model = model, data = data)
-    return(list(model,modelFit))
+    return(model)
 }
 
                       
+panelcoder <- function(data,
+                       title = "panelcoder",
+                       panelModel = "starts",
+                       program = "lavaan",
+                       crossLag = TRUE,
+                       stateCors = FALSE,
+                       residCors = FALSE,
+                       limits = TRUE,
+                       stationarity = TRUE,
+                       mplusOptions = NULL,
+                       mplusOutput = NULL,
+                       mplusDirectory = "mplus",
+                       lavaanOptions = NULL) {
+    model <- .buildModel(data,
+                         panelModel,
+                         crossLag,
+                         stateCors,
+                         residCors,
+                         limits,
+                         stationarity
+                         )
 
+    ## Lavaan
+    if (program == "lavaan") {
+        fit <- lavaan(model,
+                      data = data,
+                      meanstructure = TRUE,
+                      int.ov.free = TRUE,
+                      int.lv.free = FALSE)
+        return(fit)
+    }
+    if (program == "mplus") {
+        mplusModel <- lav2mplus(model)
+        mplusStatement <- mplusObject(TITLE = title,
+                                      rdata = data,
+                                      ANALYSIS = "MODEL=NOCOVARIANCES;",
+                                      MODEL = mplusModel)
+        fit <- mplusModeler(mplusStatement,
+                            modelout = "panelcoder.inp",
+                            run = 1)
+        }
+    return(fit)
+}
+
+    

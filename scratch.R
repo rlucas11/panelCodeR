@@ -96,8 +96,10 @@ summary(lm(y1 ~ x1 + y2, data=data2))
 ## Testing Rewrite
 ################################################################################
 
+newTest <- panelcoder(data2)
 
-startsModel <- buildLavaan(waves = 5)
+
+startsModel <- buildLavaan(waves = 10)
 oldParTable <- lavaanify(startsModel)
 
 
