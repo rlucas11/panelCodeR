@@ -184,8 +184,80 @@
     finalParTable$from <- "observed"
     return(finalParTable)
 }
-    
 
+.buildPhantom <- function(info) {
+    ## Check if bivariate or univariate
+    yVar <- info$gen$yVar
+
+    xName <- info$x$name
+    if (yVar == TRUE) {
+        yName <- info$y$name
+    }
+
+    ## Create initial table
+    initialParTable <- data.frame(
+        lhs = character(),
+        op = character(),
+        rhs = character(),
+        user = integer(),
+        block = integer(),
+        group = integer(),
+        free = integer(),
+        ustart = numeric(),
+        exo = integer(),
+        label = character(),
+        from = character()
+    )
+
+    phantomX <- setdiff(info$x$waves, info$x$actualWaves)
+    for (i in phantomX) {
+        pParTable <- data.frame(
+            lhs = paste("l", xName, i, sep = "_"),
+            op = "=~",
+            rhs = paste("l", xName, i, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 0,
+            ustart = 0,
+            exo = 0,
+            label = "",
+            from = "phantom"
+        )
+        initialParTable <- rbind(
+            initialParTable,
+            pParTable
+        )
+    }
+    if (yVar == TRUE) {
+        phantomY <- setdiff(info$y$waves, info$y$actualWaves)
+        for (i in phantomY) {
+            pParTable <- data.frame(
+                lhs = paste("l", yName, i, sep = "_"),
+                op = "=~",
+                rhs = paste("l", yName, i, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 0,
+                ustart = 0,
+                exo = 0,
+                label = "",
+                from = "phantom"
+            )
+            initialParTable <- rbind(
+                initialParTable,
+                pParTable
+            )
+        }
+    }
+    return(initialParTable)
+}
+
+
+
+
+    
 .buildResidVar <- function(info) {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
@@ -912,6 +984,7 @@
                         residCors = TRUE) {
 
     components <- list(
+        ph = .buildPhantom(info),
         obs = .buildObserved(info),
         ar = .buildAr(info),
         residVar = .buildResidVar(info),

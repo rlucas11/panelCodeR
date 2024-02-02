@@ -118,7 +118,7 @@ data2 <- data2[,1:20]
 ## Testing
 infoI <- getInfo(dataI)
 info <- getInfo(data2)
-
+infoP <- getInfo(data2[,c(1:5,11,12,14,15)])
 
 out <- panelcoder(data=data2)
 
@@ -140,8 +140,19 @@ mplusModeler(mplusStatement, modelout = "testPc.inp", run=1)
 
 
 ## Phantom vars
+testP <- buildLavaan(waves = 5, xWaves = 1:5, yWaves = c(1,2,4,5))
+pFit <- lavaan(testP, data=data)
 
-panelcoder(data2[,c(1:5,11,12,14,15)])
+testP <- panelcoder(data2[,c(1:5,11,12,14,15)])
+testPM <- lav2mplus(testP[[1]])
+
+mplusStatement <- mplusObject(TITLE="test",
+                              rdata=data2[,c(1:5,11,12,14,15)],
+                              ANALYSIS="MODEL=NOCOVARIANCES;",
+                              MODEL=testPM)
+
+mplusModeler(mplusStatement, modelout = "testPcP.inp", run=1)
+
 
 
 ## Latent vars

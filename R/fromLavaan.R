@@ -47,11 +47,15 @@ lav2mplus <- function(lav, group.label=NULL) {
         lav$rhs2[th.idx] <- paste(lav$rhs2[th.idx],"]",sep="")
         lav$lhs[th.idx] <- paste("[", lav$lhs[th.idx],sep="")
 
+        ## Fix phantom variables
+        ph.idx <- which(lav$lhs == lav$rhs & lav$op == "=~")
+        lav$rhs[ph.idx] <- ""
+        lav$rhs2[ph.idx] <- ""
+        
         # replace binary operators
         lav$op <- ifelse(lav$op == "=~", " BY ", lav$op)
         lav$op <- ifelse(lav$op == "~", " ON ", lav$op)
         lav$op <- ifelse(lav$op == "~~", " WITH ", lav$op)
-
 
         lav2 <- paste(lav$lhs, lav$op, lav$rhs, lav$rhs2,
                       lav$plabel, lav$eol, sep="")
