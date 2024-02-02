@@ -45,9 +45,11 @@ getInfo <- function(df) {
         stop("X variable names cannot be split in the same way for each variable. Check variable names.",
              call. = FALSE)
     }
-    if (length(unique(sapply(yNames, length))) > 1) {
-        stop("Y variable names cannot be split in the same way for each variable. Check variable names.",
-             call. = FALSE)
+    if (yVar == TRUE) {
+        if (length(unique(sapply(yNames, length))) > 1) {
+            stop("Y variable names cannot be split in the same way for each variable. Check variable names.",
+                 call. = FALSE)
+        }
     }
     if (any(nSplits == 1)) {
         stop("Not able to identify number of waves. Check variable names.", call.=FALSE)
