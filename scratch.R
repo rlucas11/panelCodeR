@@ -25,6 +25,19 @@ data <- gen_starts(
     yr = 1 # Measurement error for Y
 )
 
+## Create data frame with correctly labeled variables
+data2 <- data
+names(data2) <- paste(rep(c("X", "Y"), each = 10),
+                      rep(1:10, 2),
+                      sep="_")
+for (i in names(data2)) {
+    data2 <- addIndicators(data2, i, 3)
+}
+dataI <- data2[,21:80]
+data2 <- data2[,1:20]
+
+
+
 
 
 data1 <- gen_starts(
@@ -96,24 +109,7 @@ summary(lm(y1 ~ x1 + y2, data=data2))
 ## Testing Rewrite
 ################################################################################
 
-newTest <- panelcoder(data2)
-
-
-startsModel <- buildLavaan(waves = 10)
-oldParTable <- lavaanify(startsModel)
-
-
-
-## Create data frame with correctly labeled variables
-data2 <- data
-names(data2) <- paste(rep(c("X", "Y"), each = 10),
-                      rep(1:10, 2),
-                      sep="_")
-for (i in names(data2)) {
-    data2 <- addIndicators(data2, i, 3)
-}
-dataI <- data2[,21:80]
-data2 <- data2[,1:20]
+test <- panelcoder(data2, panelModel="starts", program="lavaan", stateCors=TRUE)
 
 
 

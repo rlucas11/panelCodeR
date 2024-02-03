@@ -117,3 +117,62 @@ getInfo <- function(df) {
 }
 
 
+.summarizeLavaan <- function(fitObject) {
+    ## Calculate values for summary
+    parEst <- lavaan::parameterEstimates(fitObject)
+    stdEst <- lavaan::standardizedSolution(fitObject)
+    fit <- lavaan::fitMeasures(fitObject)
+    ## Variance Decomp
+    trait.x <- parEst[which(parEst$label=="x_tVar"), "est"]
+    trait.y <- parEst[which(parEst$label=="y_tVar"), "est"]
+    ar.x <- parEst[which(parEst$label=="xvar1"), "est"]
+    ar.y <- parEst[which(parEst$label=="yvar1"), "est"]
+    state.x <- parEst[which(parEst$label=="sx1"), "est"]
+    state.y <- parEst[which(parEst$label=="sy1"), "est"]
+    trait.x.p <- trait.x/(sum(trait.x, ar.x, state.x))
+    trait.y.p <- trait.y/(sum(trait.y, ar.y, state.y))
+    ar.x.p <- ar.x/(sum(trait.x, ar.x, state.x))
+    ar.y.p <- ar.y/(sum(trait.y, ar.y, state.y))
+    state.x.p <- state.x/(sum(trait.x, ar.x, state.x))
+    state.y.p <- state.y/(sum(trait.y, ar.y, state.y))
+    ## Correlations
+    trait.cor <- stdEst[which(stdEst$label=="cov_txty"), "est.std"]
+    ar.cor <- stdEst[which(stdEst$label=="cov_ar1"), "est.std"]
+    state.cor <- stdEst[which(stdEst$label=="cov_s1"), "est.std"]
+    ## Stability
+    x.stab <- parEst[which(parEst$label=="a2"), "est"]
+    y.stab <- parEst[which(parEst$label=="b2"), "est"]
+    ## Cross-lags
+    yOnX <- parEst[which(parEst$label=="c2"), "est"]
+    xOnY <- parEst[which(parEst$label=="d2"), "est"]
+    ## Fit
+    chi2 <- fit[["chisq"]]
+    chi2df <- fit[["df"]]
+    chi2p <- fit[["pvalue"]]
+    cfi <- fit[["cfi"]]
+    tli <- fit[["tli"]]
+    srmr <- fit[["srmr"]]
+    rmsea <- fit[["rmsea"]]
+    outputList <- list(
+        trait.x = trait.x.p,
+        trait.y = trait.y.p,
+        ar.x = ar.x.p,
+        ar.y = ar.y.p,
+        state.x = state.x.p,
+        state.y = state.y.p,
+        trait.cor = trait.cor,
+        ar.cor = ar.cor,
+        state.cor = state.cor,
+        x.stab = x.stab,
+        y.stab = y.stab,
+        yOnX = yOnX,
+        xOnY = xOnY,
+        chi2 = chi2,
+        chi2df = chi2df,
+        chi2p = chi2p,
+        cfi = cfi,
+        tli = tli,
+        srmr = srmr,
+        rmsea = rmsea)
+    return(outputList)
+}

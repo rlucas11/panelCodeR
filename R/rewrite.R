@@ -180,7 +180,10 @@ panelcoder <- function(data,
                                       ANALYSIS = "MODEL=NOCOVARIANCES;",
                                       MODEL = mplusModel)
         fit <- mplusModeler(mplusStatement,
-                            modelout = "panelcoder.inp",
+                            modelout = paste0(mplusDirectory,
+                                              "/",
+                                              title,
+                                              ".inp"),
                             run = 1)
         }
     return(fit)
