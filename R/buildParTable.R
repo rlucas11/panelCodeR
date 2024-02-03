@@ -1025,9 +1025,6 @@
         components
     )
 
-    ## Create plabels
-    model$plabel <- paste0(".p", 1:nrow(model), ".")
-
     ## Get Unique names
     allVarNames <- unique(model$lhs)
     varNamesInfo <- data.frame(
@@ -1063,12 +1060,41 @@
         )]
     )
     model <- dplyr::left_join(model, varInfo, by = c("lhs" = "varName"))
-    names(model)[13:16] <- c("lhs_c", "lhs_v", "lhs_w", "lhs_i")
+    names(model)[12:15] <- c("lhs_c", "lhs_v", "lhs_w", "lhs_i")
     model <- dplyr::left_join(model, varInfo, by = c("rhs" = "varName"))
-    names(model)[17:20] <- c("rhs_c", "rhs_v", "rhs_w", "rhs_i")
+    names(model)[16:19] <- c("rhs_c", "rhs_v", "rhs_w", "rhs_i")
+
+    ## Create explicit intercepts
+    int.ov <- data.frame(
+        lhs = observedVarInfo$varName,
+        op = rep("~1", length(observedVarInfo$varName)),
+        rhs = rep("", length(observedVarInfo$varName)),
+        user = rep(1, length(observedVarInfo$varName)),
+        block = rep(1, length(observedVarInfo$varName)),
+        group = rep(1, length(observedVarInfo$varName)),
+        free = rep(1, length(observedVarInfo$varName)),
+        ustart = rep(NA, length(observedVarInfo$varName)),
+        exo = rep(0, length(observedVarInfo$varName)),
+        label = rep("", length(observedVarInfo$varName)),
+        from = rep("int.ov", length(observedVarInfo$varName))
+    )
+
+    int.lv <- data.frame(
+        lhs = latentVarInfo$varName,
+        op = rep("~1", length(latentVarInfo$varName)),
+        rhs = rep("", length(latentVarInfo$varName)),
+        user = rep(1, length(latentVarInfo$varName)),
+        block = rep(1, length(latentVarInfo$varName)),
+        group = rep(1, length(latentVarInfo$varName)),
+        free = rep(0, length(latentVarInfo$varName)),
+        ustart = rep(0, length(latentVarInfo$varName)),
+        exo = rep(0, length(latentVarInfo$varName)),
+        label = rep("", length(latentVarInfo$varName)),
+        from = rep("int.lv", length(latentVarInfo$varName))
+        )
 
     keepVars <- c(
-        "lhs", "op", "rhs", "free", "label", "plabel",
+        "lhs", "op", "rhs", "free", "label",
         paste0(
             rep(c("lhs", "rhs"), each = 4),
             c("_c", "_v", "_w", "_i")
@@ -1111,6 +1137,7 @@
             !is.na(lhs_i)
     )
 
+    
     ## Revert model back to original
     model <- model[c(
         "lhs",
@@ -1122,11 +1149,12 @@
         "free",
         "ustart",
         "exo",
-        "label",
-        "plabel"
+        "label"
     )]
 
-
+    model <- rbind(model, int.ov[,1:10], int.lv[,1:10])
+    ## Create plabels
+    model$plabel <- paste0(".p", 1:nrow(model), ".")
 
     ## Combine Info
     tableInfo <- list(
