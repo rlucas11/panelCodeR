@@ -112,6 +112,9 @@ summary(lm(y1 ~ x1 + y2, data=data2))
 test <- panelcoder(data2, panelModel="clpm", program="mplus")
 test <- panelcoder(data2, panelModel="clpm", program="lavaan")
 
+test <- panelcoder(data2, panelModel="clpm", program="mplus", run = FALSE)
+test <- panelcoder(data2, panelModel="clpm", program="lavaan", run = FALSE)
+
 
 
 ## Testing

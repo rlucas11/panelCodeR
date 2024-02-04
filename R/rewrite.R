@@ -154,7 +154,8 @@ panelcoder <- function(data,
                        mplusOptions = NULL,
                        mplusOutput = NULL,
                        mplusDirectory = "mplus",
-                       lavaanOptions = NULL) {
+                       lavaanOptions = NULL,
+                       run = TRUE) {
     info <- getInfo(data)
     model <- .buildModel(data,
                          panelModel,
@@ -167,13 +168,19 @@ panelcoder <- function(data,
 
     ## Lavaan
     if (program == "lavaan") {
-        fit <- lavaan(model,
-                      data = data,
-                      meanstructure = TRUE,
-                      int.ov.free = TRUE,
-                      int.lv.free = FALSE)
-        pcSum <- .summarizeLavaan(fit)
+        if (run == TRUE) {
+            fit <- lavaan(model,
+                          data = data,
+                          meanstructure = TRUE,
+                          missing = 'fiml')
+            pcSum <- .summarizeLavaan(fit)
+        } else {
+            modelCode <- lav2lavaan(model)
+            cat(modelCode)
+            return(modelCode)
+        }
     }
+    
     if (program == "mplus") {
         mplusModel <- lav2mplus(model)
         mplusStatement <- mplusObject(TITLE = title,
@@ -181,13 +188,18 @@ panelcoder <- function(data,
                                       ANALYSIS = "MODEL=NOCOVARIANCES;",
                                       OUTPUT = "stdyx; \n  cinterval; \n",
                                       MODEL = mplusModel)
-        fit <- mplusModeler(mplusStatement,
-                            modelout = paste0(mplusDirectory,
-                                              "/",
-                                              title,
-                                              ".inp"),
-                            run = 1)
-        pcSum <- .summarizeMplus(info, fit)
+        if (run == TRUE) {
+            fit <- mplusModeler(mplusStatement,
+                                modelout = paste0(mplusDirectory,
+                                                  "/",
+                                                  title,
+                                                  ".inp"),
+                                run = 1)
+            pcSum <- .summarizeMplus(info, fit)
+        } else {
+            cat(mplusModel)
+            return(mplusModel)
+        }
     }
     return(list(pcSum, info, model, fit))
 }

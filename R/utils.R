@@ -1,3 +1,4 @@
+
 getInfo <- function(df) {
     ## Function to get information about names, waves, and indicators from dataframe
     ## Returns errors if data are not structured and named correctly
