@@ -155,6 +155,7 @@ panelcoder <- function(data,
                        mplusOutput = NULL,
                        mplusDirectory = "mplus",
                        lavaanOptions = NULL) {
+    info <- getInfo(data)
     model <- .buildModel(data,
                          panelModel,
                          crossLag,
@@ -171,13 +172,14 @@ panelcoder <- function(data,
                       meanstructure = TRUE,
                       int.ov.free = TRUE,
                       int.lv.free = FALSE)
-        return(fit)
+        pcSum <- .summarizeLavaan(fit)
     }
     if (program == "mplus") {
         mplusModel <- lav2mplus(model)
         mplusStatement <- mplusObject(TITLE = title,
                                       rdata = data,
                                       ANALYSIS = "MODEL=NOCOVARIANCES;",
+                                      OUTPUT = "stdyx; \n  cinterval; \n",
                                       MODEL = mplusModel)
         fit <- mplusModeler(mplusStatement,
                             modelout = paste0(mplusDirectory,
@@ -185,8 +187,9 @@ panelcoder <- function(data,
                                               title,
                                               ".inp"),
                             run = 1)
-        }
-    return(fit)
+        pcSum <- .summarizeMplus(info, fit)
+    }
+    return(list(pcSum, info, model, fit))
 }
 
     

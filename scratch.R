@@ -109,7 +109,8 @@ summary(lm(y1 ~ x1 + y2, data=data2))
 ## Testing Rewrite
 ################################################################################
 
-test <- panelcoder(data2, panelModel="starts", program="lavaan", stateCors=TRUE)
+test <- panelcoder(data2, panelModel="clpm", program="mplus")
+test <- panelcoder(data2, panelModel="clpm", program="lavaan")
 
 
 
