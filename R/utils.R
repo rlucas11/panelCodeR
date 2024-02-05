@@ -175,7 +175,7 @@ getInfo <- function(df) {
         tli = tli,
         srmr = srmr,
         rmsea = rmsea)
-    class(outputList) <- "pcObject"
+    class(outputList) <- "pcSum"
     return(outputList)
 }
 
@@ -271,7 +271,7 @@ getInfo <- function(df) {
         tli = tli,
         srmr = srmr,
         rmsea = rmsea)
-    class(outputList) <- "pcObject"
+    class(outputList) <- "pcSum"
     return(outputList)
 }
 
@@ -281,12 +281,13 @@ getInfo <- function(df) {
 #' @param ... Additional arguments to `summary()`.
 #'
 #' @export
-summary.pcObject <- function(object, ...) {
+summary.pcSum <- function(object, ...) {
     cat("Model Summary: \n")
     cat("Model: Chi2 (df = ",
         sprintf("%i", object$chi2df), ") = ",
         sprintf("%.3f", object$chi2), ", p = ",
-        sprintf("%.3f", object$chi2p), "\n")
+        sprintf("%.3f", object$chi2p), "\n",
+        sep="")
     cat("\n")
     cat("Fit Indices:")
     cat("\n")
@@ -295,7 +296,8 @@ summary.pcObject <- function(object, ...) {
         ", TLI = ",
         sprintf("%.3f", object$tli),
         ", SRMR = ",
-        sprintf("%.3f", object$srmr), "\n")
+        sprintf("%.3f", object$srmr), "\n",
+        sep="")
     cat("RMSEA = ",
         sprintf("%.3f", object$rmsea),
         "\n")
@@ -309,22 +311,25 @@ summary.pcObject <- function(object, ...) {
         sprintf("%.3f", object$ar.x),
         ", State: ",
         sprintf("%.3f", object$state.x),
-        "\n")
+        "\n",
+        sep="")
     cat("Y Variable: \n")
     cat("Trait: ",
         sprintf("%.3f", object$trait.y),
         ", Autoregressive: ",
         sprintf("%.3f", object$ar.y),
         ", State: ",
-        sprintf("%.3f", object$state.y), "\n")
+        sprintf("%.3f", object$state.y), "\n",
+        sep="")
     cat("\n")
     cat("Stability: \n")
     cat("X: ", sprintf("%.3f", object$x.stab), "\n")
     cat("Y: ", sprintf("%.3f", object$y.stab), "\n")
     cat("\n")
     cat("Cross-Lag Paths: \n")
-    cat("Y predicted from X: ", sprintf("%.3f", object$yOnX) ,"\n")
-    cat("X predicted from Y: ", sprintf("%.3f", object$xOnY),"\n")
+    cat("Y predicted from X: ", sprintf("%.3f", object$yOnX) ,"\n", sep="")
+    cat("X predicted from Y: ", sprintf("%.3f", object$xOnY),"\n", sep="")
+    cat("\n")
     cat("Correlations: \n")
     cat("\n")
     cat("Stable Trait: ", sprintf("%.3f", object$trait.cor), "\n")

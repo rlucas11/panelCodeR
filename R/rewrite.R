@@ -141,7 +141,60 @@
     return(model)
 }
 
-                      
+################################################################################
+## panelcoder command
+################################################################################
+
+#' Build and Run Lavaan and Mplus Code for Various Panel Models
+#'
+#' `panelcoder()` produces lavaan and mplus code for variations of the general
+#' Stable Trait, Autoregressive Trait, State Model. Univariate and bivariate
+#' versions can be specified, and various reduced versions of the model can be
+#' run. Other options (such as whether to include lagged paths) can also be
+#' selected.
+#'
+#' @param data Dataframe with appropriately named variables. Names should
+#'   include the name stem and wave, separated by "_". If there are multiple
+#'   indicators, names should have an additional number (identifying indicator
+#'   number), again separated with "_". The number of indicators must be the
+#'   same for different waves, but different variables can have different
+#'   numbers of indicators. Mplus requires all variable names to be less than
+#'   8 characters, so variable names (including the wave and indicator indexes)
+#'   should be very short. A warning is provided if these exceed 8 characters.
+#' @param title Title of analysis for mplus
+#' @param panelModel Specific model to run. Can be "starts"(the default),
+#'   "riclpm", "clpm", "arts", or "sts". 
+#' @param program Program to use to run code. Can be "lavaan" (the default) or
+#'   "mplus"
+#' @param crossLag Logical value indicating whether to include cross-lagged
+#'   paths. Defaults to `TRUE`.
+#' @param stateCors Logical value indicating whether to include correlations
+#'   between wave-specific state components. Defaults to FALSE.
+#' @param residCors Logical value indicating whether to include correlations
+#'   between item-specific residual. Defaults to FALSE.
+#' @param limits Logical value indicating whether to constrain variances and
+#'   correlations to possible values. Defaults to TRUE.
+#' @param stationarity Logical value indicating whether to impose stationarity.
+#'   Defaults to TRUE.
+#' @param mplusAnalysis Quoted text. Specify ANLYSIS command for mplus. Defaults
+#' to "MODEL=NOCOVARIANCES;"
+#' @param mplusOutput Quoted text. Specify OUTPUT command for mplus. Defaults to
+#'   "stdyx; \\n cinterval; \\n",
+#' @param mplusDirectory Quoted text. Specify directory for mplus input and
+#'   output files. This directory must already exist before running the command.
+#'   Defaults to "mplus".
+#' @param constrainCors logical value indicating whether to constrain
+#'   correlations between same indicator at different waves (when there are more
+#'   than one indicator). Not yet implemented
+#' @param run Logical value indicating whether to run the model or to just
+#'   print and return code.
+#' @param ... Additional options passed to lavaan. Default options are
+#'   meanstructure=TRUE and missing = 'fiml'.
+#' @returns pcObject, which is a list that includes the parameter table used to
+#'   create the model, a list of basic information about the model, the model
+#'   code (either lavaan or mplus) and the fit object produced by lavaan or
+#'   MplusAutomation.
+#' @export
 panelcoder <- function(data,
                        title = "panelcoder",
                        panelModel = "starts",
@@ -151,11 +204,13 @@ panelcoder <- function(data,
                        residCors = FALSE,
                        limits = TRUE,
                        stationarity = TRUE,
-                       mplusOptions = NULL,
+                       mplusAnalysis = NULL,
                        mplusOutput = NULL,
                        mplusDirectory = "mplus",
-                       lavaanOptions = NULL,
-                       run = TRUE) {
+                       constrainCors = TRUE,
+                       run = TRUE,
+                       ...
+                       ) {
     info <- getInfo(data)
     model <- .buildModel(data,
                          panelModel,
@@ -169,7 +224,7 @@ panelcoder <- function(data,
     ## Lavaan
     if (program == "lavaan") {
         if (run == TRUE) {
-            fit <- lavaan(model,
+            fit <- lavaan::lavaan(model,
                           data = data,
                           meanstructure = TRUE,
                           missing = 'fiml')
@@ -183,13 +238,13 @@ panelcoder <- function(data,
     
     if (program == "mplus") {
         mplusModel <- lav2mplus(model)
-        mplusStatement <- mplusObject(TITLE = title,
+        mplusStatement <- MplusAutomation::mplusObject(TITLE = title,
                                       rdata = data,
                                       ANALYSIS = "MODEL=NOCOVARIANCES;",
                                       OUTPUT = "stdyx; \n  cinterval; \n",
                                       MODEL = mplusModel)
         if (run == TRUE) {
-            fit <- mplusModeler(mplusStatement,
+            fit <- MplusAutomation::mplusModeler(mplusStatement,
                                 modelout = paste0(mplusDirectory,
                                                   "/",
                                                   title,
@@ -201,7 +256,10 @@ panelcoder <- function(data,
             return(mplusModel)
         }
     }
-    return(list(pcSum, info, model, fit))
+    pcOutput <- list(pcSum, info, model, fit)
+    class(pcOutput) <- "pcOutput"
+    summary(pcSum)
+    return(pcOutput)
 }
 
     

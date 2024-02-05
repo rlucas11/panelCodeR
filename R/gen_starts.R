@@ -198,6 +198,9 @@ gen_starts <- function(n=500,      # N to generate
 #'   indicators.
 #' @param indicators Numeric value representing the number of indicators to add.
 #' @returns Dataframe with the original variables and the new indicators.
+#' @param labelType Either "numbers" (the default) or "letters"
+#' @param sd Numeric value indicating the standard deviation of the residual
+#'   variance that is added.
 #' @export
 addIndicators <- function(df, var, indicators, labelType="numbers", sd = 1) {
     var <- rlang::sym(var)
