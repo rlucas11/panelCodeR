@@ -971,7 +971,12 @@
     return(initialParTable)
 }
 
-
+#' Build Table
+#'
+#' Builds parameter table from model specification
+#' 
+#' @importFrom rlang .data
+#'
 .buildTable <- function(info,
                         ar = TRUE,
                         trait = TRUE,
@@ -1118,8 +1123,8 @@
     clParams <- subset(
         freeParams,
         op == "~" &
-            lhs_v != rhs_v &
-            lhs_c == "a"
+        lhs_v != rhs_v &
+        lhs_c == "a"
     ) %>%
         dplyr::arrange(lhs_v, as.numeric(lhs_w))
     
@@ -1134,7 +1139,7 @@
     residParams <- subset(
         freeParams,
         op == "~~" &
-            !is.na(lhs_i)
+        !is.na(lhs_i)
     )
 
     

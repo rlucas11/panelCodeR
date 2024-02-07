@@ -1,3 +1,7 @@
+#' Build Model
+#'
+#' Builds parameter table representing model
+#'
 .buildModel <- function(data,
                         panelModel = "starts",
                         crossLag = TRUE,
