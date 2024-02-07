@@ -971,12 +971,6 @@
     return(initialParTable)
 }
 
-#' Build Table
-#'
-#' Builds parameter table from model specification
-#' 
-#' @importFrom rlang .data
-#'
 .buildTable <- function(info,
                         ar = TRUE,
                         trait = TRUE,
