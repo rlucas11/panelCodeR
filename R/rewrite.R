@@ -241,7 +241,7 @@ panelcoder <- function(data,
         mplusStatement <- MplusAutomation::mplusObject(TITLE = title,
                                       rdata = data,
                                       ANALYSIS = "MODEL=NOCOVARIANCES;",
-                                      OUTPUT = "stdyx; \n  cinterval; \n",
+                                      OUTPUT = "stdyx; cinterval; TECH4 \n",
                                       MODEL = mplusModel)
         if (run == TRUE) {
             fit <- MplusAutomation::mplusModeler(mplusStatement,

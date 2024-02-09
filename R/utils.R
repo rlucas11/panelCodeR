@@ -336,3 +336,162 @@ summary.pcSum <- function(object, ...) {
     cat("Autoregressive Trait: ", sprintf("%.3f", object$ar.cor), "\n")
     cat("State: ", sprintf("%.3f", object$state.cor), "\n")
     }
+
+
+
+getObservedCors <- function(df, info, var) {
+    waves <- info$gen$maxWaves
+    aWaves <- info[[var]]$actualWaves
+    phantom <- setdiff(info[[var]]$waves, info[[var]]$actualWaves)
+    name <- info[[var]]$name
+    oldData <- df[, paste(name, aWaves, sep = "_")]
+    if (length(phantom) > 0) {
+        newData <- as.data.frame(matrix(NA,
+                                        nrow = nrow(df),
+                                        ncol = length(phantom)))
+        names(newData) <- paste(name, phantom, sep = "_")
+        finalData <- cbind(oldData, newData)
+    } else {
+        finalData <- oldData
+    }
+    corMat <- cor(finalData[,paste(name, 1:waves, sep="_")],
+                  use = "pair")
+    return(corMat)
+}
+
+
+
+
+getLavaanImpliedCors <- function(lavFit, vars, waves) {
+    xNames <- paste(rep("l", waves),
+                    vars[[1]],
+                    1:waves,
+                    sep = "_")
+    if (length(vars) == 2) {
+        yNames <- paste(rep("l", waves),
+                        vars[[2]],
+                        1:waves,
+                        sep = "_")
+    }
+    allCors <- lavaan::lavInspect(lavFit, what = "cor.lv")
+    xCors <- allCors[xNames, xNames]
+    xSum <- summarizeR(xCors)
+    if (length(vars) == 2) {
+        yCors <- allCors[yNames, yNames]
+        ySum <- summarizeR(yCors)
+    }
+    if (length(vars) == 1) {
+        return(xSum)
+    } else if (length(vars == 2)) {
+        return(cbind(xSum, ySum))
+    } else {
+        stop("No more than two variables allowed")
+    }
+    return(lCors)
+}
+
+getMplusImpliedCors <- function(latCorEst, vars, waves) {
+    xNames <- paste(rep("L", waves),
+                    vars[[1]],
+                    1:waves,
+                    sep = "_")
+    if (length(vars) == 2) {
+        yNames <- paste(rep("L", waves),
+                        vars[[2]],
+                        1:waves,
+                        sep = "_")
+    } 
+    latCorEst <- as.matrix(Matrix::forceSymmetric(latCorEst, uplo = "L"))
+    xCors <- latCorEst[xNames, xNames]
+    xSum <- summarizeR(xCors)
+    if (length(vars) == 2) {
+        yCors <- latCorEst[yNames, yNames]
+        ySum <- summarizeR(yCors)
+    }
+    if (length(vars) == 1) {
+        return(xSum)
+    } else if (length(vars == 2)) {
+        return(cbind(xSum, ySum))
+    } else {
+        stop("No more than two variables allowed")
+    }
+}
+
+
+
+
+summarizeR <- function(corMat, nvars=1) {
+
+    averageRs <- matrix(nrow=(nrow(corMat)/nvars-1),
+                        ncol=nvars)
+
+    for (k in 1:nvars) {
+        for (i in 1:((nrow(corMat)/nvars)-1)) {
+            sumR <- 0
+            nValid <- 0
+            for (j in seq(1, (nrow(corMat)-nvars*i), by=nvars)) {
+                if(!is.na(corMat[(j+(i*nvars)+(k-1)), j+(k-1)])) {
+                    sumR <- sumR + corMat[(j+(i*nvars)+(k-1)), j+(k-1)]
+                    nValid <- nValid + 1
+                }
+                
+            }
+            averageRs[i,k] <- sumR/(nValid)
+        }
+    }
+    return(averageRs)
+}
+
+
+combineCors <- function(df, info, program, fitObject) {
+    if (info$gen$yVar == TRUE) {
+        varNames <- c(info$x$name, info$y$name)
+        vars <- c("x", "y")
+    } else {
+        varNames <- c(info$x$name)
+        vars <- c("x", "y")
+    }
+    
+    ## Get implied correlations
+    if (program == "mplus") {
+        impliedCors <- getMplusImpliedCors(fitObject[[4]]$results$tech4$latCorEst,
+                                       varNames,
+                                       info$gen$maxWaves)
+    } else {
+        impliedCors <- getLavaanImpliedCors(fitObject[[4]],
+                                            varNames,
+                                            info$gen$maxWaves)
+    }
+
+    ## Get observed correlations
+
+    if (length(vars) == 1) {
+        observedCors <- getObservedCors(df, info, "x")
+    } else {
+        observedCors <- cbind(summarizeR(getObservedCors(df, info, "x")),
+                              summarizeR(getObservedCors(df, info, "y")))
+    }
+
+    allCors <- cbind(impliedCors, observedCors)
+    return(allCors)
+}
+
+    
+
+plotCors <- function(cors, vars) {
+    cors <- as.data.frame(cors)
+    lags <- nrow(cors)
+    names(cors) <- paste(
+        rep(c("Implied", "Observed"), each = 2),
+        rep(vars, 2))
+    cors <- cors %>%
+        mutate(lag=row_number()) %>%
+        pivot_longer(!lag) %>%
+        separate_wider_delim(name, " ", names = c("Source", "Variable"))
+    minCor <- min(cors$value)
+
+    ggplot(aes(x=lag, y=value, linetype=Source, color=Variable), data=cors) +
+        geom_line() +
+        geom_point() +
+        ylim(min(minCor,0), 1)
+}
