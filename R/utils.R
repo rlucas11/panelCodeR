@@ -1,4 +1,3 @@
-
 getInfo <- function(df) {
     ## Function to get information about names, waves, and indicators from dataframe
     ## Returns errors if data are not structured and named correctly
@@ -107,7 +106,7 @@ getInfo <- function(df) {
                 ),
             x = list(
                 name = variableNames[1],
-                waves = xWaves,
+                waves = 1:maxWaves,
                 actualWaves = xWaves,
                 indicators = xIndicators
             ),
@@ -205,16 +204,28 @@ getInfo <- function(df) {
     ## Variance Decomp
     trait.x <- est[which(est$paramHeader == "Variances" &
                          est$param == t.x), "est"]
-    trait.y <- est[which(est$paramHeader == "Variances" &
-                         est$param == t.y), "est"]
+    if (info$gen$yVar == TRUE) {
+        trait.y <- est[which(est$paramHeader == "Variances" &
+                             est$param == t.y), "est"]
+    } else {
+        trait.y <- NA
+    }
     ar.x <- est[which(est$paramHeader == "Variances" &
                          est$param == a.x), "est"]
-    ar.y <- est[which(est$paramHeader == "Variances" &
-                         est$param == a.y), "est"]
+    if (info$gen$yVar == TRUE) {
+        ar.y <- est[which(est$paramHeader == "Variances" &
+                          est$param == a.y), "est"]
+    } else {
+        ar.y <- NA
+    }
     state.x <- est[which(est$paramHeader == "Variances" &
                          est$param == s.x), "est"]
-    state.y <- est[which(est$paramHeader == "Variances" &
-                         est$param == s.y), "est"]
+    if (info$gen$yVar == TRUE) {
+        state.y <- est[which(est$paramHeader == "Variances" &
+                             est$param == s.y), "est"]
+    } else {
+        state.y <- NA
+    }
     trait.x.p <- trait.x/(sum(trait.x, ar.x, state.x))
     trait.y.p <- trait.y/(sum(trait.y, ar.y, state.y))
     ar.x.p <- ar.x/(sum(trait.x, ar.x, state.x))
@@ -223,24 +234,45 @@ getInfo <- function(df) {
     state.y.p <- state.y/(sum(trait.y, ar.y, state.y))
     
     ## Correlations
-    trait.cor <- est.std[which(est.std$paramHeader == paste0(t.x, ".WITH") &
-                               est.std$param == t.y), "est"]
-    ar.cor <- est.std[which(est.std$paramHeader == paste0(a.x, ".WITH") &
-                               est.std$param == a.y), "est"]
-    state.cor <- est.std[which(est.std$paramHeader == paste0(s.x, ".WITH") &
-                               est.std$param == s.y), "est"]
+    if (info$gen$yVar == TRUE) {
+        trait.cor <- est.std[which(est.std$paramHeader == paste0(t.x, ".WITH") &
+                                   est.std$param == t.y), "est"]
+    } else {
+        trait.cor <- ""
+    }
+    if (info$gen$yVar == TRUE) {
+        ar.cor <- est.std[which(est.std$paramHeader == paste0(a.x, ".WITH") &
+                                est.std$param == a.y), "est"]
+    } else {
+        ar.cor <- ""
+    }
+    if (info$gen$yVar == TRUE) {
+        state.cor <- est.std[which(est.std$paramHeader == paste0(s.x, ".WITH") &
+                                   est.std$param == s.y), "est"]
+    } else {
+        state.cor <- ""
+    }
     
     ## Stability
     x.stab <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
                             est.std$param == a.x), "est"]
-    y.stab <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
-                            est.std$param == a.y), "est"]
+    if (info$gen$yVar == TRUE) {
+        y.stab <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
+                                est.std$param == a.y), "est"]
+    } else {
+        y.stab <- ""
+    }
     
     ## Cross-lags
-    yOnX <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
-                          est.std$param == a.x), "est"]
-    xOnY <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
-                          est.std$param == a.y), "est"]
+    if (info$gen$yVar == TRUE) {
+        yOnX <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
+                              est.std$param == a.x), "est"]
+        xOnY <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
+                              est.std$param == a.y), "est"]
+    } else {
+        yOnX <- ""
+        xOnY <- ""
+    }
     
     ## Fit
     chi2 <- fit[["ChiSqM_Value"]]
@@ -449,16 +481,16 @@ combineCors <- function(df, info, program, fitObject) {
         vars <- c("x", "y")
     } else {
         varNames <- c(info$x$name)
-        vars <- c("x", "y")
+        vars <- "x"
     }
     
     ## Get implied correlations
     if (program == "mplus") {
-        impliedCors <- getMplusImpliedCors(fitObject[[4]]$results$tech4$latCorEst,
+        impliedCors <- getMplusImpliedCors(fitObject$results$tech4$latCorEst,
                                        varNames,
                                        info$gen$maxWaves)
     } else {
-        impliedCors <- getLavaanImpliedCors(fitObject[[4]],
+        impliedCors <- getLavaanImpliedCors(fitObject,
                                             varNames,
                                             info$gen$maxWaves)
     }
@@ -466,7 +498,7 @@ combineCors <- function(df, info, program, fitObject) {
     ## Get observed correlations
 
     if (length(vars) == 1) {
-        observedCors <- getObservedCors(df, info, "x")
+        observedCors <- summarizeR(getObservedCors(df, info, "x"))
     } else {
         observedCors <- cbind(summarizeR(getObservedCors(df, info, "x")),
                               summarizeR(getObservedCors(df, info, "y")))
@@ -482,7 +514,7 @@ plotCors <- function(cors, vars) {
     cors <- as.data.frame(cors)
     lags <- nrow(cors)
     names(cors) <- paste(
-        rep(c("Implied", "Observed"), each = 2),
+        rep(c("Implied", "Observed"), each = length(vars)),
         rep(vars, 2))
     cors <- cors %>%
         mutate(lag=row_number()) %>%

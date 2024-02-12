@@ -39,7 +39,7 @@
                     free = indList$free[i],
                     ustart = indList$ustart[i],
                     exo = 0,
-                    label = ""
+                    label = paste0("x", w, letters[i])
                 )
                 initialParTable <- rbind(
                     initialParTable,
@@ -119,7 +119,7 @@
                         free = indList$free[i],
                         ustart = indList$ustart[i],
                         exo = 0,
-                        label = ""
+                        label = paste0("y", w, letters[i])
                     )
                     initialParTable <- rbind(
                         initialParTable,
@@ -253,8 +253,6 @@
     }
     return(initialParTable)
 }
-
-
 
 
     
@@ -924,8 +922,9 @@
                         ustart = NA,
                         exo = 0,
                         label = paste0("x",
-                                       i,
-                                       "l_",
+                                       k,
+                                       letters[i],
+                                       "_l",
                                        xWaves[k]-xWaves[j]),
                         from = "residCors"
                     )
@@ -942,7 +941,7 @@
         if(yInd > 1) {
             for (i in 1:yInd) {
                 for (j in 1:(length(yWaves) - 1)) {
-                    for (k in yWaves[j:length(yWaves)]) {
+                    for (k in yWaves[(j + 1):length(yWaves)]) {
                         rCorTable <- data.frame(
                             lhs = paste(yName, j, i, sep = "_"),
                             op = "~~",
@@ -953,9 +952,10 @@
                             free = 1,
                             ustart = NA,
                             exo = 0,
-                            label = paste0("x",
-                                           i,
-                                           "l_",
+                            label = paste0("y",
+                                           k,
+                                           letters[i],
+                                           "_l",
                                            xWaves[k]-xWaves[j]),
                             from = "residCors"
                         )

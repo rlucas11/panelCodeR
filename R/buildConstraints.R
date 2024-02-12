@@ -206,6 +206,77 @@
     return(parTable)
 }
 
+
+.constrainResidVar <- function(parTable, info) {
+    waves <- info$gen$maxWaves
+    xInd <- info$x$indicators
+    for (w in 2:waves) {
+        for (i in 1:xInd) {
+            cVals <- list(
+                parTable,
+                paste0("x", w, "_", i, "v"),
+                "==",
+                paste0("x1_", i, "v")
+            )
+            parTable <- do.call(.buildConstraint, cVals)
+        }
+    }
+
+    if (info$gen$yVar == TRUE) {
+        yInd <- info$y$indicators
+        for (w in 2:waves) {
+            for (i in 1:yInd) {
+                cVals <- list(
+                    parTable,
+                    paste0("y", w, "_", i, "v"),
+                    "==",
+                    paste0("y1_", i, "v")
+                )
+                parTable <- do.call(.buildConstraint, cVals)
+            }
+        }
+    }
+    return(parTable)
+}
+
+.constrainLoadings <- function(parTable, info) {
+    waves <- info$gen$maxWaves
+    xInd <- info$x$indicators
+    if (xInd > 1) {
+        for (w in 2:waves) {
+            for (i in 2:xInd) {
+                cVals <- list(
+                    parTable,
+                    paste0("x", w, letters[i]),
+                    "==",
+                    paste0("x", 1, letters[i])
+                )
+                parTable <- do.call(.buildConstraint, cVals)
+            }
+        }
+    }
+
+    if (info$gen$yVar == TRUE) {
+        yInd <- info$y$indicators
+        if (yInd > 1) {
+            for (w in 2:waves) {
+                for (i in 2:yInd) {
+                    cVals <- list(
+                        parTable,
+                        paste0("y", w, letters[i]),
+                        "==",
+                        paste0("y", 1, letters[i])
+                    )
+                    parTable <- do.call(.buildConstraint, cVals)
+                }
+            }
+        }
+    }
+    return(parTable)
+}
+
+
+
 .constrainStateCors <- function(parTable, info, zero = FALSE) {
     waves <- info$gen$maxWaves
     for (w in 2:waves) {
@@ -228,6 +299,8 @@
     }
     return(parTable)
 }
+
+        
 
 .buildLimits <- function(parTable,
                          info,

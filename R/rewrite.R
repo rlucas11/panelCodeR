@@ -4,7 +4,8 @@
                         stateCors = FALSE,
                         residCors = FALSE,
                         limits = TRUE,
-                        stationarity = TRUE
+                        stationarity = TRUE,
+                        invariance = TRUE
                         ) {
     ## Collect basic info
     info <- getInfo(data)
@@ -120,6 +121,10 @@
         model <- .constrainStateCors(model, info)
     }
 
+    if (invariance == TRUE) {
+        model <- .constrainLoadings(model, info)
+    }
+
     ## Impose limits on variances and covariances
     ## Eventually change to allow for no correlations
     if (limits == TRUE) {
@@ -176,6 +181,8 @@
 #'   correlations to possible values. Defaults to TRUE.
 #' @param stationarity Logical value indicating whether to impose stationarity.
 #'   Defaults to TRUE.
+#' @param invariance Logical value indicating whether to constrain loadings for
+#'   the same item to be equal across waves. 
 #' @param mplusAnalysis Quoted text. Specify ANLYSIS command for mplus. Defaults
 #' to "MODEL=NOCOVARIANCES;"
 #' @param mplusOutput Quoted text. Specify OUTPUT command for mplus. Defaults to
@@ -204,6 +211,7 @@ panelcoder <- function(data,
                        residCors = FALSE,
                        limits = TRUE,
                        stationarity = TRUE,
+                       invariance = TRUE,
                        mplusAnalysis = NULL,
                        mplusOutput = NULL,
                        mplusDirectory = "mplus",
@@ -218,7 +226,8 @@ panelcoder <- function(data,
                          stateCors,
                          residCors,
                          limits,
-                         stationarity
+                         stationarity,
+                         invariance
                          )
 
     ## Lavaan
@@ -256,7 +265,34 @@ panelcoder <- function(data,
             return(mplusModel)
         }
     }
-    pcOutput <- list(pcSum, info, model, fit)
+    ## Get average correlations for each lag
+    ## Temporarily only run if using manifest-variable model
+    if (info$x$indicators > 1) {
+        latent <- 1
+    } else {
+        latent <- 0
+    }
+
+    if (info$gen$yVar == TRUE) {
+        if (info$y$indicators > 1) {
+            latent <- 1
+        }
+    }
+    
+    if (latent == 0) {
+        if (info$gen$yVar == TRUE) {
+            varNames <- c(info$x$name, info$y$name)
+        } else {
+            varNames <- info$x$name
+        }
+        corSummary <- combineCors(data,
+                                  info,
+                                  program,
+                                  fit)
+    } else {
+        corSummary <- NULL
+    }
+    pcOutput <- list(pcSum, info, model, fit, corSummary)
     class(pcOutput) <- "pcOutput"
     summary(pcSum)
     return(pcOutput)
