@@ -9,6 +9,8 @@ This R package generates lavaan and mplus code for models for analyzing panel da
 
 ## Updates!
 
+2/27/2024: Major changes to the package are starting. With version 0.0.0.9011, I added a new function called `panelcoder()` that will replace just about everything below with one command. I haven't updated this readme yet to describe the function, but you should be able to use the R help function do see the details. The panelcoder command can also plot the implied and actual correlations for increasingly long lags as a way of visualizing the fit of the model. I also added a new function to create parcels for items (see the help for `parcel()`). All of the existing functions still work, but they will eventually be deprecated in favor of the simpler `panelcoder()` command. If you run into any problems with the old commands after updating the package let me know. I tried to avoid changing anything that would break the old commands, but I may have missed something. 
+
 12/29/2023: Wrote new functions and summary method for lavaan code. Now you can use `run_starts_lavaan()` and related wrapper functions to build and run code for lavaan. Also prints nice summary of most important results. 
 
 12/27/2023: Implemented latent occasion variables with multiple indicators for lavaan. I also added some utilities for testing these models. The function `gen_starts()` generates data based on the STARTS model and `addIndicators()` can take that generated data and add indicators for each variable at each wave. 
@@ -121,6 +123,14 @@ The wrapper functions available are:
 - `run_arts_lavaan()`
 
 I may add additional wrapper functions in the future.
+
+### Missing Data
+
+If you have missing data and want to use FIML, then you should add `missing="FIML", int.ov.free=TRUE, int.lv.free=FALSE` to the end of the command. For example, to test a STARTS model, you could use:
+
+```R
+startsFit <- run_starts_lavaan(data, 10, missing="FIML", int.ov.free=TRUE, int.lv.free=FALSE)
+```
 
 ## Mplus commands
 

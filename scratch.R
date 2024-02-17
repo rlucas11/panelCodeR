@@ -189,7 +189,7 @@ mplusModeler(mplusStatement, modelout = "testPcL.inp", run=1)
 ################################################################################
 
 
-testL <- run_starts_lavaan(data,5)
+testL <- run_starts_lavaan(data,10)
 
 testL <- run_startsY_lavaan(data[1:1000,],5)
 

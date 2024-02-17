@@ -42,7 +42,7 @@ correlations to valid values.}
 Returns character vector of code that can be run using lavaan.
 }
 \description{
-\code{lavaanjclpm()} Wrapper function for \code{run_starts_mplus()}. Produces lavaan
+\code{lavaanjclpm()} Wrapper function for \code{buildLavaan()}. Produces lavaan
 code for the standard cross-lagged panel model. This is equivalent to the
 STARTS model with no stable trait or state variance.
 }

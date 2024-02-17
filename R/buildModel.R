@@ -1160,7 +1160,7 @@ buildLavaan <- function(waves,
 
 #' Builds Univariate Starts Model for X in Lavaan
 #'
-#' `lavaanStartsX()` Wrapper function for `run_starts_mplus()`. Produces lavaan
+#' `lavaanStartsX()` Wrapper function for `buildLavaan()`. Produces lavaan
 #' code for the univariate STARTS model (for variabes named X). 
 #'
 #' @param waves Numeric value indicating total number of waves.
@@ -1196,7 +1196,7 @@ lavaanStartsX <- function(waves,
 
 #' Builds Univariate Starts Model for Y in Lavaan
 #'
-#' `lavaanStartsY()` Wrapper function for `run_starts_mplus()`. Produces lavaan
+#' `lavaanStartsY()` Wrapper function for `buildLavaan()`. Produces lavaan
 #' code for the univariate STARTS model (for variabes named Y). 
 #'
 #' @param waves Numeric value indicating total number of waves.
@@ -1234,7 +1234,7 @@ lavaanStartsY <- function(waves,
 
 #' Builds Bivariate Starts Model in Lavaan
 #'
-#' `lavaanStarts2()` Wrapper function for `run_starts_mplus()`. Produces lavaan
+#' `lavaanStarts2()` Wrapper function for `buildLavaan()`. Produces lavaan
 #' code for the standard bivariate STARTS model. 
 #'
 #' @param waves Numeric value indicating total number of waves.
@@ -1284,7 +1284,7 @@ lavaanStarts2 <- function(waves,
 
 #' Builds RI-CLPM Model in Lavaan
 #'
-#' `lavaanRiclpm()` Wrapper function for `run_starts_mplus()`. Produces lavaan
+#' `lavaanRiclpm()` Wrapper function for `buildLavaan()`. Produces lavaan
 #' code for the standard Random-Intercept Cross-Lagged Panel Model. This is
 #' equivalent to a STARTS model without the state variance.
 #'
@@ -1327,7 +1327,7 @@ lavaanRiclpm <- function(waves,
 
 #' Builds CLPM Model in Lavaan
 #'
-#' `lavaanjclpm()` Wrapper function for `run_starts_mplus()`. Produces lavaan
+#' `lavaanjclpm()` Wrapper function for `buildLavaan()`. Produces lavaan
 #' code for the standard cross-lagged panel model. This is equivalent to the
 #' STARTS model with no stable trait or state variance.
 #'
@@ -1372,7 +1372,7 @@ lavaanClpm <- function(waves,
 
 #' Builds ARTS Model in Lavaan
 #'
-#' `lavaanArts()` Wrapper function for `run_starts_mplus()`. Produces lavaan
+#' `lavaanArts()` Wrapper function for `buildLavaan()`. Produces lavaan
 #' code for the autoregressive trait, state (ARTS) model. This is equivalent
 #' to the STARTS model with no stable trait variance.
 #'
@@ -1582,7 +1582,7 @@ run_starts_lavaan <- function(data,
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values.
 #' @param ... Additional arguments to the `lavaan()` command.
-#' @returns Character vector representing the Mplus code for the model statement.
+#' @returns Character vector representing the lavaan code for the model statement.
 #' @export
 run_riclpm_lavaan <- function(data,
                               waves,
@@ -1629,7 +1629,7 @@ run_riclpm_lavaan <- function(data,
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values.
 #' @param ... Additional arguments to the `lavaan()` command.
-#' @returns Character vector representing the Mplus code for the model statement.
+#' @returns Character vector representing the lavaan code for the model statement.
 #' @export
 run_clpm_lavaan <- function(data,
                               waves,
@@ -1679,7 +1679,7 @@ run_clpm_lavaan <- function(data,
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values.
 #' @param ... Additional arguments to the `lavaan()` command.
-#' @returns Character vector representing the Mplus code for the model statement.
+#' @returns Character vector representing the lavaan code for the model statement.
 #' @export
 run_arts_lavaan <- function(data,
                             waves,
@@ -1726,7 +1726,7 @@ run_arts_lavaan <- function(data,
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values.
 #' @param ... Additional arguments to the `lavaan()` command.
-#' @returns Character vector representing the Mplus code for the model statement.
+#' @returns Character vector representing the lavaan code for the model statement.
 #' @export
 run_startsX_lavaan <- function(data,
                               waves,
@@ -1767,7 +1767,7 @@ run_startsX_lavaan <- function(data,
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values.
 #' @param ... Additional arguments to the `lavaan()` command.
-#' @returns Character vector representing the Mplus code for the model statement.
+#' @returns Character vector representing the lavaan code for the model statement.
 #' @export
 run_startsY_lavaan <- function(data,
                               waves,

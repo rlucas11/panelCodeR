@@ -42,7 +42,7 @@ correlations to valid values.}
 Returns character vector of code that can be run using lavaan.
 }
 \description{
-\code{lavaanRiclpm()} Wrapper function for \code{run_starts_mplus()}. Produces lavaan
+\code{lavaanRiclpm()} Wrapper function for \code{buildLavaan()}. Produces lavaan
 code for the standard Random-Intercept Cross-Lagged Panel Model. This is
 equivalent to a STARTS model without the state variance.
 }

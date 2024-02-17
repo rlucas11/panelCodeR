@@ -45,7 +45,7 @@ correlations to possible values.}
 \item{...}{Additional arguments to the \code{lavaan()} command.}
 }
 \value{
-Character vector representing the Mplus code for the model statement.
+Character vector representing the lavaan code for the model statement.
 }
 \description{
 \code{run_clpm_lavaan()} produces and runs lavaan code for the standard lag-1
