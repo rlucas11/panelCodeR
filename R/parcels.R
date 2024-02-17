@@ -2,13 +2,26 @@
 #####CREATE PARCEL FUNCTION#####
 ################################
 
-#Need to structure data by Wave, only including items to parcel
-#Relies on 'gtools' package for evaluation of odd and even lines
-#pattern should be in the form of c(n1,n2,n3), where n1, n2, and n3 are the number of items per parcel
-
-
+#' Creates parcels from items
+#'
+#' `parcel()` takes a set of items from a single scale and creates parcels based
+#' on the user specification. The function conducts a factor analysis of items
+#' at each wave and then calculates the average factor loading for each item.
+#' The item with the strongest loading is assigned to the first parcel, the
+#' item with the second strongest loading is assigned to the second parcel,
+#' and so on until all items are assigned. 
+#'
+#'
+#' @param data Dataframe with just the items to be parcelled.
+#' @param items Number of items for the scale.
+#' @param waves Number of waves.
+#' @param pattern Vector specifying the number of parcels and the number of
+#'   items per parcel. For example, to get three parcels with 3 items for the
+#'   first parcel, 3 items for the second, and 4 items for the third, specify
+#'   `pattern = c(3, 3, 4)`
+#'
+#' @export
 parcel <- function(data,items,waves,pattern) {
-require(gtools)
 
 #Create Temporary Matrix
 loadingSum <- matrix(0,items,1)
@@ -17,7 +30,8 @@ loadingSum <- matrix(0,items,1)
 for (i in 1:waves) {
   start=1+(i-1)*items
   finish=i*items
-  loadingSum <- loadingSum+factanal(na.omit(data[,start:finish]), 1)$loadings[,1]
+  loadingSum <- loadingSum+stats::factanal(na.omit(data[,start:finish]),
+                                           1)$loadings[,1]
 }
 loadingAvg <- loadingSum/waves
 
@@ -28,7 +42,7 @@ itemList <- itemList[order(itemList$X1),]
 #Create Pattern Matrix for Creating Parcels
 temp <- matrix(nrow=max(pattern),ncol=length(pattern))
 for (i in 1:max(pattern)) {
-  if (odd(i)) {
+  if (gtools::odd(i)) {
     temp[i,] <- ((1+((i-1)*(length(pattern)))):(3+((i-1)*(length(pattern)))))
   }
   else {
@@ -38,7 +52,7 @@ for (i in 1:max(pattern)) {
 
 #Create Parcels
 for (i in 1:waves){
-  if (odd(max(pattern))) newPattern <- pattern else {
+  if (gtools::odd(max(pattern))) newPattern <- pattern else {
     newPattern <- pattern
     newPattern[1] <- pattern[3]
     newPattern[2] <- pattern[2]

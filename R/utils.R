@@ -517,12 +517,12 @@ plotCors <- function(cors, vars) {
         rep(c("Implied", "Observed"), each = length(vars)),
         rep(vars, 2))
     cors <- cors %>%
-        mutate(lag=row_number()) %>%
-        pivot_longer(!lag) %>%
-        separate_wider_delim(name, " ", names = c("Source", "Variable"))
+        dplyr::mutate(lag=row_number()) %>%
+        tidyr::pivot_longer(!lag) %>%
+        tidyr::separate_wider_delim(name, " ", names = c("Source", "Variable"))
     minCor <- min(cors$value)
 
-    ggplot(aes(x=lag, y=value, linetype=Source, color=Variable), data=cors) +
+    ggplot2::ggplot(aes(x=lag, y=value, linetype=Source, color=Variable), data=cors) +
         geom_line() +
         geom_point() +
         ylim(min(minCor,0), 1)

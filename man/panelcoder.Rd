@@ -14,6 +14,7 @@ panelcoder(
   residCors = FALSE,
   limits = TRUE,
   stationarity = TRUE,
+  invariance = TRUE,
   mplusAnalysis = NULL,
   mplusOutput = NULL,
   mplusDirectory = "mplus",
@@ -54,6 +55,9 @@ correlations to possible values. Defaults to TRUE.}
 
 \item{stationarity}{Logical value indicating whether to impose stationarity.
 Defaults to TRUE.}
+
+\item{invariance}{Logical value indicating whether to constrain loadings for
+the same item to be equal across waves.}
 
 \item{mplusAnalysis}{Quoted text. Specify ANLYSIS command for mplus. Defaults
 to "MODEL=NOCOVARIANCES;"}
