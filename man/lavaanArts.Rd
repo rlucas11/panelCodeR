@@ -46,7 +46,7 @@ correlations to valid values.}
 Returns character vector of code that can be run using lavaan.
 }
 \description{
-\code{lavaanArts()} Wrapper function for \code{run_starts_mplus()}. Produces lavaan
+\code{lavaanArts()} Wrapper function for \code{buildLavaan()}. Produces lavaan
 code for the autoregressive trait, state (ARTS) model. This is equivalent
 to the STARTS model with no stable trait variance.
 }

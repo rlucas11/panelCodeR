@@ -198,16 +198,27 @@ gen_starts <- function(n=500,      # N to generate
 #'   indicators.
 #' @param indicators Numeric value representing the number of indicators to add.
 #' @returns Dataframe with the original variables and the new indicators.
+#' @param labelType Either "numbers" (the default) or "letters"
+#' @param sd Numeric value indicating the standard deviation of the residual
+#'   variance that is added.
 #' @export
-addIndicators <- function(df, var, indicators) {
+addIndicators <- function(df, var, indicators, labelType="numbers", sd = 1) {
     var <- rlang::sym(var)
+    if (labelType == "letters") {
+        labels <- letters[1:indicators]
+    } else if (labelType == "numbers") {
+        labels <- paste0("_", 1:indicators)
+    } else {
+        stop("Label Type not recognized")
+    }
+
     for (i in 1:indicators) {
-        label <- letters[i]
+        label <- labels[i]
         var <- rlang::enquo(var)
         prefix <- rlang::as_label(var)
         df <- df %>%
             dplyr::rowwise() %>%
-            dplyr::mutate("{ prefix }{label}" := !!var + rnorm(1, 0, 1))
+            dplyr::mutate("{ prefix }{label}" := !!var + rnorm(1, 0, sd))
     }
     return(df)
 }

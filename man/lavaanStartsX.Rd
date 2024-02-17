@@ -35,6 +35,6 @@ correlations to valid values.}
 Returns character vector of code that can be run using lavaan.
 }
 \description{
-\code{lavaanStartsX()} Wrapper function for \code{run_starts_mplus()}. Produces lavaan
+\code{lavaanStartsX()} Wrapper function for \code{buildLavaan()}. Produces lavaan
 code for the univariate STARTS model (for variabes named X).
 }

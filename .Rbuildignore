@@ -1,7 +1,10 @@
 ^LICENSE\.md$
 ^scratch\.R$
+^localScratch\.R$
+^lavExport$
 ^mplus$
 ^testData\.csv$
 ^\.#scratch\.R$
 ^images$
 ^testTidySem\.R$
+^oldCode$
