@@ -10,6 +10,8 @@ panelcoder(
   panelModel = "starts",
   program = "lavaan",
   crossLag = TRUE,
+  traitCors = TRUE,
+  arCors = TRUE,
   stateCors = FALSE,
   residCors = FALSE,
   limits = TRUE,
@@ -43,6 +45,12 @@ should be very short. A warning is provided if these exceed 8 characters.}
 
 \item{crossLag}{Logical value indicating whether to include cross-lagged
 paths. Defaults to \code{TRUE}.}
+
+\item{traitCors}{Logical value indicating whether to include correlations
+between stable-trait/random-intercept components. Defaults to TRUE.}
+
+\item{arCors}{Logical value indicating whether to include correlations
+between wave-specific AR components. Defaults to TRUE.}
 
 \item{stateCors}{Logical value indicating whether to include correlations
 between wave-specific state components. Defaults to FALSE.}

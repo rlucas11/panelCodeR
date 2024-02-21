@@ -153,6 +153,8 @@ getInfo <- function(df) {
     tli <- fit[["tli"]]
     srmr <- fit[["srmr"]]
     rmsea <- fit[["rmsea"]]
+    aic <- fit[["aic"]]
+    bic <- fit[["bic"]]
     outputList <- list(
         trait.x = trait.x.p,
         trait.y = trait.y.p,
@@ -173,7 +175,9 @@ getInfo <- function(df) {
         cfi = cfi,
         tli = tli,
         srmr = srmr,
-        rmsea = rmsea)
+        rmsea = rmsea,
+        aic = aic,
+        bic = bic)
     class(outputList) <- "pcSum"
     return(outputList)
 }
@@ -282,6 +286,8 @@ getInfo <- function(df) {
     tli <- fit[["TLI"]]
     srmr <- fit[["SRMR"]]
     rmsea <- fit[["RMSEA_Estimate"]]
+    aic <- fit[["AIC"]]
+    bic <- fit[["BIC"]]
     outputList <- list(
         trait.x = trait.x.p,
         trait.y = trait.y.p,
@@ -302,7 +308,9 @@ getInfo <- function(df) {
         cfi = cfi,
         tli = tli,
         srmr = srmr,
-        rmsea = rmsea)
+        rmsea = rmsea,
+        aic = aic,
+        bic = bic)
     class(outputList) <- "pcSum"
     return(outputList)
 }
@@ -333,6 +341,10 @@ summary.pcSum <- function(object, ...) {
     cat("RMSEA = ",
         sprintf("%.3f", object$rmsea),
         "\n")
+    cat("AIC = ",
+        sprintf("%.3f", object$aic),
+        ", BIC = ",
+        sprintf("%.3f", object$bic), "\n")
     cat("\n")
     cat("Variance Decomposition: \n")
     cat("\n")

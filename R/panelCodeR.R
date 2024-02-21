@@ -173,6 +173,10 @@
 #'   "mplus"
 #' @param crossLag Logical value indicating whether to include cross-lagged
 #'   paths. Defaults to `TRUE`.
+#' @param traitCors Logical value indicating whether to include correlations
+#'   between stable-trait/random-intercept components. Defaults to TRUE.
+#' @param arCors Logical value indicating whether to include correlations
+#'   between wave-specific AR components. Defaults to TRUE.
 #' @param stateCors Logical value indicating whether to include correlations
 #'   between wave-specific state components. Defaults to FALSE.
 #' @param residCors Logical value indicating whether to include correlations
@@ -207,6 +211,8 @@ panelcoder <- function(data,
                        panelModel = "starts",
                        program = "lavaan",
                        crossLag = TRUE,
+                       traitCors = TRUE,
+                       arCors = TRUE,
                        stateCors = FALSE,
                        residCors = FALSE,
                        limits = TRUE,
@@ -220,6 +226,43 @@ panelcoder <- function(data,
                        ...
                        ) {
     info <- getInfo(data)
+
+    ## Set impossible options
+    if (panelModel == "clpm") {
+        stateCors <- FALSE
+        traitCors <- FALSE
+    }
+
+    if (panelModel == "riclpm") {
+        stateCors <- FALSE
+    }
+
+    if (panelModel == "arts") {
+        traitCors <- FALSE
+    }
+
+    if (panelModel == "sts") {
+        arCors <- FALSE
+    }
+    
+        
+
+    ## Check for phantom variables
+    if (identical(info$x$waves, info$x$actualWaves) == FALSE &
+        stationarity == FALSE) {
+        stop("Can't have phantom variables when stationarity is not set",
+             call. = FALSE)
+    }
+
+    if (info$gen$yVar == TRUE) {
+        if (identical(info$y$waves, info$y$actualWaves) == FALSE &
+            stationarity == FALSE) {
+            stop("Can't have phantom variables when stationarity is not set",
+                 call. = FALSE)
+        }
+    }
+    
+    
     model <- .buildModel(data,
                          panelModel,
                          crossLag,
