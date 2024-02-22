@@ -4,9 +4,9 @@
 \name{panelCodeR-package}
 \alias{panelCodeR}
 \alias{panelCodeR-package}
-\title{panelCodeR: Produces Lavaan and Mplus Code for Various Models for Panel Data}
+\title{panelCodeR: Run Models for Analyzing Panel Data}
 \description{
-This package produces lavaan and Mplus code for various models for panel data. One function creates lavaan code for the Stable Trait, Autoregressive Trait, State (STARTS) model and its constrained variants, and one function does this for Mplus. Univariate or bivariate models can be specified. The package also produces code for one version of a dynamic panel model.
+This package produces and then runs lavaan and Mplus code for various models for analyzing panel data.
 }
 \author{
 \strong{Maintainer}: Richard Lucas \email{richard.e.lucas@gmail.com} (\href{https://orcid.org/0000-0002-7995-3319}{ORCID})
