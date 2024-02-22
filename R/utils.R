@@ -1,3 +1,6 @@
+#' Get info about dataframe
+#' @param df dataframe
+#' @noRd
 getInfo <- function(df) {
     ## Function to get information about names, waves, and indicators from dataframe
     ## Returns errors if data are not structured and named correctly
@@ -116,7 +119,9 @@ getInfo <- function(df) {
     return(info)
 }
 
-
+#' Get summary data from lavaan output
+#' @param fitObject Lavaan object
+#' @noRd
 .summarizeLavaan <- function(fitObject) {
     ## Calculate values for summary
     parEst <- lavaan::parameterEstimates(fitObject)
@@ -182,7 +187,10 @@ getInfo <- function(df) {
     return(outputList)
 }
 
-
+#' Summarize info from mplus object
+#' @param info information object generated from `getInfo()`
+#' @param fitObject mplus object with output
+#' @noRd
 .summarizeMplus <- function(info, fitObject) {
     ## Extract estimates and fit info
     est <- fitObject$results$parameters$unstandardized
