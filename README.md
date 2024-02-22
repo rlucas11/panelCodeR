@@ -6,7 +6,7 @@ This R package generates lavaan and mplus code for models for analyzing panel da
 
 Reduced form models can be specified by setting certain variance components equal to zero. For instance, omitting the state variance at each wave from the general model results in the RI-CLPM, and removing both the state and stable-trait variance results in the CLPM. 
 
-![Diagram of RI-CLPM](images/riclpm.png =45%x)![Diagram of CLPM](clpmReduced.png =75%x)
+![Diagram of RI-CLPM](images/riclpm.png =45%x) ![Diagram of CLPM](clpmReduced.png =75%x)
 
 Currently, it is possible to run bivariate and univariate versions of the following models: 
 
