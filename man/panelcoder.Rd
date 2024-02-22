@@ -14,6 +14,7 @@ panelcoder(
   arCors = TRUE,
   stateCors = FALSE,
   residCors = FALSE,
+  residVar = FALSE,
   limits = TRUE,
   stationarity = TRUE,
   invariance = TRUE,
@@ -57,6 +58,9 @@ between wave-specific state components. Defaults to FALSE.}
 
 \item{residCors}{Logical value indicating whether to include correlations
 between item-specific residual. Defaults to FALSE.}
+
+\item{residVar}{Logical value indicating whether to constrain residual
+variance to be equal across waves when there are multiple indicators.}
 
 \item{limits}{Logical value indicating whether to constrain variances and
 correlations to possible values. Defaults to TRUE.}

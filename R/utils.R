@@ -540,6 +540,77 @@ plotCors <- function(cors, vars) {
         ylim(min(minCor,0), 1)
 }
 
+#' Plots implied and actual correlations
+#'
+#' `panelPlot()` plots implied and actual stability coefficients for
+#' increasingly long lags for the variables analyzed by the panelcoder
+#' function. The function takes a panelcoder output object as an argument and
+#' then plots these stabilities. Currently, the model only works for observed-
+#' variable models. Eventually it will be able to handle latent-variable models,
+#' too. 
+#'
+#' @param pcOutput An object created from running the `panelcoder()` command.
+#' @export
+panelPlot <- function(pcOutput) {
+    if (class(pcOutput) != "pcOutput") {
+        stop("This is not output from the panelcoder function", call.=FALSE)
+    }
+    if (pcOutput[[2]]$gen$yVar == TRUE) {
+        maxInd <- max(pcOutput[[2]]$y$indicators,
+                      pcOutput[[2]]$x$indicators)
+    } else {
+        maxInd <- pcOutput[[2]]$x$indicators
+    }
+
+    if (maxInd > 1) {
+        stop("panelPlot not implemented yet for data with multiple indicators", call.=FALSE)
+    }
+    
+    if (pcOutput[[2]]$gen$yVar == TRUE) {
+        varNames <- c(pcOutput[[2]]$x$name, pcOutput[[2]]$y$name)
+    } else {
+        varNames <- pcOutput[[2]]$x$name
+    }
+    plotCors(pcOutput[[5]], varNames)
+}
+
+#' Prints all estimates 
+#'
+#' `panelEstimates()` takes a panelcoder output object as an argument and then
+#' prints all estimates from lavaan or mplus. 
+#'
+#' @param pcOutput An object created from running the `panelcoder()` command.
+#' @export
+panelEstimates <- function(pcOutput) {
+    if (class(pcOutput) != "pcOutput") {
+        stop("This is not output from the panelcoder function", call.=FALSE)
+    }
+
+    output <- pcOutput[[4]]
+    if (class(pcOutput) == "mplusObject") {
+        print(output$results$parameters)
+    } else {
+        print(lavaan::parameterEstimates(output))
+    }
+}
+
+#' Prints formatted version of lavaan or mplus code
+#'
+#' `modelCode()` takes a panelcoder output object as an argument and then
+#' prints corresponding lavaan or mplus code. 
+#'
+#' @param pcOutput An object created from running the `panelcoder()` command.
+#' @export
+modelCode <- function(pcOutput) {
+    if (class(pcOutput) != "pcOutput") {
+        stop("This is not output from the panelcoder function", call.=FALSE)
+    }
+
+    cat(pcOutput[[6]])
+}
+
+
+
 ################################
 #####CREATE PARCEL FUNCTION#####
 ################################

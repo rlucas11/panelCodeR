@@ -538,7 +538,9 @@ infoI <- getInfo(dataI)
 info <- getInfo(data2)
 
 
-panelcoder(data=data2)
+out <- panelcoder(data=dataI, program = "mplus")
+
+out <- panelcoder(data=data2, program = "lavaan", run=FALSE)
 
 
 model <- .buildTable(info, stateCors = FALSE)

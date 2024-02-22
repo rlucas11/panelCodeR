@@ -8,7 +8,7 @@ Reduced form models can be specified by setting certain variance components equa
 
 - STARTS (includes all components)
 - RI-CLPM (excludes state component)
-- ARTs (excludes stable-trait component)
+- ARTs (also known as a 'factor CLPM'; excludes stable-trait component)
 - STS (excludes autoregressive component)
 - CLPM (excludes stable-trait and state components)
 
@@ -16,9 +16,9 @@ A number of additional options are also available. By default, the model imposes
 
 The package handles data with multiple indicators per wave (as long as the same indicators are available at each wave). In addition, most models can be run even if certain waves are missing. This is accomplished through the use of phantom variables for missing waves, but stationarity constraints must be included for these to work. 
 
-Finally, there are a few helper functions. The package includes a function called `gen_starts()` that generates data from a STARTS model with user specified parameters (e.g., different amounts of variance for each component or different lagged paths). This can be useful for seeing how the models behave under different data-generating processes. There is a related function called `addIndicators()` that can take the data from `gen_starts()` and make multiple indicators for each wave. 
+Finally, there are a few helper functions. The package includes a function called `gen_starts()` that generates data from a STARTS model with user specified parameters (e.g., different amounts of variance for each component or different lagged paths). This can be useful for seeing how the models behave under different data-generating processes. There is a related function called `addIndicators()` that can take the data from `gen_starts()` and make multiple indicators for each wave. Finally, the function `parcels()` takes multiple-item scales and creates parcels based on the average loadings across waves. 
 
-There are two functions that are useful after you have run a model. `panelplot()` will plot the implied stabilities and actual stabilities for increasingly long waves (up to the length of the study). This can be useful for visualizing the ways that the model might not describe the underlying data well. The function `panelcode()` prints a formatted version of lavaan or mplus code used to run the model. This can be useful for checking that everything was specified correctly or for modifying the basic code for variations that the package cannot handle. 
+There are three functions that are useful after you have run a model. `panelPlot()` will plot the implied stabilities and actual stabilities for increasingly long waves (up to the length of the study). This can be useful for visualizing the ways that the model might not describe the underlying data well. The function `panelEstimates()` prints all estimates from the model. The function `modelCode()` prints a formatted version of lavaan or mplus code used to run the model. This can be useful for checking that everything was specified correctly or for modifying the basic code for variations that the package cannot handle. 
 
 
 ## Installation

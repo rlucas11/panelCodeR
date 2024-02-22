@@ -285,6 +285,7 @@ panelcoder <- function(data,
 
     ## Lavaan
     if (program == "lavaan") {
+        modelCode <- lav2lavaan(model)
         if (run == TRUE) {
             fit <- lavaan::lavaan(model,
                           data = data,
@@ -292,19 +293,18 @@ panelcoder <- function(data,
                           missing = 'fiml')
             pcSum <- .summarizeLavaan(fit)
         } else {
-            modelCode <- lav2lavaan(model)
             cat(modelCode)
             return(modelCode)
         }
     }
     
     if (program == "mplus") {
-        mplusModel <- lav2mplus(model)
+        modelCode <- lav2mplus(model)
         mplusStatement <- MplusAutomation::mplusObject(TITLE = title,
                                       rdata = data,
                                       ANALYSIS = "MODEL=NOCOVARIANCES;",
                                       OUTPUT = "stdyx; cinterval; TECH4 \n",
-                                      MODEL = mplusModel)
+                                      MODEL = modelCode)
         if (run == TRUE) {
             fit <- MplusAutomation::mplusModeler(mplusStatement,
                                 modelout = paste0(mplusDirectory,
@@ -314,8 +314,8 @@ panelcoder <- function(data,
                                 run = 1)
             pcSum <- .summarizeMplus(info, fit)
         } else {
-            cat(mplusModel)
-            return(mplusModel)
+            cat(modelCode)
+            return(modelCode)
         }
     }
     ## Get average correlations for each lag
@@ -345,7 +345,7 @@ panelcoder <- function(data,
     } else {
         corSummary <- NULL
     }
-    pcOutput <- list(pcSum, info, model, fit, corSummary)
+    pcOutput <- list(pcSum, info, model, fit, corSummary, modelCode)
     class(pcOutput) <- "pcOutput"
     summary(pcSum)
     return(pcOutput)
