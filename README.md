@@ -1,31 +1,25 @@
 # panelCodeR Package
 
-This R package generates lavaan and mplus code for models for analyzing panel data. Currently, it can generate code for the bivariate STARTS model and a number of models nested under this more general model. Specifically, it is possible to set different variance components to zero, which results in a reduced model. For instance, omitting the state variance at each wave results in the RI-CLPM and removing both the state and stable-trait variance results in the CLPM. It is also possible to remove the lagged paths. There are also some wrapper functions that create code for these models using appropriate options (see below).
+This R package generates lavaan and mplus code for models for analyzing panel data. Currently, it can generate code for the bivariate STARTS model and a number of models nested under this more general model. The diagram below shows the STARTS model and its components, which include a stable-trait (ST) component, an autoregressive trait (ART) component, and a state (S) component for each variable. 
 
 ![Diagram of STARTS Model](images/startsTransparent.png)
 
-> [!CAUTION]
-> This package is under development and changes frequently. It is likely that the naming of functions will change substantially in future versions!  **You should also check the model code that is generated to make sure it is what you want!**
+Reduced form models can be specified by setting certain variance components equal to zero. For instance, omitting the state variance at each wave from the general model results in the RI-CLPM, and removing both the state and stable-trait variance results in the CLPM. Currently, it is possible to run bivariate and univariate versions of the following models: 
 
-## Updates!
+- STARTS (includes all components)
+- RI-CLPM (excludes state component)
+- ARTs (excludes stable-trait component)
+- STS (excludes autoregressive component)
+- CLPM (excludes stable-trait and state components)
 
-2/27/2024: Major changes to the package are starting. With version 0.0.0.9011, I added a new function called `panelcoder()` that will replace just about everything below with one command. I haven't updated this readme yet to describe the function, but you should be able to use the R help function do see the details. The panelcoder command can also plot the implied and actual correlations for increasingly long lags as a way of visualizing the fit of the model. I also added a new function to create parcels for items (see the help for `parcel()`). All of the existing functions still work, but they will eventually be deprecated in favor of the simpler `panelcoder()` command. If you run into any problems with the old commands after updating the package let me know. I tried to avoid changing anything that would break the old commands, but I may have missed something. 
+A number of additional options are also available. By default, the model imposes stationarity constraints, which set the variances, stabilities, and cross-lagged paths to be equal across waves; but this constraint can often be removed. It is also possible to remove the lagged paths. Correlations between the components for the two variables in bivariate models can also be included or excluded. 
 
-12/29/2023: Wrote new functions and summary method for lavaan code. Now you can use `run_starts_lavaan()` and related wrapper functions to build and run code for lavaan. Also prints nice summary of most important results. 
+The package handles data with multiple indicators per wave (as long as the same indicators are available at each wave). In addition, most models can be run even if certain waves are missing. This is accomplished through the use of phantom variables for missing waves, but stationarity constraints must be included for these to work. 
 
-12/27/2023: Implemented latent occasion variables with multiple indicators for lavaan. I also added some utilities for testing these models. The function `gen_starts()` generates data based on the STARTS model and `addIndicators()` can take that generated data and add indicators for each variable at each wave. 
+Finally, there are a few helper functions. The package includes a function called `gen_starts()` that generates data from a STARTS model with user specified parameters (e.g., different amounts of variance for each component or different lagged paths). This can be useful for seeing how the models behave under different data-generating processes. There is a related function called `addIndicators()` that can take the data from `gen_starts()` and make multiple indicators for each wave. 
 
-12/24/2023: The code to compare univariate models in Mplus has been added to the package.
+There are two functions that are useful after you have run a model. `panelplot()` will plot the implied stabilities and actual stabilities for increasingly long waves (up to the length of the study). This can be useful for visualizing the ways that the model might not describe the underlying data well. The function `panelcode()` prints a formatted version of lavaan or mplus code used to run the model. This can be useful for checking that everything was specified correctly or for modifying the basic code for variations that the package cannot handle. 
 
-12/22/2023: The code to run the DPM model in Mplus has been added to the package. 
-
-12/20/2023: I turned this into an R package. In doing this, I made a few naming changes, mostly to the lavaan functions. 
-
-11/15/2023: I added code to generate Mplus data for a dynamic panel model. This code is in buildMplusDpm.R and it has very similar options as basic code described below. 
-
-Also note that if there is something that the Mplus code does that you want to do in Mplus, I have been testing the `mplus2lavaan.modelSyntax()` command from the `lavaan` package, and it seems to work pretty well. The one problem is that it doesn't seem to handle phantom variables correctly. 
-
-11/15/2023: I updated the code to allow for multiple indicators at each wave (only for Mplus). This is specified through two new arguments to the mplus functions: `xIndicators` and `yIndicators`. The default for these is `1`. If you set these to something greater than 1, the model will specify multiple indicators. You will need to make sure these are labeled with letters from 'a' to the letter corresponding to the maximum number of indicators (e.g., 'c' for 3 indicators). In other words, if you had three indicators, you need to have variables in your file labeled "x1a," "x1b," and "x1c" for Wave 1. I also added correlations between the same indicator at different wave, and by these are constrained so that correlations across equally long lags are equal (e.g., x1a with x2a is the same as x3a with x4a). Set the 'constrainCor' argument to FALSE to allow these to vary freely. 
 
 ## Installation
 
@@ -38,11 +32,76 @@ devtools::install_github("rlucas11/panelCodeR")
 
 ## Data
 
-The code that this generates is like any other lavaan or mplus model. However, it assumes that you have two sets of variables, named x1 through xw and y1 through yw, where 'w' is the number of waves. It is possible to have missing waves, in which case, the code generator creates phantom variables for missing waves. This is often only possible if stationarity is imposed. To specify that waves are missing, use `xWaves` and/or `yWaves` to indicate which waves exist (e.g., `xWaves = c(1:5, 7:10)`). If you have multiple indicators per wave, indicators should be labeled using letters starting from 'a' (e.g., "x1a", "x1b", and "x1c" for three indicators of the variable at Wave 1). 
+One of the benefits of the package is that it flexibly creates model code based on the data you provide. In other words, the function determines how many variables (either one or two), waves, and indicators exist in your data, and then creates a model appropriate for those data. This means, however, that you must name your variables in a specific way for the code to work. In short, your variables must at least have a stem and a wave number, separated by an underscore (e.g. X_1, X_2, X_3). If you have multiple indicators, then you should add a number that indexes the indicator, again separated by an underscore (e.g., X_1_1, X_1_2, X_2_1, X_2_2). If there is a wave missing, just do not include those variables in the dataframe that is passed to the function (e.g., do not include X_3 if the variable was not assessed at Wave 3). The dataframe should not have any variables other than those to be used in the model (i.e., no ID variables).
 
-## Commands
+**Note for Mplus**: Mplus restricts variable names to eight characters. Because of the requirement for wave and indicator indexes (along with separators), this means that the stem of your variable names must be very short. For instance, if you have more than nine waves, five of the eight characters are taken up by the wave and indicator indexes, which means that the stem cannot be more than 3 characters long. Keep this in mind when naming your variables. 
+
+
+## Usage
+
+The main function to build and run the code is `panelcoder()`. 
+
+```R
+panelcoder <- function(data,
+                       title = "panelcoder",
+                       panelModel = "starts",
+                       program = "lavaan",
+                       crossLag = TRUE,
+                       traitCors = TRUE,
+                       arCors = TRUE,
+                       stateCors = FALSE,
+                       residCors = FALSE,
+                       residVar = FALSE,
+                       limits = TRUE,
+                       stationarity = TRUE,
+                       invariance = TRUE,
+                       mplusAnalysis = NULL,
+                       mplusOutput = NULL,
+                       mplusDirectory = "mplus",
+                       constrainCors = TRUE,
+                       run = TRUE,
+                       ...
+                       )
+```
+
+Hopefully, these options are self-explanatory. You will need to specify the (properly named) dataframe to use. Without specifying anything else, that will run a STARTS model using lavaan, with all the default settings. To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", or "sts" model. Eventually, there will be an option to run a dynamic panel model ("dpm"), but for now this requires using a different command (see below). To change which program to use, select either "lavaan" or "mplus" for the `program` option. 
+
+The other options are described below (and in the R help functions).
+
+- `crossLag` specifies whether the reciprocal lagged associations between the two variables in a bivariate model are included.
+- `traitCors` specifies whether to include the correlation between the stable trait components.
+- `arCors` specifies whether to include correlations between AR components in the same wave (in bivariate models).
+- `stateCors` specifies whether to include correlations between state components in the same wave (in bivariate models).
+- `residCors` specifies whether to include correlations between the residuals from a specific indicator at a specific wave with the residuals for the same indicator at other waves. 
+- `residVar` specifies whether to constraint the residuals for specific indicators to be the same across waves
+- `limits` specifies whether to restrict variances to be greater than zero and correlations to be between -1 and 1. This is sometimes needed to prevent inadmissible solutions when a variance component is very small or zero. 
+- `stationarity` specifies whether to impose stationarity. If true, the following parameters are constrained
+  - Stability coefficients
+  - Lagged paths
+  - Total autoregressive variance
+  - State variance
+- `mplusAnalysis` specifies the ANALYSIS command to use for mplus if different from the default.
+- `mplusOutput` specifies the OUTPUT command to use for mplus if different from the default.
+- `mplusDirectory` specifies the directory to store .inp and .out files from mplus. This needs to be created before running the model or the command will fail with a 'file not found' error. 
+- `constrainCors` specifies whether to constrain correlations between residuals with equal lags to be equal (e.g., the correlation between X_1_1 and X_2_1 would be constrained to be equal to the correlation between X_2_1 and X_3_1. 
+- `run` specifies whether to run the model or just to create and print the model code. 
+
+When you call the function, it will present a summary of some of the most important results from the model, but it is best to save the output of the command to an object (e.g., `pcOutput <- panelcoder(data)`. This object includes some information used when constructing the model, along with the lavaan or mplus code, the lavaan or mplus output, and information to plot correlations. The following functions help examine this information (these are not yet implemented, but will be soon).
+
+The function `panelplot()` will plot the implied and actual stabilities for increasingly long lags (up to the number of waves in the data). This can show whether the selected model accurately reproduces the actual stability coefficients from the data. Models like the CLPM often underestimate the long-term stability of the variables. 
+
+The function `modelstatement()` will produce a formatted version of the mplus or lavaan code representing the model. This could be used to check that the model was specified correctly, and it can also be copied, pasted, and modified to run models that can't be specified with panelCodeR. 
+
+The function `modelestimates()` will extract and print the lavaan or mplus estimates. The actual lavaan or mplus object that is created from running the model is stored in the panelCodeR output; you can access it by selecting the fourth element of the panelCodeR output (e.g., `pcOutput[[4]]`). 
+
+
+
+# Old Version
+
+Below is the documentation for the functions used in the early versions of this package. These work for now, but will eventually be deprecated. 
 
 For both Lavaan and Mplus, there are functions just to build the model code or to build and run the code. It is often easiest to do the latter, but the former functions are especially useful if you want to build and then modify code. 
+
 
 ## Lavaan Commands
 
