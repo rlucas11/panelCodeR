@@ -210,29 +210,33 @@
 .constrainResidVar <- function(parTable, info) {
     waves <- info$gen$maxWaves
     xInd <- info$x$indicators
-    for (w in 2:waves) {
-        for (i in 1:xInd) {
-            cVals <- list(
-                parTable,
-                paste0("x", w, "_", i, "v"),
-                "==",
-                paste0("x1_", i, "v")
-            )
-            parTable <- do.call(.buildConstraint, cVals)
+    if (xInd > 1) {
+        for (w in 2:waves) {
+            for (i in 1:xInd) {
+                cVals <- list(
+                    parTable,
+                    paste0("x", w, "_", i, "v"),
+                    "==",
+                    paste0("x1_", i, "v")
+                )
+                parTable <- do.call(.buildConstraint, cVals)
+            }
         }
     }
 
     if (info$gen$yVar == TRUE) {
         yInd <- info$y$indicators
-        for (w in 2:waves) {
-            for (i in 1:yInd) {
-                cVals <- list(
-                    parTable,
-                    paste0("y", w, "_", i, "v"),
-                    "==",
-                    paste0("y1_", i, "v")
-                )
-                parTable <- do.call(.buildConstraint, cVals)
+        if (yInd > 1) {
+            for (w in 2:waves) {
+                for (i in 1:yInd) {
+                    cVals <- list(
+                        parTable,
+                        paste0("y", w, "_", i, "v"),
+                        "==",
+                        paste0("y1_", i, "v")
+                    )
+                    parTable <- do.call(.buildConstraint, cVals)
+                }
             }
         }
     }

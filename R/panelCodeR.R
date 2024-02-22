@@ -5,7 +5,8 @@
                         residCors = FALSE,
                         limits = TRUE,
                         stationarity = TRUE,
-                        invariance = TRUE
+                        invariance = TRUE,
+                        residVar = FALSE
                         ) {
     ## Collect basic info
     info <- getInfo(data)
@@ -125,6 +126,11 @@
         model <- .constrainLoadings(model, info)
     }
 
+    if (residVar == TRUE) {
+        model <- .constrainResidVar(model, info)
+    }
+    
+
     ## Impose limits on variances and covariances
     ## Eventually change to allow for no correlations
     if (limits == TRUE) {
@@ -181,6 +187,8 @@
 #'   between wave-specific state components. Defaults to FALSE.
 #' @param residCors Logical value indicating whether to include correlations
 #'   between item-specific residual. Defaults to FALSE.
+#' @param residVar Logical value indicating whether to constrain residual
+#'   variance to be equal across waves when there are multiple indicators.
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values. Defaults to TRUE.
 #' @param stationarity Logical value indicating whether to impose stationarity.
@@ -215,6 +223,7 @@ panelcoder <- function(data,
                        arCors = TRUE,
                        stateCors = FALSE,
                        residCors = FALSE,
+                       residVar = FALSE,
                        limits = TRUE,
                        stationarity = TRUE,
                        invariance = TRUE,
@@ -263,14 +272,15 @@ panelcoder <- function(data,
     }
     
     
-    model <- .buildModel(data,
-                         panelModel,
-                         crossLag,
-                         stateCors,
-                         residCors,
-                         limits,
-                         stationarity,
-                         invariance
+    model <- .buildModel(data = data,
+                         panelModel = panelModel,
+                         crossLag = crossLag,
+                         stateCors = stateCors,
+                         residCors = residCors,
+                         limits = limits,
+                         stationarity = stationarity,
+                         invariance = invariance,
+                         residVar = residVar
                          )
 
     ## Lavaan
