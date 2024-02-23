@@ -260,14 +260,14 @@ panelcoder <- function(data,
         
 
     ## Check for phantom variables
-    if (identical(info$x$waves, info$x$actualWaves) == FALSE &
+    if (length(info$x$waves) != length(info$x$actualWaves) &
         stationarity == FALSE) {
         stop("Can't have phantom variables when stationarity is not set",
              call. = FALSE)
     }
 
     if (info$gen$yVar == TRUE) {
-        if (identical(info$y$waves, info$y$actualWaves) == FALSE &
+        if (length(info$y$waves) != length(info$y$actualWaves) &
             stationarity == FALSE) {
             stop("Can't have phantom variables when stationarity is not set",
                  call. = FALSE)
