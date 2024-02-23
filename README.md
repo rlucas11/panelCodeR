@@ -4,23 +4,19 @@ This R package generates lavaan and mplus code for models for analyzing panel da
 
 ![Diagram of STARTS Model](images/startsTransparent.png)
 
-Reduced form models can be specified by setting certain variance components equal to zero. For instance, omitting the state variance at each wave from the general model results in the RI-CLPM, and removing both the state and stable-trait variance results in the CLPM. 
+Reduced form models can be specified by setting certain variance components equal to zero. For instance, omitting the state variance at each wave from the general model results in the Random-Intercept Cross-Lagged Panel Model (RI-CLPM), and removing both the state and stable-trait variance results in the Cross-Lagged Panel Model (CLPM). 
 
 
 RI-CLPM | CLPM
 :-----:|:-----:
 ![](images/riclpm.png) | ![](images/clpmReduced.png)
 
+Although the CLPM and RI-CLPM are the more commonly used reduced-form versions of the general STARTS model, it is also possible to remove just the stable-trait component, which results in an "Autoregressive-Trait State" (ARTS) model (otherwise known as the factor CLPM). Removing the autoregressive-trait component results in a simple correlated Stable-Trait model (STS). 
 
+ARTS | STS
+:-----:|:-----:
+![](images/artsReduced.png) | ![](images/sts.png)
 
-
-Currently, it is possible to run bivariate and univariate versions of the following models: 
-
-- STARTS (includes all components)
-- RI-CLPM (excludes state component)
-- ARTs (also known as a 'factor CLPM'; excludes stable-trait component)
-- STS (excludes autoregressive component)
-- CLPM (excludes stable-trait and state components)
 
 A number of additional options are also available. By default, the model imposes stationarity constraints, which set the variances, stabilities, and cross-lagged paths to be equal across waves; but this constraint can often be removed. It is also possible to remove the lagged paths. Correlations between the components for the two variables in bivariate models can also be included or excluded. 
 
