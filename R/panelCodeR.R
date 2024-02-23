@@ -1,6 +1,7 @@
 .buildModel <- function(data,
                         panelModel = "starts",
                         crossLag = TRUE,
+                        traitCors = TRUE,
                         stateCors = FALSE,
                         residCors = FALSE,
                         limits = TRUE,
@@ -25,7 +26,7 @@
         stability <- TRUE
         cl <- TRUE
         state <- TRUE
-        traitCors <- TRUE
+        traitCors <- traitCors
         arCors <- TRUE
         stateCors <- stateCors
         residCors <- residCors
@@ -37,7 +38,7 @@
         stability <- TRUE
         cl <- TRUE
         state <- FALSE
-        traitCors <- TRUE
+        traitCors <- traitCors
         arCors <- TRUE
         stateCors <- FALSE
         residCors <- residCors
@@ -49,7 +50,7 @@
         stability <- TRUE
         cl <- TRUE
         state <- TRUE
-        traitCors <- TRUE
+        traitCors <- traitCors
         arCors <- TRUE
         stateCors <- stateCors
         residCors <- residCors
@@ -73,7 +74,7 @@
         stability <- FALSE
         cl <- FALSE
         state <- TRUE
-        traitCors <- TRUE
+        traitCors <- traitCors
         arCors <- FALSE
         stateCors <- stateCors
         residCors <- residCors

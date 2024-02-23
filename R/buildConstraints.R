@@ -348,6 +348,24 @@
                 ">",
                 0
             )
+            if (traitCors == TRUE) {
+                parTable <- .buildConstraint(
+                    parTable,
+                    "cov_txty",
+                    "<",
+                    ## Temporarily use 99/100 because of bug in lavaan
+                    "(99/100)*sqrt(x_tVar)*sqrt(y_tVar)",
+                    0
+                )
+                parTable <- .buildConstraint(
+                    parTable,
+                    "cov_txty",
+                    ">",
+                    ## Temporarily use 99/100 because of bug in lavaan
+                    "-(99/100)*sqrt(x_tVar)*sqrt(y_tVar)",
+                    0
+                )
+            }
         }
     }
     if (state == TRUE) {
