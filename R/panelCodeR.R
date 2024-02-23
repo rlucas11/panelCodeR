@@ -196,7 +196,9 @@
 #' @param invariance Logical value indicating whether to constrain loadings for
 #'   the same item to be equal across waves. 
 #' @param mplusAnalysis Quoted text. Specify ANLYSIS command for mplus. Defaults
-#' to "MODEL=NOCOVARIANCES;"
+#'   to "MODEL=NOCOVARIANCES;". If you change thish, including
+#'   "MODEL=NOCOVARIANCES" is highly recommended given the way the model is
+#'   specified. 
 #' @param mplusOutput Quoted text. Specify OUTPUT command for mplus. Defaults to
 #'   "stdyx; \\n cinterval; \\n",
 #' @param mplusDirectory Quoted text. Specify directory for mplus input and
@@ -208,11 +210,12 @@
 #' @param run Logical value indicating whether to run the model or to just
 #'   print and return code.
 #' @param ... Additional options passed to lavaan. Default options are
-#'   meanstructure=TRUE and missing = 'fiml'.
+#'   meanstructure=TRUE, missing = 'fiml', int.ov.free=TRUE, and
+#'   int.lv.free=FALSE.
 #' @returns pcObject, which is a list that includes the parameter table used to
-#'   create the model, a list of basic information about the model, the model
-#'   code (either lavaan or mplus) and the fit object produced by lavaan or
-#'   MplusAutomation.
+#'   create the model, a list of basic information about the model, the actual
+#'   and implied stability coefficients used for plotting, the model code and
+#'   the fit object produced by lavaan or MplusAutomation.
 #' @export
 panelcoder <- function(data,
                        title = "panelcoder",
@@ -290,7 +293,10 @@ panelcoder <- function(data,
             fit <- lavaan::lavaan(model,
                           data = data,
                           meanstructure = TRUE,
-                          missing = 'fiml')
+                          missing = 'fiml',
+                          int.ov.free=TRUE,
+                          int.lv.free=FALSE,
+                          ...)
             pcSum <- .summarizeLavaan(fit)
         } else {
             cat(modelCode)
@@ -299,11 +305,18 @@ panelcoder <- function(data,
     }
     
     if (program == "mplus") {
+        if (is.null(mplusAnalysis)) {
+            mplusAnalysis <- "MODEL=NOCOVARIANCES;"
+        }
+        if (is.null(mplusOutput)) {
+            mplusOutput <- "stdyx; cinterval; TECH4; \n"
+        }
+        
         modelCode <- lav2mplus(model)
         mplusStatement <- MplusAutomation::mplusObject(TITLE = title,
                                       rdata = data,
-                                      ANALYSIS = "MODEL=NOCOVARIANCES;",
-                                      OUTPUT = "stdyx; cinterval; TECH4 \n",
+                                      ANALYSIS = mplusAnalysis,
+                                      OUTPUT = mplusOutput,
                                       MODEL = modelCode)
         if (run == TRUE) {
             fit <- MplusAutomation::mplusModeler(mplusStatement,
