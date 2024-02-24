@@ -3,6 +3,8 @@ lav2mplus <- function(lav, group.label=NULL) {
     lav_one_group <- function(lav) {
         # mplus does not like variable names with a 'dot'
         # replace them by an underscore '_'
+        ## Note that this is a problem when constraints have decimal
+        ## As a workaround, I've used fractions (e.g., 99/100 for .99)
         lav$lhs <- gsub("\\.", "_", lav$lhs)
         lav$rhs <- gsub("\\.", "_", lav$rhs)
 

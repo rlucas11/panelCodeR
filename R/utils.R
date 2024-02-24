@@ -595,10 +595,10 @@ panelEstimates <- function(pcOutput) {
     }
 
     output <- pcOutput[[4]]
-    if (class(pcOutput) == "mplusObject") {
-        print(output$results$parameters)
-    } else {
+    if (is(output, "lavaan")) {
         print(lavaan::parameterEstimates(output))
+    } else {
+        print(output$results$parameters)
     }
 }
 

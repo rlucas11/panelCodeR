@@ -4,7 +4,7 @@
 \name{panelCodeR-package}
 \alias{panelCodeR}
 \alias{panelCodeR-package}
-\title{panelCodeR: Run Models for Analyzing Panel Data}
+\title{panelCodeR: An R Package to Create and Run Models for Analyzing Panel Data}
 \description{
 This package produces and then runs lavaan and Mplus code for various models for analyzing panel data.
 }

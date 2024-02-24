@@ -2,6 +2,7 @@
                         panelModel = "starts",
                         crossLag = TRUE,
                         traitCors = TRUE,
+                        arCors = TRUE,
                         stateCors = FALSE,
                         residCors = FALSE,
                         limits = TRUE,
@@ -16,7 +17,8 @@
                           "riclpm",
                           "arts",
                           "clpm",
-                          "sts")) == FALSE) {
+                          "sts",
+                          "dpm")) == FALSE) {
         stop("No model with that name")
     }
     
@@ -30,6 +32,7 @@
         arCors <- TRUE
         stateCors <- stateCors
         residCors <- residCors
+        dpm <- FALSE
     }
 
     if (panelModel == "riclpm") {
@@ -42,6 +45,7 @@
         arCors <- TRUE
         stateCors <- FALSE
         residCors <- residCors
+        dpm <- FALSE
     }
 
     if (panelModel == "arts") {
@@ -54,6 +58,7 @@
         arCors <- TRUE
         stateCors <- stateCors
         residCors <- residCors
+        dpm <- FALSE
     }
 
     if (panelModel == "clpm") {
@@ -66,6 +71,7 @@
         arCors <- TRUE
         stateCors <- stateCors
         residCors <- residCors
+        dpm <- FALSE
     }
 
     if (panelModel == "sts") {
@@ -78,32 +84,49 @@
         arCors <- FALSE
         stateCors <- stateCors
         residCors <- residCors
+        dpm <- FALSE
+    }
+
+    if (panelModel == "dpm") {
+        ar <- TRUE
+        trait <- FALSE
+        stability <- TRUE
+        cl <- TRUE
+        state <- FALSE
+        traitCors <- FALSE
+        arCors <- arCors
+        stateCors <- FALSE
+        residCors <- residCors
+        dpm <- TRUE
+        stationarity <- FALSE
     }
 
     modelInfo <- .buildTable(info,
         ar = ar,
         trait = trait,
+        state = state,
         stability = stability,
         cl = cl,
-        state = state,
         traitCors = traitCors,
         arCors = arCors,
         stateCors = stateCors,
-        residCors = residCors
+        residCors = residCors,
+        dpm = dpm
     )
 
     ## Build table and collect parameters
     model <- modelInfo$model
 
     ## Build final model based on options
-    if (ar == TRUE) {
+    if (ar == TRUE & (stationarity == TRUE | dpm == TRUE)) {
         model <- .constrainStability(model, info)
     }
 
     ## Constrain cross-lagged paths if necessary
     if (info$gen$yVar == TRUE &
         ar == TRUE &
-        crossLag == TRUE) {
+        crossLag == TRUE &
+        (stationarity == TRUE | dpm == TRUE)) {
         model <- .constrainCl(model, info)
     }
 
@@ -114,7 +137,7 @@
     }
 
     ## Constrain state variances
-    if (state == TRUE) {
+    if (state == TRUE & stationarity == TRUE) {
         model <- .constrainStateVar(model, info)
     }
 
@@ -149,7 +172,6 @@
         )
     }
 
-    ## Run model in lavaan if requested
     return(model)
 }
 
@@ -272,6 +294,21 @@ panelcoder <- function(data,
             stationarity == FALSE) {
             stop("Can't have phantom variables when stationarity is not set",
                  call. = FALSE)
+        }
+    }
+
+    if (panelModel == "dpm") {
+        if (length(info$x$waves) != length(info$x$actualWaves)) {
+            stop("Can't have phantom variables when fitting the dynamic panel model",
+                 call. = FALSE)
+        }
+    }
+    if (panelModel == "dpm") {
+        if (info$gen$yVar == TRUE) {    
+            if (length(info$y$waves) != length(info$y$actualWaves)) {
+                stop("Can't have phantom variables when fitting the dynamic panel model",
+                     call. = FALSE)
+            }
         }
     }
     

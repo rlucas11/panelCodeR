@@ -119,7 +119,9 @@ test <- panelcoder(data2, panelModel="clpm", program="lavaan", run = FALSE)
 
 test2 <- lavaan(test[[3]], data = data2, do.fit=FALSE)
 
-test <- panelcoder(data2[1:5])
+test <- panelcoder(data2[1:5], program="lavaan")
+
+testDpm <- panelcoder(data2[1:10], panelModel="starts", program="lavaan", title = "starts")
 
 data3 <- data2
 names(data3) <- paste(c(rep("LA", 10), rep("PL", 10)), rep(1:10, 2), sep="_")

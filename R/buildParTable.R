@@ -547,6 +547,110 @@
 }
 
 
+.buildDpmTrait <- function(info) {
+    ## Check if bivariate or univariate
+    yVar <- info$gen$yVar
+
+    xName <- info$x$name
+    if (yVar == TRUE) {
+        yName <- info$y$name
+    }
+
+    ## Create initial table
+    initialParTable <- data.frame(
+        lhs = character(),
+        op = character(),
+        rhs = character(),
+        user = integer(),
+        block = integer(),
+        group = integer(),
+        free = integer(),
+        ustart = numeric(),
+        exo = integer(),
+        label = character()
+    )
+    
+    for (w in info$x$waves[-1]) {
+        loadingParTable <- data.frame(
+            lhs = paste("t", xName, sep = "_"),
+            op = "=~",
+            rhs = paste("a", xName, w, sep="_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 0,
+            ustart = 1,
+            exo = 0,
+            label = ""
+        )
+        initialParTable <- rbind(
+            initialParTable,
+            loadingParTable
+        )
+    }
+
+    var1ParTable <- data.frame(
+            lhs = paste("t", xName, sep = "_"),
+            op = "~~",
+            rhs = paste("t", xName, sep="_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "x_tVar"
+    )
+    initialParTable <- rbind(
+        initialParTable,
+        var1ParTable
+    )
+
+    if (yVar == TRUE) {
+        for (w in info$y$waves[-1]) {
+            loadingParTable <- data.frame(
+                lhs = paste("t", yName, sep = "_"),
+                op = "=~",
+                rhs = paste("a", yName, w, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 0,
+                ustart = 1,
+                exo = 0,
+                label = ""
+            )
+            initialParTable <- rbind(
+                initialParTable,
+                loadingParTable
+            )
+        }
+
+        var1ParTable <- data.frame(
+            lhs = paste("t", yName, sep = "_"),
+            op = "~~",
+            rhs = paste("t", yName, sep="_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "y_tVar"
+        )
+        initialParTable <- rbind(
+            initialParTable,
+            var1ParTable
+        )
+    }
+    
+    finalParTable <- initialParTable[order(initialParTable$op), ]
+    finalParTable$from <- "trait"
+    return(finalParTable)  
+}
+
+
+
 .buildStability <- function(info) {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
@@ -879,6 +983,78 @@
     }
 }
 
+.buildDpmCors <- function(info) {
+    ## Check if bivariate or univariate
+    yVar <- info$gen$yVar
+    xName <- info$x$name
+
+    corParTable <- data.frame(
+        lhs = paste("t", xName, sep = "_"),
+        op = "~~",
+        rhs = paste("a", xName, 1, sep = "_"),
+        user = 1,
+        block = 1,
+        group = 1,
+        free = 1,
+        ustart = NA,
+        exo = 0,
+        label = "cov_TArX"
+    )
+    
+    if (yVar == TRUE) {
+        yName <- info$y$name
+        ytCorParTable <- data.frame(
+            lhs = paste("t", yName, sep = "_"),
+            op = "~~",
+            rhs = paste("a", yName, 1, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "cov_TArY"
+        )
+        xyCorParTable <- data.frame(
+            lhs = paste("t", xName, sep = "_"),
+            op = "~~",
+            rhs = paste("a", yName, 1, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "cov_TxAy"
+        )
+        yxCorParTable <- data.frame(
+            lhs = paste("t", yName, sep = "_"),
+            op = "~~",
+            rhs = paste("a", xName, 1, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "cov_TyAx"
+        )
+        corParTable <- do.call(
+        rbind,
+        list(
+            corParTable,
+            ytCorParTable,
+            xyCorParTable,
+            yxCorParTable
+        )
+    )
+    }
+    
+    corParTable$from <- "dpmCors"
+    return(corParTable)
+}
+
+
 .buildResidCors <- function(info) {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
@@ -974,33 +1150,56 @@
 .buildTable <- function(info,
                         ar = TRUE,
                         trait = TRUE,
+                        state = TRUE,
                         stability = TRUE,
                         cl = TRUE,
-                        state = TRUE,
                         traitCors = TRUE,
                         arCors = TRUE,
                         stateCors = TRUE,
-                        residCors = TRUE) {
+                        residCors = TRUE,
+                        dpm = FALSE) {
 
+    if (dpm == TRUE) {
+        trait <- FALSE
+        state <- FALSE
+    }
+
+    if (trait == FALSE) {
+        traitCors == FALSE
+    }
+
+    if (ar == FALSE) {
+        arCors <- FALSE
+    }
+
+    if (state == FALSE) {
+        stateCors <- FALSE
+    }
+    
     components <- list(
         ph = .buildPhantom(info),
         obs = .buildObserved(info),
         ar = .buildAr(info),
         residVar = .buildResidVar(info),
         trait = .buildTrait(info),
+        dpmTrait = .buildDpmTrait(info),
         stability = .buildStability(info),
         cl = .buildCrossLag(info),
         state = .buildState(info),
-        cors = .buildCors(info, ar = ar, trait = trait, state = stateCors),
+        cors = .buildCors(info, ar = arCors, trait = traitCors, state = stateCors),
+        dpmCors = .buildDpmCors(info),
         residCors = .buildResidCors(info)
     )
-
+    
     if (ar == FALSE) {
         components$ar <- NULL
     }
     ## Fix resid var stuff here
     if (trait == FALSE) {
-        components$trait  <- NULL
+        components$trait <- NULL
+    }
+    if (dpm == FALSE) {
+        components$dpmTrait <- NULL
     }
     if (stability == FALSE) {
         components$stability <- NULL
@@ -1011,13 +1210,13 @@
     if (state == FALSE) {
         components$state <- NULL
     }
-    ## if (cors == FALSE) {
-    ##     components$cors <- NULL
-    ## }
     if (residCors == FALSE) {
         components$residCors <- NULL
     }
-        
+    if (dpm == FALSE) {
+        components$dpmCors <- NULL
+    }
+           
     
     model <- do.call(
         rbind,

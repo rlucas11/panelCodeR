@@ -1,10 +1,10 @@
 # panelCodeR Package
 
-This R package generates lavaan and mplus code for models for analyzing panel data. Currently, it can generate code for the bivariate STARTS model and a number of models nested under this more general model. The diagram below shows the STARTS model and its components, which include a stable-trait (ST) component, an autoregressive trait (ART) component, and a state (S) component for each variable. 
+This R package generates lavaan and mplus code for models for analyzing panel data. Currently, it can generate code for the univariate and bivariate STARTS model and a number of models nested under this more general model. The diagram below shows the STARTS model and its components, which include a stable-trait (ST) component, an autoregressive trait (ART) component, and a state (S) component for each variable. 
 
 ![Diagram of STARTS Model](images/startsTransparent.png)
 
-Reduced form models can be specified by setting certain variance components equal to zero. For instance, omitting the state variance at each wave from the general model results in the Random-Intercept Cross-Lagged Panel Model (RI-CLPM), and removing both the state and stable-trait variance results in the Cross-Lagged Panel Model (CLPM). 
+Reduced form models can be specified by setting certain variance components equal to zero (see Usami et al., 2019). For instance, omitting the state variance at each wave from the general model results in the Random-Intercept Cross-Lagged Panel Model (RI-CLPM), and removing both the state and stable-trait variance results in the Cross-Lagged Panel Model (CLPM). 
 
 
 RI-CLPM | CLPM
@@ -18,13 +18,15 @@ ARTS | STS
 ![](images/artsReduced.png) | ![](images/sts.png)
 
 
+Finally, the `panelcoder()` command can also create and run lavaan or mplus code for a Dynamic Panel Model (DPM; see Dishop & Deshon, 2021). The DPM is similar to the RI-CLPM, but the autoregressive process is not attached to residualized variables (see Murayama & Gfrörer, 2023). 
+
 A number of additional options are also available. By default, the model imposes stationarity constraints, which set the variances, stabilities, and cross-lagged paths to be equal across waves; but this constraint can often be removed. It is also possible to remove the lagged paths. Correlations between the components for the two variables in bivariate models can also be included or excluded. 
 
-The package handles data with multiple indicators per wave (as long as the same indicators are available at each wave). In addition, most models can be run even if certain waves are missing. This is accomplished through the use of phantom variables for missing waves, but stationarity constraints must be included for these to work. 
+The package handles data with multiple indicators per wave (as long as the same indicators are available at each wave). In addition, most models can be run even if some waves are missing. This is accomplished through the use of phantom variables for missing waves, but stationarity constraints must be included for these to work. 
 
 Finally, there are a few helper functions. The package includes a function called `gen_starts()` that generates data from a STARTS model with user specified parameters (e.g., different amounts of variance for each component or different lagged paths). This can be useful for seeing how the models behave under different data-generating processes. There is a related function called `addIndicators()` that can take the data from `gen_starts()` and make multiple indicators for each wave. Finally, the function `parcels()` takes multiple-item scales and creates parcels based on the average loadings across waves. 
 
-There are three functions that are useful after you have run a model. `panelPlot()` will plot the implied stabilities and actual stabilities for increasingly long waves (up to the length of the study). This can be useful for visualizing the ways that the model might not describe the underlying data well. The function `panelEstimates()` prints all estimates from the model. The function `modelCode()` prints a formatted version of lavaan or mplus code used to run the model. This can be useful for checking that everything was specified correctly or for modifying the basic code for variations that the package cannot handle. 
+There are three functions that are useful after you have run a model. `panelPlot()` will plot the implied stabilities and actual stabilities for increasingly long waves (up to the length of the study). This can be useful for visualizing the ways that the model might not describe the underlying data well. Currently, this only works for manifest-variable models (i.e, not for models with multiple indicators per wave). The function `panelEstimates()` prints all estimates from the model. The function `modelCode()` prints a formatted version of lavaan or mplus code used to run the model. This can be useful for checking that everything was specified correctly or for modifying the basic code for variations that the package cannot handle. Note that the way that panelCodeR specifies code might be a little different than if you were writing the code from scratch. For instance, because of the way the code building is automated, it avoids some of the shortcuts that can be used to write lavaan or mplus code more efficiently. 
 
 
 ## Installation
@@ -343,3 +345,12 @@ I've included a few utilities that can help you better understand these models. 
 ## Issues?
 
 Feel free to create an "Issue" to document any problems and I'll try to get to it.
+
+## References
+
+Dishop, C. R., & DeShon, R. P. (2021). A tutorial on bollen and brand’s approach to modeling dynamics while attending to dynamic panel bias. *Psychological Methods*. [https://doi.org/10.1037/met0000333](https://doi.org/10.1037/met0000333)
+
+Murayama, K., & Gfrörer Thomas. (2022). Thinking clearly about time-invariant confounders in cross-lagged panel models: A guide for model choice from causal inference perspective. PsyArXiv. [https://doi.org/10.31234/osf.io/bt9xr](https://doi.org/10.31234/osf.io/bt9xr)
+
+Usami, S., Murayama, K., & Hamaker, E. L. (2019). A unified framework of longitudinal models to examine reciprocal relations. *Psychological Methods*, 24(5), 637–657. [https://doi.org/10/gf4fqx]
+(https://doi.org/10/gf4fqx)

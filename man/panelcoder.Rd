@@ -72,7 +72,9 @@ Defaults to TRUE.}
 the same item to be equal across waves.}
 
 \item{mplusAnalysis}{Quoted text. Specify ANLYSIS command for mplus. Defaults
-to "MODEL=NOCOVARIANCES;"}
+to "MODEL=NOCOVARIANCES;". If you change thish, including
+"MODEL=NOCOVARIANCES" is highly recommended given the way the model is
+specified.}
 
 \item{mplusOutput}{Quoted text. Specify OUTPUT command for mplus. Defaults to
 "stdyx; \\n cinterval; \\n",}
@@ -89,13 +91,14 @@ than one indicator). Not yet implemented}
 print and return code.}
 
 \item{...}{Additional options passed to lavaan. Default options are
-meanstructure=TRUE and missing = 'fiml'.}
+meanstructure=TRUE, missing = 'fiml', int.ov.free=TRUE, and
+int.lv.free=FALSE.}
 }
 \value{
 pcObject, which is a list that includes the parameter table used to
-create the model, a list of basic information about the model, the model
-code (either lavaan or mplus) and the fit object produced by lavaan or
-MplusAutomation.
+create the model, a list of basic information about the model, the actual
+and implied stability coefficients used for plotting, the model code and
+the fit object produced by lavaan or MplusAutomation.
 }
 \description{
 \code{panelcoder()} produces lavaan and mplus code for variations of the general
