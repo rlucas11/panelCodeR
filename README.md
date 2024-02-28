@@ -2,20 +2,20 @@
 
 This R package generates lavaan and mplus code for models for analyzing panel data. Currently, it can generate code for the univariate and bivariate STARTS model and a number of models nested under this more general model. The diagram below shows the STARTS model and its components, which include a stable-trait (ST) component, an autoregressive trait (ART) component, and a state (S) component for each variable. 
 
-![Diagram of STARTS Model](images/startsTransparent.png)
+![Diagram of STARTS Model](images/startsWhite.png)
 
 Reduced form models can be specified by setting certain variance components equal to zero (see Usami et al., 2019). For instance, omitting the state variance at each wave from the general model results in the Random-Intercept Cross-Lagged Panel Model (RI-CLPM), and removing both the state and stable-trait variance results in the Cross-Lagged Panel Model (CLPM). 
 
 
 RI-CLPM | CLPM
 :-----:|:-----:
-![](images/riclpm.png) | ![](images/clpmReduced.png)
+![](images/riclpmWhite.png) | ![](images/clpmWhite.png)
 
 Although the CLPM and RI-CLPM are the more commonly used reduced-form versions of the general STARTS model, it is also possible to remove just the stable-trait component, which results in an "Autoregressive-Trait State" (ARTS) model (otherwise known as the factor CLPM). Removing the autoregressive-trait component results in a simple correlated Stable-Trait model (STS). 
 
 ARTS | STS
 :-----:|:-----:
-![](images/artsReduced.png) | ![](images/sts.png)
+![](images/artsWhite.png) | ![](images/stsWhite.png)
 
 
 Finally, the `panelcoder()` command can also create and run lavaan or mplus code for a Dynamic Panel Model (DPM; see Dishop & Deshon, 2021). The DPM is similar to the RI-CLPM, but the autoregressive process is not attached to residualized variables (see Murayama & Gfrörer, 2023). 
