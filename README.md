@@ -50,26 +50,26 @@ One of the benefits of the package is that it flexibly creates model code based 
 The main function to build and run the code is `panelcoder()`. 
 
 ```R
-panelcoder <- function(data,
-                       title = "panelcoder",
-                       panelModel = "starts",
-                       program = "lavaan",
-                       crossLag = TRUE,
-                       traitCors = TRUE,
-                       arCors = TRUE,
-                       stateCors = FALSE,
-                       residCors = FALSE,
-                       residVar = FALSE,
-                       limits = TRUE,
-                       stationarity = TRUE,
-                       invariance = TRUE,
-                       mplusAnalysis = NULL,
-                       mplusOutput = NULL,
-                       mplusDirectory = "mplus",
-                       constrainCors = TRUE,
-                       run = TRUE,
-                       ...
-                       )
+panelcoder(data,
+           title = "panelcoder",
+           panelModel = "starts",
+           program = "lavaan",
+           crossLag = TRUE,
+           traitCors = TRUE,
+           arCors = TRUE,
+           stateCors = FALSE,
+           residCors = FALSE,
+           residVar = FALSE,
+           limits = TRUE,
+           stationarity = TRUE,
+           invariance = TRUE,
+           mplusAnalysis = NULL,
+           mplusOutput = NULL,
+           mplusDirectory = "mplus",
+           constrainCors = TRUE,
+           run = TRUE,
+           ...
+           )
 ```
 
 Hopefully, these options are self-explanatory. You will need to specify the (properly named) dataframe to use. Without specifying anything else, that will run a STARTS model using lavaan, with all the default settings. To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", or "sts" model. Eventually, there will be an option to run a dynamic panel model ("dpm"), but for now this requires using a different command (see below). To change which program to use, select either "lavaan" or "mplus" for the `program` option. 
