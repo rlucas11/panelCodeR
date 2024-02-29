@@ -71,9 +71,26 @@ panelcoder(data,
            ...
            )
 ```
+Hopefully, the options are self-explanatory. You will need to specify the (properly named) dataframe to use. Without specifying anything else, that will run a STARTS model using lavaan, with all the default settings.
 
-Hopefully, these options are self-explanatory. You will need to specify the (properly named) dataframe to use. Without specifying anything else, that will run a STARTS model using lavaan, with all the default settings. To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", or "sts" model. Eventually, there will be an option to run a dynamic panel model ("dpm"), but for now this requires using a different command (see below). To change which program to use, select either "lavaan" or "mplus" for the `program` option. 
+So, for example, to get output for a STARTS model from lavaan with all default settings, the following command could be used:
 
+```R
+modelOutput <- panelcoder(data)
+```
+
+To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", "sts", or "dpm" model. 
+
+```R
+modelOutput <- panelcoder(data, panelModel = "riclpm")
+```
+
+
+To change which program to use, select either "lavaan" or "mplus" for the `program` option. So, if you wanted to use mplus, the command would be:
+
+```R
+modelOutput <- panelcoder(data, program = "mplus")
+```
 The other options are described below (and in the R help functions).
 
 - `crossLag` specifies whether the reciprocal lagged associations between the two variables in a bivariate model are included.
