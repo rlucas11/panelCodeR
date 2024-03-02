@@ -198,19 +198,19 @@ getInfo <- function(df) {
     fit <- fitObject$results$summaries
 
     ## Set names
-    t.x  <- paste("T", info$x$name, sep = "_")
+    t.x  <- paste("T", toupper(info$x$name), sep = "_")
     if (info$gen$yVar == TRUE) {
-        t.y <- paste("T", info$y$name, sep = "_")
+        t.y <- paste("T", toupper(info$y$name), sep = "_")
     }
-    a.x  <- paste("A", info$x$name, "1", sep = "_")
-    a.x2  <- paste("A", info$x$name, "2", sep = "_")
+    a.x  <- paste("A", toupper(info$x$name), "1", sep = "_")
+    a.x2  <- paste("A", toupper(info$x$name), "2", sep = "_")
     if (info$gen$yVar == TRUE) {
-        a.y <- paste("A", info$y$name, "1", sep = "_")
-        a.y2 <- paste("A", info$y$name, "2", sep = "_")
+        a.y <- paste("A", toupper(info$y$name), "1", sep = "_")
+        a.y2 <- paste("A", toupper(info$y$name), "2", sep = "_")
     }
-    s.x  <- paste("S", info$x$name, "1", sep = "_")
+    s.x  <- paste("S", toupper(info$x$name), "1", sep = "_")
     if (info$gen$yVar == TRUE) {
-        s.y <- paste("S", info$y$name, "1", sep = "_")
+        s.y <- paste("S", toupper(info$y$name), "1", sep = "_")
     }
     
     ## Variance Decomp
@@ -250,19 +250,19 @@ getInfo <- function(df) {
         trait.cor <- est.std[which(est.std$paramHeader == paste0(t.x, ".WITH") &
                                    est.std$param == t.y), "est"]
     } else {
-        trait.cor <- ""
+        trait.cor <- NA
     }
     if (info$gen$yVar == TRUE) {
         ar.cor <- est.std[which(est.std$paramHeader == paste0(a.x, ".WITH") &
                                 est.std$param == a.y), "est"]
     } else {
-        ar.cor <- ""
+        ar.cor <- NA
     }
     if (info$gen$yVar == TRUE) {
         state.cor <- est.std[which(est.std$paramHeader == paste0(s.x, ".WITH") &
                                    est.std$param == s.y), "est"]
     } else {
-        state.cor <- ""
+        state.cor <- NA
     }
     
     ## Stability
@@ -272,7 +272,7 @@ getInfo <- function(df) {
         y.stab <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
                                 est.std$param == a.y), "est"]
     } else {
-        y.stab <- ""
+        y.stab <- NA
     }
     
     ## Cross-lags
@@ -282,8 +282,8 @@ getInfo <- function(df) {
         xOnY <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
                               est.std$param == a.y), "est"]
     } else {
-        yOnX <- ""
-        xOnY <- ""
+        yOnX <- NA
+        xOnY <- NA
     }
     
     ## Fit
@@ -507,7 +507,7 @@ combineCors <- function(df, info, program, fitObject) {
     ## Get implied correlations
     if (program == "mplus") {
         impliedCors <- getMplusImpliedCors(fitObject$results$tech4$latCorEst,
-                                       varNames,
+                                       toupper(varNames),
                                        info$gen$maxWaves)
     } else {
         impliedCors <- getLavaanImpliedCors(fitObject,

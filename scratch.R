@@ -27,7 +27,7 @@ data <- gen_starts(
 
 ## Create data frame with correctly labeled variables
 data2 <- data
-names(data2) <- paste(rep(c("X", "Y"), each = 10),
+names(data2) <- paste(rep(c("x", "LS"), each = 10),
                       rep(1:10, 2),
                       sep="_")
 for (i in names(data2)) {
@@ -109,7 +109,8 @@ summary(lm(y1 ~ x1 + y2, data=data2))
 ## Testing Rewrite
 ################################################################################
 
-test <- panelcoder(data2, panelModel="starts", program="mplus")
+test <- panelcoder(data2[,c(1:5,7,9,11,13)], panelModel="starts", program="mplus")
+
 test <- panelcoder(data2, panelModel="starts", program="mplus", stationarity = FALSE)
 
 test <- panelcoder(data2, panelModel="starts", program="")
