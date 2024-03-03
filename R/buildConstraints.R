@@ -208,10 +208,10 @@
 
 
 .constrainResidVar <- function(parTable, info) {
-    waves <- info$gen$maxWaves
+    xWaves <- info$x$actualWaves
     xInd <- info$x$indicators
     if (xInd > 1) {
-        for (w in 2:waves) {
+        for (w in xWaves[-1]) {
             for (i in 1:xInd) {
                 cVals <- list(
                     parTable,
@@ -225,9 +225,10 @@
     }
 
     if (info$gen$yVar == TRUE) {
+        yWaves <- info$y$actualWaves
         yInd <- info$y$indicators
         if (yInd > 1) {
-            for (w in 2:waves) {
+            for (w in yWaves[-1]) {
                 for (i in 1:yInd) {
                     cVals <- list(
                         parTable,
@@ -244,10 +245,10 @@
 }
 
 .constrainLoadings <- function(parTable, info) {
-    waves <- info$gen$maxWaves
+    xWaves <- info$x$actualWaves
     xInd <- info$x$indicators
     if (xInd > 1) {
-        for (w in 2:waves) {
+        for (w in xWaves[-1]) {
             for (i in 2:xInd) {
                 cVals <- list(
                     parTable,
@@ -261,9 +262,10 @@
     }
 
     if (info$gen$yVar == TRUE) {
+        yWaves <- info$y$actualWaves
         yInd <- info$y$indicators
         if (yInd > 1) {
-            for (w in 2:waves) {
+            for (w in yWaves[-1]) {
                 for (i in 2:yInd) {
                     cVals <- list(
                         parTable,

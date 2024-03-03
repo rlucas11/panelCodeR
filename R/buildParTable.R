@@ -286,7 +286,7 @@
 
     if (xInd > 1) {
         for (i in 1:xInd) {
-            for (j in 1:length(xWaves)) {
+            for (j in xWaves) {
                 rCorTable <- data.frame(
                     lhs = paste(xName, j, i, sep = "_"),
                     op = "~~",
@@ -302,7 +302,7 @@
                                    "_",
                                    i,
                                    "v"),
-                    from = "residCors"
+                    from = "residVar"
                 )
                 initialParTable <- rbind(
                     initialParTable,
@@ -316,7 +316,7 @@
     if (yVar == TRUE) {
         if(yInd > 1) {
             for (i in 1:yInd) {
-                for (j in 1:length(yWaves)) {
+                for (j in yWaves) {
                     rCorTable <- data.frame(
                         lhs = paste(yName, j, i, sep = "_"),
                         op = "~~",
@@ -332,7 +332,7 @@
                                        "_",
                                        i,
                                        "v"),
-                        from = "residCors"
+                        from = "residVar"
                     )
                     initialParTable <- rbind(
                         initialParTable,
@@ -1085,7 +1085,7 @@
 
     if (xInd > 1) {
         for (i in 1:xInd) {
-            for (j in 1:(length(xWaves) - 1)) {
+            for (j in xWaves[-length(xWaves)]) {
                 for (k in xWaves[(j + 1):length(xWaves)]) {
                     rCorTable <- data.frame(
                         lhs = paste(xName, j, i, sep = "_"),
@@ -1116,7 +1116,7 @@
     if (yVar == TRUE) {
         if(yInd > 1) {
             for (i in 1:yInd) {
-                for (j in 1:(length(yWaves) - 1)) {
+                for (j in yWaves[-length(yWaves)]) {
                     for (k in yWaves[(j + 1):length(yWaves)]) {
                         rCorTable <- data.frame(
                             lhs = paste(yName, j, i, sep = "_"),

@@ -129,8 +129,10 @@ names(data3) <- paste(c(rep("LA", 10), rep("PL", 10)), rep(1:10, 2), sep="_")
 test <- panelcoder(data3, panelModel="starts", program="mplus")
 test2 <- panelcoder(data2, panelModel="starts", program="mplus")
 
+out <- panelcoder(dataI[,c(1:3, 7:60)], program="mplus")
+
 ## Testing
-infoI <- getInfo(dataI)
+infoI <- getInfo(dataI[,c(1:3, 7:60)])
 info <- getInfo(data2)
 infoP <- getInfo(data2[,c(1:5,11,12,14,15)])
 
