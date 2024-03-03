@@ -4,7 +4,7 @@
 \alias{parcel}
 \title{Creates parcels from items}
 \usage{
-parcel(data, items, waves, pattern)
+parcel(data, items, waves, parcels)
 }
 \arguments{
 \item{data}{Dataframe with just the items to be parcelled.}
@@ -13,10 +13,7 @@ parcel(data, items, waves, pattern)
 
 \item{waves}{Number of waves.}
 
-\item{pattern}{Vector specifying the number of parcels and the number of
-items per parcel. For example, to get three parcels with 3 items for the
-first parcel, 3 items for the second, and 4 items for the third, specify
-\code{pattern = c(3, 3, 4)}}
+\item{parcels}{Number of parcels to create.}
 }
 \description{
 \code{parcel()} takes a set of items from a single scale and creates parcels based
