@@ -131,6 +131,9 @@ test2 <- panelcoder(data2, panelModel="starts", program="mplus")
 
 out <- panelcoder(dataI[,c(1:3, 7:60)], program="lavaan")
 
+
+out <- panelcoder(dataI[,c(1:3, 7:9, 22:30, 31:60)], residCors = TRUE, program="mplus")
+
 ## Testing
 infoI <- getInfo(dataI[,c(1:3, 7:60)])
 info <- getInfo(data2)
