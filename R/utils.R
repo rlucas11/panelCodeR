@@ -128,12 +128,36 @@ getInfo <- function(df) {
     stdEst <- lavaan::standardizedSolution(fitObject)
     fit <- lavaan::fitMeasures(fitObject)
     ## Variance Decomp
-    trait.x <- parEst[which(parEst$label=="x_tVar"), "est"]
-    trait.y <- parEst[which(parEst$label=="y_tVar"), "est"]
-    ar.x <- parEst[which(parEst$label=="xvar1"), "est"]
-    ar.y <- parEst[which(parEst$label=="yvar1"), "est"]
-    state.x <- parEst[which(parEst$label=="sx1"), "est"]
-    state.y <- parEst[which(parEst$label=="sy1"), "est"]
+    if(length(parEst[which(parEst$label=="x_tVar"), "est"]) == 0) {
+        trait.x <- 0
+    } else {
+        trait.x <- parEst[which(parEst$label=="x_tVar"), "est"]
+    }
+    if(length(parEst[which(parEst$label=="y_tVar"), "est"]) == 0) {
+        trait.y <- 0
+    } else {
+        trait.y <- parEst[which(parEst$label=="y_tVar"), "est"]
+    }
+    if(length(parEst[which(parEst$label=="xvar1"), "est"]) == 0) {
+        ar.x <- 0
+    } else {
+        ar.x <- parEst[which(parEst$label=="xvar1"), "est"]
+    }
+    if(length(parEst[which(parEst$label=="yvar1"), "est"]) == 0) {
+        ar.y <- 0
+    } else {
+        ar.y <- parEst[which(parEst$label=="yvar1"), "est"]
+    }
+    if(length(parEst[which(parEst$label=="sx1"), "est"]) == 0) {
+        state.x <- 0
+    } else {
+        state.x <- parEst[which(parEst$label=="sx1"), "est"]
+    }
+    if(length(parEst[which(parEst$label=="sy1"), "est"]) == 0) {
+        state.y <- 0
+    } else {
+        state.y <- parEst[which(parEst$label=="sy1"), "est"]
+    }
     trait.x.p <- trait.x/(sum(trait.x, ar.x, state.x))
     trait.y.p <- trait.y/(sum(trait.y, ar.y, state.y))
     ar.x.p <- ar.x/(sum(trait.x, ar.x, state.x))
@@ -145,11 +169,27 @@ getInfo <- function(df) {
     ar.cor <- stdEst[which(stdEst$label=="cov_ar1"), "est.std"]
     state.cor <- stdEst[which(stdEst$label=="cov_s1"), "est.std"]
     ## Stability
-    x.stab <- parEst[which(parEst$label=="a2"), "est"]
-    y.stab <- parEst[which(parEst$label=="b2"), "est"]
+    if (length(parEst[which(parEst$label == "a2"), "est"]) > 0) {
+        x.stab <- parEst[which(parEst$label == "a2"), "est"]
+    } else {
+        x.stab <- NA
+    }
+    if (length(parEst[which(parEst$label == "b2"), "est"]) > 0) {
+        y.stab <- parEst[which(parEst$label == "b2"), "est"]
+    } else {
+        y.stab <- NA
+    }
     ## Cross-lags
-    yOnX <- parEst[which(parEst$label=="c2"), "est"]
-    xOnY <- parEst[which(parEst$label=="d2"), "est"]
+    if (length(parEst[which(parEst$label == "c2"), "est"]) > 0) {
+        yOnX <- parEst[which(parEst$label == "c2"), "est"]
+    } else {
+        yOnX <- NA
+    }
+    if (length(parEst[which(parEst$label == "d2"), "est"]) > 0) {
+        xOnY <- parEst[which(parEst$label == "d2"), "est"]
+    } else {
+        xOnY <- NA
+    }
     ## Fit
     chi2 <- fit[["chisq"]]
     chi2df <- fit[["df"]]
@@ -214,27 +254,60 @@ getInfo <- function(df) {
     }
     
     ## Variance Decomp
-    trait.x <- est[which(est$paramHeader == "Variances" &
-                         est$param == t.x), "est"]
+    if (length(est[which(est$paramHeader == "Variances" &
+                         est$param == t.x), "est"]) == 0) {
+        trait.x <- 0
+    } else {
+        trait.x <- est[which(est$paramHeader == "Variances" &
+                             est$param == t.x), "est"]
+    }
+    
     if (info$gen$yVar == TRUE) {
-        trait.y <- est[which(est$paramHeader == "Variances" &
-                             est$param == t.y), "est"]
+        if (length(est[which(est$paramHeader == "Variances" &
+                             est$param == t.y), "est"]) == 0) {
+            trait.y <- 0
+        } else {
+            trait.y <- est[which(est$paramHeader == "Variances" &
+                                 est$param == t.y), "est"]
+        }
     } else {
         trait.y <- NA
     }
-    ar.x <- est[which(est$paramHeader == "Variances" &
-                         est$param == a.x), "est"]
+
+    if (length(est[which(est$paramHeader == "Variances" &
+                         est$param == a.x), "est"]) == 0) {
+        ar.x <- 0
+    } else {
+        ar.x <- est[which(est$paramHeader == "Variances" &
+                          est$param == a.x), "est"]
+    }
+    
     if (info$gen$yVar == TRUE) {
-        ar.y <- est[which(est$paramHeader == "Variances" &
-                          est$param == a.y), "est"]
+        if (length(est[which(est$paramHeader == "Variances" &
+                             est$param == a.y), "est"]) == 0) {
+            ar.y <- 0
+        } else {
+            ar.y <- est[which(est$paramHeader == "Variances" &
+                              est$param == a.y), "est"]
+        }
     } else {
         ar.y <- NA
     }
-    state.x <- est[which(est$paramHeader == "Variances" &
-                         est$param == s.x), "est"]
+    if (length(est[which(est$paramHeader == "Variances" &
+                         est$param == s.x), "est"]) == 0) {
+        state.x <- 0
+    } else {
+        state.x <- est[which(est$paramHeader == "Variances" &
+                             est$param == s.x), "est"]
+    }
     if (info$gen$yVar == TRUE) {
-        state.y <- est[which(est$paramHeader == "Variances" &
-                             est$param == s.y), "est"]
+        if (length(est[which(est$paramHeader == "Variances" &
+                             est$param == s.y), "est"]) == 0) {
+            state.y <- 0
+        } else {
+            state.y <- est[which(est$paramHeader == "Variances" &
+                                 est$param == s.y), "est"]
+        }
     } else {
         state.y <- NA
     }
@@ -266,21 +339,39 @@ getInfo <- function(df) {
     }
     
     ## Stability
-    x.stab <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
-                            est.std$param == a.x), "est"]
+    if (length(est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
+                             est.std$param == a.x), "est"]) == 0) {
+        x.stab <- NA
+    } else {
+        x.stab <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
+                                est.std$param == a.x), "est"]
+    }
     if (info$gen$yVar == TRUE) {
-        y.stab <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
-                                est.std$param == a.y), "est"]
+        if (length(est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
+                                 est.std$param == a.y), "est"]) == 0) {
+            y.stab <- NA
+        } else {
+            y.stab <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
+                                    est.std$param == a.y), "est"]
+        }
     } else {
         y.stab <- NA
     }
     
     ## Cross-lags
     if (info$gen$yVar == TRUE) {
-        yOnX <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
-                              est.std$param == a.x), "est"]
-        xOnY <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
-                              est.std$param == a.y), "est"]
+        if (length(est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
+            est.std$param == a.x), "est"]) > 0 &
+            length(est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
+                est.std$param == a.y), "est"]) > 0) {
+            yOnX <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
+                est.std$param == a.x), "est"]
+            xOnY <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
+                est.std$param == a.y), "est"]
+        } else {
+            yOnX <- NA
+            xOnY <- NA
+        }
     } else {
         yOnX <- NA
         xOnY <- NA

@@ -1,4 +1,4 @@
-#' Compares Univariate Variations of STARTS Model
+#' Compares Univariate Variations of STARTS Model (Old Version)
 #'
 #' `compareUnivariate()` produces code, runs, and compares variations of the
 #' Stable Trait, Autoregressive Trait, State Model. Specifically, it
@@ -13,7 +13,7 @@
 #' @returns Matrix of results for each model. This includes basic fit indices
 #'   as well as variance decomposition and stability estimates. 
 #' @export
-compareUnivariate <- function(data, waves, xWaves=NULL) {
+compareUnivariate_old <- function(data, waves, xWaves=NULL) {
     results <- data.frame(
         trait.p.starts = numeric(),
         ar.p.starts = numeric(),
@@ -185,3 +185,206 @@ compareUnivariate <- function(data, waves, xWaves=NULL) {
     results$best.bic <- colnames(results[, bicCols])[apply(results[, bicCols], 1, which.min)]
     return(results)
 }
+
+#' Compares Univariate Variations of STARTS Model
+#'
+#' `compareUnivariate()` produces code, runs, and compares variations of the
+#' Stable Trait, Autoregressive Trait, State Model. Specifically, it
+#' sequentially drops each component (stable trait, autoregressive trait, and
+#' state) and then uses BIC to identify the best model. 
+#'
+#' @param data Dataframe with multiwave data. Variables should be names 'x1' to
+#'   'xw', where 'w' is the number of waves.
+#' @param program Name of the program. Defaults to mplus as it is much quicker. 
+#' @export
+compareUnivariate <- function(data, program = "mplus") {
+    results <- data.frame(
+        trait.p.starts = numeric(),
+        ar.p.starts = numeric(),
+        st.p.starts = numeric(),
+        stability.starts = numeric(),
+        aic.starts = numeric(),
+        bic.starts = numeric(),
+        chisq.starts = numeric(),
+        df.starts = numeric(),
+        cfi.starts = numeric(),
+        tli.starts = numeric(),
+        srmr.starts = numeric(),
+        rmsea.starts = numeric(),
+        trait.p.st = numeric(),
+        ar.p.st = numeric(),
+        st.p.st = numeric(),
+        stability.st = numeric(),
+        aic.st = numeric(),
+        bic.st = numeric(),
+        chisq.st = numeric(),
+        df.st = numeric(),
+        cfi.st = numeric(),
+        tli.st = numeric(),
+        srmr.st = numeric(),
+        rmsea.st = numeric(),
+        trait.p.arts = numeric(),
+        ar.p.arts = numeric(),
+        st.p.arts = numeric(),
+        stability.arts = numeric(),
+        aic.arts = numeric(),
+        bic.arts = numeric(),
+        chisq.arts = numeric(),
+        df.arts = numeric(),
+        cfi.arts = numeric(),
+        tli.arts = numeric(),
+        srmr.arts = numeric(),
+        rmsea.arts = numeric(),
+        trait.p.start = numeric(),
+        ar.p.start = numeric(),
+        st.p.start = numeric(),
+        stability.start = numeric(),
+        aic.start = numeric(),
+        bic.start = numeric(),
+        chisq.start = numeric(),
+        df.start = numeric(),
+        cfi.start = numeric(),
+        tli.start = numeric(),
+        srmr.start = numeric(),
+        rmsea.start = numeric(),
+        trait.p.art = numeric(),
+        ar.p.art = numeric(),
+        st.p.art = numeric(),
+        stability.art = numeric(),
+        aic.art = numeric(),
+        bic.art = numeric(),
+        chisq.art = numeric(),
+        df.art = numeric(),
+        cfi.art = numeric(),
+        tli.art = numeric(),
+        srmr.art = numeric(),
+        rmsea.art = numeric(),
+        best.aic = character(),
+        best.bic = character()
+    )
+    starts <- panelcoder(
+        data = data,
+        title="starts",
+        program = program
+    )
+    results[1, 1:12] <- unlist(.collectResults(starts)[1, 1:12])
+    st <- panelcoder(
+        data = data,
+        panelModel = "sts",
+        program = program,
+        title = "sts"
+    )
+    results[1, 13:24] <- unlist(.collectResults(st)[1, 1:12])
+    arts <- panelcoder(
+        data = data,
+        panelModel = "arts",
+        program = program,
+        title = "arts"
+    )
+    results[1, 25:36] <- unlist(.collectResults(arts)[1, 1:12])
+    start <- panelcoder(
+        data = data,
+        panelModel = "riclpm",
+        program = program,
+        title = "start"
+    )
+    results[1, 37:48] <- unlist(.collectResults(start)[1, 1:12])
+    art <- panelcoder(
+        data = data,
+        panelModel = "clpm",
+        program = program,
+        title = "art"
+    )
+    results[1, 49:60] <- unlist(.collectResults(art)[1, 1:12])
+    aicCols <- paste("aic", c("starts", "st", "arts", "start", "art"), sep = ".")
+    bicCols <- paste("bic", c("starts", "st", "arts", "start", "art"), sep = ".")
+    results$best.aic <- colnames(results[, aicCols])[apply(results[, aicCols], 1, which.min)]
+    results$best.bic <- colnames(results[, bicCols])[apply(results[, bicCols], 1, which.min)]
+    return(results)
+}
+
+
+.collectResults <- function(fit) {
+    singleModelResults <- data.frame(
+        trait = numeric(),
+        ar = numeric(),
+        st = numeric(),
+        stab = numeric(),
+        aic = numeric(),
+        bic = numeric(),
+        chisq = numeric(),
+        df = numeric(),
+        cfi = numeric(),
+        tli = numeric(),
+        srmr = numeric(),
+        rmsea = numeric()
+    )
+    pcResults <- fit[[1]]
+    if (!is.null(pcResults$trait.x)) {
+        singleModelResults[1, 1] <- pcResults$trait.x
+    } else {
+        singleModelResults[1, 1] <- NA
+    }
+    if (!is.null(pcResults$ar.x)) {
+        singleModelResults[1, 2] <- pcResults$ar.x
+    } else {
+        singleModelResults[1, 2] <- NA
+    }
+    if (!is.null(pcResults$state.x)) {
+        singleModelResults[1, 3] <- pcResults$state.x
+    } else {
+        singleModelResults[1, 3] <- NA
+    }
+    if (!is.null(pcResults$x.stab)) {
+        singleModelResults[1, 4] <- pcResults$x.stab
+    } else {
+        singleModelResults[1, 4] <- NA
+    }
+    if (!is.null(pcResults$aic)) {
+        singleModelResults[1, 5] <- pcResults$aic
+    } else {
+        singleModelResults[1, 5] <- NA
+    }
+    if (!is.null(pcResults$bic)) {
+        singleModelResults[1, 6] <- pcResults$bic
+    } else {
+        singleModelResults[1, 6] <- NA
+    }
+    if (!is.null(pcResults$chi2)) {
+        singleModelResults[1, 7] <- pcResults$chi2
+    } else {
+        singleModelResults[1, 7] <- NA
+    }
+    if (!is.null(pcResults$chi2df)) {
+        singleModelResults[1, 8] <- pcResults$chi2df
+    } else {
+        singleModelResults[1, 8] <- NA
+    }
+    if (!is.null(pcResults$chi2p)) {
+        singleModelResults[1, 7] <- pcResults$chi2p
+    } else {
+        singleModelResults[1, 7] <- NA
+    }
+    if (!is.null(pcResults$cfi)) {
+        singleModelResults[1, 9] <- pcResults$cfi
+    } else {
+        singleModelResults[1, 9] <- NA
+    }
+    if (!is.null(pcResults$tli)) {
+        singleModelResults[1, 10] <- pcResults$tli
+    } else {
+        singleModelResults[1, 10] <- NA
+    }
+    if (!is.null(pcResults$srmr)) {
+        singleModelResults[1, 11] <- pcResults$srmr
+    } else {
+        singleModelResults[1, 11] <- NA
+    }
+    if (!is.null(pcResults$rmsea)) {
+        singleModelResults[1, 12] <- pcResults$rmsea
+    } else {
+        singleModelResults[1, 12] <- NA
+    }
+    return(singleModelResults)
+}
+    

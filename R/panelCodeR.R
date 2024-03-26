@@ -54,7 +54,7 @@
         stability <- TRUE
         cl <- TRUE
         state <- TRUE
-        traitCors <- traitCors
+        traitCors <- FALSE
         arCors <- TRUE
         stateCors <- stateCors
         residCors <- residCors
