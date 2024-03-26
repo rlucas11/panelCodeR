@@ -219,7 +219,7 @@
 #' @param invariance Logical value indicating whether to constrain loadings for
 #'   the same item to be equal across waves. 
 #' @param mplusAnalysis Quoted text. Specify ANLYSIS command for mplus. Defaults
-#'   to "MODEL=NOCOVARIANCES;". If you change thish, including
+#'   to "MODEL=NOCOVARIANCES;\nCOVERAGE=.001;". If you change thish, including
 #'   "MODEL=NOCOVARIANCES" is highly recommended given the way the model is
 #'   specified. 
 #' @param mplusOutput Quoted text. Specify OUTPUT command for mplus. Defaults to
@@ -344,7 +344,7 @@ panelcoder <- function(data,
     
     if (program == "mplus") {
         if (is.null(mplusAnalysis)) {
-            mplusAnalysis <- "MODEL=NOCOVARIANCES;"
+            mplusAnalysis <- "MODEL=NOCOVARIANCES;\nCOVERAGE=.001;"
         }
         if (is.null(mplusOutput)) {
             mplusOutput <- "stdyx; cinterval; TECH4; \n"

@@ -4,20 +4,13 @@
 \alias{compareUnivariate}
 \title{Compares Univariate Variations of STARTS Model}
 \usage{
-compareUnivariate(data, waves, xWaves = NULL)
+compareUnivariate(data, program = "mplus")
 }
 \arguments{
 \item{data}{Dataframe with multiwave data. Variables should be names 'x1' to
 'xw', where 'w' is the number of waves.}
 
-\item{waves}{Numeric value indicating the number of waves.}
-
-\item{xWaves}{Numeric vector indicating which waves actually exist (e.g.,
-'c(1:3, 5:7)' if there are 7 waves but Wave 6 is missing.}
-}
-\value{
-Matrix of results for each model. This includes basic fit indices
-as well as variance decomposition and stability estimates.
+\item{program}{Name of the program. Defaults to mplus as it is much quicker.}
 }
 \description{
 \code{compareUnivariate()} produces code, runs, and compares variations of the
