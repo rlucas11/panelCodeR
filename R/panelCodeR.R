@@ -14,9 +14,9 @@
     info <- getInfo(data)
 
     if ((panelModel %in% c("starts",
-                          "riclpm",
+                          "riclpm", "start",
                           "arts",
-                          "clpm",
+                          "clpm", "art",
                           "sts",
                           "dpm")) == FALSE) {
         stop("No model with that name")
@@ -26,7 +26,7 @@
         ar <- TRUE
         trait <- TRUE
         stability <- TRUE
-        cl <- TRUE
+        crossLag <- crossLag
         state <- TRUE
         traitCors <- traitCors
         arCors <- TRUE
@@ -35,11 +35,11 @@
         dpm <- FALSE
     }
 
-    if (panelModel == "riclpm") {
+    if (panelModel == "riclpm" | panelModel == "start") {
         ar <- TRUE
         trait <- TRUE
         stability <- TRUE
-        cl <- TRUE
+        crossLag <- crossLag
         state <- FALSE
         traitCors <- traitCors
         arCors <- TRUE
@@ -52,7 +52,7 @@
         ar <- TRUE
         trait <- FALSE
         stability <- TRUE
-        cl <- TRUE
+        crossLag <- crossLag
         state <- TRUE
         traitCors <- FALSE
         arCors <- TRUE
@@ -61,15 +61,15 @@
         dpm <- FALSE
     }
 
-    if (panelModel == "clpm") {
+    if (panelModel == "clpm" | panelModel == "art") {
         ar <- TRUE
         trait <- FALSE
         stability <- TRUE
-        cl <- TRUE
+        crossLag <- crossLag
         state <- FALSE
         traitCors <- FALSE
         arCors <- TRUE
-        stateCors <- stateCors
+        stateCors <- FALSE
         residCors <- residCors
         dpm <- FALSE
     }
@@ -78,7 +78,7 @@
         ar <- FALSE
         trait <- TRUE
         stability <- FALSE
-        cl <- FALSE
+        crossLag <- FALSE
         state <- TRUE
         traitCors <- traitCors
         arCors <- FALSE
@@ -91,7 +91,7 @@
         ar <- TRUE
         trait <- FALSE
         stability <- TRUE
-        cl <- TRUE
+        crossLag <- TRUE
         state <- FALSE
         traitCors <- FALSE
         arCors <- arCors
@@ -106,7 +106,7 @@
         trait = trait,
         state = state,
         stability = stability,
-        cl = cl,
+        crossLag = crossLag,
         traitCors = traitCors,
         arCors = arCors,
         stateCors = stateCors,
@@ -124,10 +124,18 @@
 
     ## Constrain cross-lagged paths if necessary
     if (info$gen$yVar == TRUE &
-        ar == TRUE &
-        crossLag == TRUE &
-        (stationarity == TRUE | dpm == TRUE)) {
-        model <- .constrainCl(model, info)
+        ar == TRUE) {
+        if (stationarity == TRUE | dpm == TRUE) {
+            if (crossLag == FALSE) {
+                zero <- TRUE
+            } else {
+                zero <- FALSE
+            }
+            model <- .constrainCl(model, info, zero)
+        } else if (stationarity == FALSE & crossLag == FALSE) {
+            zero <- TRUE
+            model <- .constrainCl(model, info, zero)
+        }
     }
 
     ## Impose stationarity if requested
@@ -163,7 +171,7 @@
             ar = ar,
             trait = trait,
             stability = stability,
-            cl = cl,
+            crossLag = crossLag,
             state = state,
             traitCors = TRUE,
             arCors = TRUE,

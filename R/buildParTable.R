@@ -1154,7 +1154,7 @@
                         trait = TRUE,
                         state = TRUE,
                         stability = TRUE,
-                        cl = TRUE,
+                        crossLag = TRUE,
                         traitCors = TRUE,
                         arCors = TRUE,
                         stateCors = TRUE,
@@ -1206,7 +1206,7 @@
     if (stability == FALSE) {
         components$stability <- NULL
     }
-    if (cl == FALSE) {
+    if (ar == FALSE) {
         components$cl <- NULL
     }
     if (state == FALSE) {

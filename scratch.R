@@ -113,7 +113,9 @@ test <- panelcoder(data2[,c(1:5,7,9,11,13)], panelModel="starts", program="mplus
 
 test <- panelcoder(data2, panelModel="starts", program="mplus", stationarity = FALSE)
 
-test <- panelcoder(data2, panelModel="arts", program="mplus")
+test <- panelcoder(data2, panelModel="starts", program="mplus")
+test <- panelcoder(data2, crossLag = TRUE, stationarity=TRUE, stateCors=TRUE)
+
 test2 <- panelcoder(data2, panelModel="sts", program="lavaan")
 
 test <- panelcoder(data2, panelModel="arts", program="lavaan", run = FALSE)
