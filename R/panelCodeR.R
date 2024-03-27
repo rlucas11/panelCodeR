@@ -29,7 +29,7 @@
         crossLag <- crossLag
         state <- TRUE
         traitCors <- traitCors
-        arCors <- TRUE
+        arCors <- arCors
         stateCors <- stateCors
         residCors <- residCors
         dpm <- FALSE
@@ -42,7 +42,7 @@
         crossLag <- crossLag
         state <- FALSE
         traitCors <- traitCors
-        arCors <- TRUE
+        arCors <- arCors
         stateCors <- FALSE
         residCors <- residCors
         dpm <- FALSE
@@ -55,7 +55,7 @@
         crossLag <- crossLag
         state <- TRUE
         traitCors <- FALSE
-        arCors <- TRUE
+        arCors <- arCors
         stateCors <- stateCors
         residCors <- residCors
         dpm <- FALSE
@@ -68,7 +68,7 @@
         crossLag <- crossLag
         state <- FALSE
         traitCors <- FALSE
-        arCors <- TRUE
+        arCors <- arCors
         stateCors <- FALSE
         residCors <- residCors
         dpm <- FALSE
@@ -141,7 +141,12 @@
     ## Impose stationarity if requested
     if (stationarity == TRUE &
         ar == TRUE) {
-        model <- .arStationarity(model, info)
+        if (arCors == FALSE) {
+            zero <- TRUE
+        } else {
+            zero <- FALSE
+        }
+        model <- .arStationarity(model, info, zero=zero)
     }
 
     ## Constrain state variances
@@ -326,6 +331,7 @@ panelcoder <- function(data,
                          crossLag = crossLag,
                          stateCors = stateCors,
                          residCors = residCors,
+                         arCors = arCors,
                          limits = limits,
                          stationarity = stationarity,
                          invariance = invariance,
