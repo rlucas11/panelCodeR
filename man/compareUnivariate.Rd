@@ -4,13 +4,15 @@
 \alias{compareUnivariate}
 \title{Compares Univariate Variations of STARTS Model}
 \usage{
-compareUnivariate(data, program = "mplus")
+compareUnivariate(data, program = "mplus", title = NULL)
 }
 \arguments{
 \item{data}{Dataframe with multiwave data. Variables should be names 'x1' to
 'xw', where 'w' is the number of waves.}
 
 \item{program}{Name of the program. Defaults to mplus as it is much quicker.}
+
+\item{title}{Optional character string to be attended to title of model.}
 }
 \description{
 \code{compareUnivariate()} produces code, runs, and compares variations of the

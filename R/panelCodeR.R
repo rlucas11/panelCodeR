@@ -232,7 +232,7 @@
 #' @param invariance Logical value indicating whether to constrain loadings for
 #'   the same item to be equal across waves. 
 #' @param mplusAnalysis Quoted text. Specify ANLYSIS command for mplus. Defaults
-#'   to "MODEL=NOCOVARIANCES;\nCOVERAGE=.001;". If you change thish, including
+#'   to "MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;". If you change this, including
 #'   "MODEL=NOCOVARIANCES" is highly recommended given the way the model is
 #'   specified. 
 #' @param mplusOutput Quoted text. Specify OUTPUT command for mplus. Defaults to

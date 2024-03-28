@@ -72,7 +72,7 @@ Defaults to TRUE.}
 the same item to be equal across waves.}
 
 \item{mplusAnalysis}{Quoted text. Specify ANLYSIS command for mplus. Defaults
-to "MODEL=NOCOVARIANCES;". If you change thish, including
+to "MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;". If you change thish, including
 "MODEL=NOCOVARIANCES" is highly recommended given the way the model is
 specified.}
 

@@ -195,7 +195,8 @@ compareUnivariate_old <- function(data, waves, xWaves=NULL) {
 #'
 #' @param data Dataframe with multiwave data. Variables should be names 'x1' to
 #'   'xw', where 'w' is the number of waves.
-#' @param program Name of the program. Defaults to mplus as it is much quicker. 
+#' @param program Name of the program. Defaults to mplus as it is much quicker.
+#' @param title Optional character string to be attended to title of model.
 #' @export
 compareUnivariate <- function(data, program = "mplus", title=NULL) {
     results <- data.frame(
