@@ -197,7 +197,7 @@ compareUnivariate_old <- function(data, waves, xWaves=NULL) {
 #'   'xw', where 'w' is the number of waves.
 #' @param program Name of the program. Defaults to mplus as it is much quicker. 
 #' @export
-compareUnivariate <- function(data, program = "mplus") {
+compareUnivariate <- function(data, program = "mplus", title=NULL) {
     results <- data.frame(
         trait.p.starts = numeric(),
         ar.p.starts = numeric(),
@@ -264,7 +264,7 @@ compareUnivariate <- function(data, program = "mplus") {
     )
     starts <- panelcoder(
         data = data,
-        title="starts",
+        title= paste(title, "starts", sep="_"),
         program = program
     )
     results[1, 1:12] <- unlist(.collectResults(starts)[1, 1:12])
@@ -272,28 +272,28 @@ compareUnivariate <- function(data, program = "mplus") {
         data = data,
         panelModel = "sts",
         program = program,
-        title = "sts"
+        title = paste(title, "sts", sep="_")
     )
     results[1, 13:24] <- unlist(.collectResults(st)[1, 1:12])
     arts <- panelcoder(
         data = data,
         panelModel = "arts",
         program = program,
-        title = "arts"
+        title = paste(title, "arts", sep="_")
     )
     results[1, 25:36] <- unlist(.collectResults(arts)[1, 1:12])
     start <- panelcoder(
         data = data,
         panelModel = "riclpm",
         program = program,
-        title = "start"
+        title = paste(title, "start", sep = "_")
     )
     results[1, 37:48] <- unlist(.collectResults(start)[1, 1:12])
     art <- panelcoder(
         data = data,
         panelModel = "clpm",
         program = program,
-        title = "art"
+        title = paste(title, "art", sep = "_")
     )
     results[1, 49:60] <- unlist(.collectResults(art)[1, 1:12])
     aicCols <- paste("aic", c("starts", "st", "arts", "start", "art"), sep = ".")

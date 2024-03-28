@@ -514,7 +514,7 @@ summary.pcObject <- function(obj) {
 ## compareUnivariate
 ################################################################################
 
-compareUnivariate(data, 10)
+compareUnivariate(data2, program="mplus", title="temp")
 
 ################################################################################
 ## Lavaan DPM
