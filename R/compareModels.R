@@ -263,40 +263,102 @@ compareUnivariate <- function(data, program = "mplus", title=NULL) {
         best.aic = character(),
         best.bic = character()
     )
-    starts <- panelcoder(
-        data = data,
-        title= paste(title, "starts", sep="_"),
-        program = program
+    
+    starts <- tryCatch(
+        panelcoder(
+            data = data,
+            title = paste(title, "starts", sep = "_"),
+            program = program
+        ),
+        error = function(e) {
+            return(NA)
+        },
+        warning = function(w) {
+            return(NA)
+        }
     )
-    results[1, 1:12] <- unlist(.collectResults(starts)[1, 1:12])
-    st <- panelcoder(
-        data = data,
-        panelModel = "sts",
-        program = program,
-        title = paste(title, "sts", sep="_")
+    if (!is.na(starts[1])) {
+        results[1, 1:12] <- unlist(.collectResults(starts)[1, 1:12])
+    } else {
+        results[1, 1:12] <- NA
+    }
+    
+    st <- tryCatch(
+        panelcoder(
+            data = data,
+            panelModel = "sts",
+            program = program,
+            title = paste(title, "sts", sep = "_")
+        ),
+        error = function(e) {
+            return(NA)
+        },
+        warning = function(w) {
+            return(NA)
+        }
     )
-    results[1, 13:24] <- unlist(.collectResults(st)[1, 1:12])
-    arts <- panelcoder(
-        data = data,
-        panelModel = "arts",
-        program = program,
-        title = paste(title, "arts", sep="_")
+    if (!is.na(st[1])) {
+        results[1, 13:24] <- unlist(.collectResults(st)[1, 1:12])
+    } else {
+        results[1, 13:24] <- NA
+    }
+    arts <- tryCatch(
+        panelcoder(
+            data = data,
+            panelModel = "arts",
+            program = program,
+            title = paste(title, "arts", sep = "_")
+        ),
+        error = function(e) {
+            return(NA)
+        },
+        warning = function(w) {
+            return(NA)
+        }
     )
-    results[1, 25:36] <- unlist(.collectResults(arts)[1, 1:12])
-    start <- panelcoder(
-        data = data,
-        panelModel = "riclpm",
-        program = program,
-        title = paste(title, "start", sep = "_")
+    if (!is.na(arts[1])) {
+        results[1, 25:36] <- unlist(.collectResults(arts)[1, 1:12])
+    } else {
+        results[1, 25:36] <- NA
+    }
+    start <- tryCatch(panelcoder(
+            data = data,
+            panelModel = "riclpm",
+            program = program,
+            title = paste(title, "start", sep = "_")
+        ),
+        error = function(e) {
+            return(NA)
+        },
+        warning = function(w) {
+            return(NA)
+        }
     )
-    results[1, 37:48] <- unlist(.collectResults(start)[1, 1:12])
-    art <- panelcoder(
-        data = data,
-        panelModel = "clpm",
-        program = program,
-        title = paste(title, "art", sep = "_")
-    )
-    results[1, 49:60] <- unlist(.collectResults(art)[1, 1:12])
+    if (!is.na(start[1])) {
+        results[1, 37:48] <- unlist(.collectResults(start)[1, 1:12])
+    } else {
+        results[1, 37:48] <- NA
+    }
+        art <- tryCatch(
+            panelcoder(
+                data = data,
+                panelModel = "clpm",
+                program = program,
+                title = paste(title, "art", sep = "_")
+            ),
+            error = function(e) {
+                return(NA)
+            },
+            warning = function(w) {
+                return(NA)
+            }
+        )
+    if (!is.na(art[1])) {
+        results[1, 49:60] <- unlist(.collectResults(art)[1, 1:12])
+    } else {
+        results[1, 49:60] <- NA
+    }
+    
     aicCols <- paste("aic", c("starts", "st", "arts", "start", "art"), sep = ".")
     bicCols <- paste("bic", c("starts", "st", "arts", "start", "art"), sep = ".")
     results$best.aic <- colnames(results[, aicCols])[apply(results[, aicCols], 1, which.min)]
