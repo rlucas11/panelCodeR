@@ -1,6 +1,4 @@
-# Package Development Information
-
-This page describes the structure of the package for future reference when adding features. The package is broken down into the following files, which include the following functions.
+This page describes the structure of the package for future reference when adding features. This page describes the general approach I used when creating this package and then describes the internal functions used, structured by the file in which they reside.
 
 # Approach
 
@@ -10,12 +8,12 @@ The `panelcoder` command goes through the following steps to build and test a mo
   - Determine whether to use a univariate or bivariate model
   - Identify the number of waves
   - Extract variable names
-  - Identify phantom variables
+  - Identify which waves require phantom variables
   
-* Determine which parts of the model to include  
+* Determine which parts of the model to include (based on model name and other options)
 * Build an initial parameter table (using functions in buildParTable.R)
-* Add constraints based on model specifications
-* Optionally add limits to help with convergence issues
+* Add constraints based on model specifications (using functions in buildConstraints.R)
+* Optionally add limits to help with convergence issues (also from buildConstraints.R)
 * If lavaan: Run code from parameter table
 * If Mplus: Build Mplus code from lavaan parameter table and run (with MplusAutomation)
 * Create summary information for output
@@ -167,6 +165,57 @@ This function constrains certain variances to be greater than 0 and certain corr
 * Trait variance
 * Correlation between traits
 * State variance
-* Check: "x1_lv"
+* Need to implement this for indicator variance
+* Probably need to implement this for additional correlations
 
-I will likely add additional parameters.
+## utils.R
+
+This file includes a variety of utility functions. 
+
+### getInfo
+
+This function takes a dataframe as input and creates a list of information that is used to construct the model. Specifically, it determines whether to run a univariate or bivariate model, whether there are multiple indicators, and how many waves there are. It also extracts the variable names. The variable names must be in the correct format for this to work (e.g., name_wave#_indicator#). 
+
+### .summarizeLavaan
+
+This function is used to extract information from the lavaan output to create standardized output from panelcoder. It creates an object of class "pcSum" that includes the basic information typically interpreted when running these models. 
+
+### .summarizeMplus
+
+This function does the same from mplus output. 
+
+### summary.pcSum
+
+This creates a method to summarize and display output from a "pcSum" object. 
+
+### getObservedCors
+
+The panelCodeR package can also plot model implied correlations and compare them to the observed correlations to diagnose misfit. This function calculates the average stability coefficients for each lag from the observed data.
+
+### getLavaanImpliedCors
+
+This function reads in lavaan output and calculates the average implied stability coefficients for each lag.
+
+### getMplusImpliedCors
+
+This function does the same for mplus output. 
+
+### summarizeR
+
+This function takes a matrix of correlations (with one or two variables) and calculates the average correlation for a given lag.
+
+### combineCors
+
+This function uses the above functions to create a matrix of observed and implied correlations for increasingly long lags that can be plotted to compare the model implied correlations to the observed correlations. 
+
+### plotCors
+
+This is an internal function that does the actual plotting when called by panelPlot.
+
+### panelEstimates
+
+Although it is possible to print the full model output after running panelcoder, this function prints all the relevant estimates, regardless of the program used to get the estimates. 
+
+## fromLavaan.R
+
+This file includes two functions—`lav2lavaan` and `lav2mplus` that are modified versions of functions from the lavaan package used to translate a lavaan parameter table into lavaan or mplus code. 
