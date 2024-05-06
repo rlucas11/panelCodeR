@@ -5,12 +5,17 @@
 library(tidyverse)
 library(lavaan)
 library(MplusAutomation)
+
 load_all()
-#library(panelCodeR)
+
+library(panelCodeR)
+
+waves <- 30
+indicators <- 3
 
 data <- gen_starts(
     n = 1000, # N to generate
-    nwaves = 10, # Number of waves
+    nwaves = waves, # Number of waves
     ri_x = 1, # Random intercept variance for X
     ri_y = 1, # Random intercept variance for Y
     cor_i = .5, # Correlation between intercepts (as correlation)
@@ -27,14 +32,15 @@ data <- gen_starts(
 
 ## Create data frame with correctly labeled variables
 data2 <- data
-names(data2) <- paste(rep(c("x", "LS"), each = 10),
-                      rep(1:10, 2),
+names(data2) <- paste(rep(c("x", "LS"), each = waves),
+                      rep(1:waves, 2),
                       sep="_")
 for (i in names(data2)) {
-    data2 <- addIndicators(data2, i, 3)
+    data2 <- addIndicators(data2, i, indicators)
 }
-dataI <- data2[,21:80]
-data2 <- data2[,1:20]
+
+dataI <- data2[,(2*waves+1):(2*waves*indicators)]
+data2 <- data2[,1:(2*waves)]
 
 
 
