@@ -39,6 +39,60 @@
     return(parTable)
 }
 
+
+## Constrain stability for Moving Average part of model
+.constrainMa <- function(parTable, info) {
+    waves <- info$gen$maxWaves
+    for (w in 3:(waves)) {
+        cVals <- list(
+            parTable,
+            paste0("ma_a", w),
+            "==",
+            paste0("ma_a", 2)
+        )
+        parTable <- do.call(.buildConstraint, cVals)
+    }
+    if (info$gen$yVar == TRUE) {
+        for (w in 3:(waves)) {
+            cVals <- list(
+                parTable,
+                paste0("ma_b", w),
+                "==",
+                paste0("ma_b", 2)
+            )
+            parTable <- do.call(.buildConstraint, cVals)
+        }
+    }
+    return(parTable)
+}
+
+
+.constrainClMa <- function(parTable, info) {
+    waves <- info$gen$maxWaves
+    for (w in 3:(waves)) {
+        cVals <- list(
+            parTable,
+            paste0("ma_d", w),
+            "==",
+            paste0("ma_d", 2)
+        )
+        parTable <- do.call(.buildConstraint, cVals)
+    }
+    if (info$gen$yVar == TRUE) {
+        for (w in 3:(waves)) {
+            cVals <- list(
+                parTable,
+                paste0("ma_c", w),
+                "==",
+                paste0("ma_c", 2)
+            )
+            parTable <- do.call(.buildConstraint, cVals)
+        }
+    }
+    return(parTable)
+}
+
+
 ## Constrain cross-lagged paths
 .constrainCl <- function(parTable, info, zero=FALSE) {
     waves <- info$gen$maxWaves

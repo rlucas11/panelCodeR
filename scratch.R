@@ -10,7 +10,12 @@ load_all()
 
 library(panelCodeR)
 
-waves <- 30
+
+################################################################################
+## Create test data
+################################################################################
+
+waves <- 10
 indicators <- 3
 
 data <- gen_starts(
@@ -42,9 +47,13 @@ for (i in names(data2)) {
 dataI <- data2[,(2*waves+1):(2*waves*indicators)]
 data2 <- data2[,1:(2*waves)]
 
+write_csv(dataI, "testDataI.csv")
+write_csv(data2, "testData2.csv")
 
+dataI <- read_csv("testDataI.csv")
+data2 <- read_csv("testData2.csv")
 
-
+##################################################################################
 
 data1 <- gen_starts(
     n = 1000, # N to generate

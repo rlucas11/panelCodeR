@@ -8,7 +8,9 @@
                         limits = TRUE,
                         stationarity = TRUE,
                         invariance = TRUE,
-                        residVar = FALSE
+                        residVar = FALSE,
+                        ma = FALSE,
+                        clma = FALSE
                         ) {
     ## Collect basic info
     info <- getInfo(data)
@@ -18,7 +20,8 @@
                           "arts",
                           "clpm", "art",
                           "sts",
-                          "dpm")) == FALSE) {
+                          "dpm",
+                          "gclm")) == FALSE) {
         stop("No model with that name")
     }
     
@@ -33,6 +36,9 @@
         stateCors <- stateCors
         residCors <- residCors
         dpm <- FALSE
+        gclm <- FALSE
+        ma <- ma
+        clma <- clma
     }
 
     if (panelModel == "riclpm" | panelModel == "start") {
@@ -46,6 +52,9 @@
         stateCors <- FALSE
         residCors <- residCors
         dpm <- FALSE
+        gclm <- FALSE
+        ma <- ma
+        clma <- clma
     }
 
     if (panelModel == "arts") {
@@ -59,6 +68,9 @@
         stateCors <- stateCors
         residCors <- residCors
         dpm <- FALSE
+        gclm <- FALSE
+        ma <- ma
+        clma <- clma
     }
 
     if (panelModel == "clpm" | panelModel == "art") {
@@ -72,6 +84,9 @@
         stateCors <- FALSE
         residCors <- residCors
         dpm <- FALSE
+        gclm <- FALSE
+        ma <- ma
+        clma <- clma
     }
 
     if (panelModel == "sts") {
@@ -85,6 +100,9 @@
         stateCors <- stateCors
         residCors <- residCors
         dpm <- FALSE
+        gclm <- FALSE
+        ma <- FALSE
+        clma <- FALSE
     }
 
     if (panelModel == "dpm") {
@@ -98,7 +116,27 @@
         stateCors <- FALSE
         residCors <- residCors
         dpm <- TRUE
+        gclm <- FALSE
         stationarity <- FALSE
+        ma <- ma
+        clma <- clma
+    }
+
+    if (panelModel == "gclm") {
+        ar <- TRUE
+        trait <- FALSE
+        stability <- TRUE
+        crossLag <- TRUE
+        state <- FALSE
+        traitCors <- TRUE
+        arCors <- arCors
+        stateCors <- FALSE
+        residCors <- residCors
+        dpm <- FALSE
+        gclm <- TRUE
+        stationarity <- FALSE
+        ma <- ma
+        clma <- clma
     }
 
     modelInfo <- .buildTable(info,
@@ -111,21 +149,34 @@
         arCors = arCors,
         stateCors = stateCors,
         residCors = residCors,
-        dpm = dpm
+        dpm = dpm,
+        gclm = gclm,
+        ma = ma,
+        clma = clma
     )
 
     ## Build table and collect parameters
     model <- modelInfo$model
 
     ## Build final model based on options
-    if (ar == TRUE & (stationarity == TRUE | dpm == TRUE)) {
+    if (ar == TRUE & (stationarity == TRUE | dpm == TRUE | gclm == TRUE )) {
         model <- .constrainStability(model, info)
     }
+
+    if (ma == TRUE) {
+        model <- .constrainMa(model, info)
+    }
+
+    if (clma == TRUE) {
+        model <- .constrainClMa(model, info)
+    }
+
+
 
     ## Constrain cross-lagged paths if necessary
     if (info$gen$yVar == TRUE &
         ar == TRUE) {
-        if (stationarity == TRUE | dpm == TRUE) {
+        if (stationarity == TRUE | dpm == TRUE | gclm == TRUE ) {
             if (crossLag == FALSE) {
                 zero <- TRUE
             } else {
@@ -258,6 +309,8 @@ panelcoder <- function(data,
                        panelModel = "starts",
                        program = "lavaan",
                        crossLag = TRUE,
+                       ma = FALSE,
+                       clma = FALSE,
                        traitCors = TRUE,
                        arCors = TRUE,
                        stateCors = FALSE,
@@ -310,16 +363,16 @@ panelcoder <- function(data,
         }
     }
 
-    if (panelModel == "dpm") {
+    if (panelModel == "dpm" | panelModel == "gclm") {
         if (length(info$x$waves) != length(info$x$actualWaves)) {
-            stop("Can't have phantom variables when fitting the dynamic panel model",
+            stop("Can't have phantom variables when fitting the dynamic panel model or generalized cross-lagged panel model",
                  call. = FALSE)
         }
     }
-    if (panelModel == "dpm") {
+    if (panelModel == "dpm" | panelModel == "gclpm") {
         if (info$gen$yVar == TRUE) {    
             if (length(info$y$waves) != length(info$y$actualWaves)) {
-                stop("Can't have phantom variables when fitting the dynamic panel model",
+                stop("Can't have phantom variables when fitting the dynamic panel model or generalized cross-lagged panel model",
                      call. = FALSE)
             }
         }
@@ -329,6 +382,8 @@ panelcoder <- function(data,
     model <- .buildModel(data = data,
                          panelModel = panelModel,
                          crossLag = crossLag,
+                         ma = ma,
+                         clma = clma,
                          stateCors = stateCors,
                          residCors = residCors,
                          arCors = arCors,

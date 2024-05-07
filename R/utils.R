@@ -242,11 +242,18 @@ getInfo <- function(df) {
     if (info$gen$yVar == TRUE) {
         t.y <- paste("T", toupper(info$y$name), sep = "_")
     }
+    ## AR Variance is captured in impulses
     a.x  <- paste("A", toupper(info$x$name), "1", sep = "_")
     a.x2  <- paste("A", toupper(info$x$name), "2", sep = "_")
     if (info$gen$yVar == TRUE) {
         a.y <- paste("A", toupper(info$y$name), "1", sep = "_")
         a.y2 <- paste("A", toupper(info$y$name), "2", sep = "_")
+    }
+    i.x  <- paste("I", toupper(info$x$name), "1", sep = "_")
+    i.x2  <- paste("I", toupper(info$x$name), "2", sep = "_")
+    if (info$gen$yVar == TRUE) {
+        i.y <- paste("I", toupper(info$y$name), "1", sep = "_")
+        i.y2 <- paste("I", toupper(info$y$name), "2", sep = "_")
     }
     s.x  <- paste("S", toupper(info$x$name), "1", sep = "_")
     if (info$gen$yVar == TRUE) {
@@ -275,20 +282,20 @@ getInfo <- function(df) {
     }
 
     if (length(est[which(est$paramHeader == "Variances" &
-                         est$param == a.x), "est"]) == 0) {
+                         est$param == i.x), "est"]) == 0) {
         ar.x <- 0
     } else {
         ar.x <- est[which(est$paramHeader == "Variances" &
-                          est$param == a.x), "est"]
+                          est$param == i.x), "est"]
     }
     
     if (info$gen$yVar == TRUE) {
         if (length(est[which(est$paramHeader == "Variances" &
-                             est$param == a.y), "est"]) == 0) {
+                             est$param == i.y), "est"]) == 0) {
             ar.y <- 0
         } else {
             ar.y <- est[which(est$paramHeader == "Variances" &
-                              est$param == a.y), "est"]
+                              est$param == i.y), "est"]
         }
     } else {
         ar.y <- NA
@@ -326,8 +333,8 @@ getInfo <- function(df) {
         trait.cor <- NA
     }
     if (info$gen$yVar == TRUE) {
-        ar.cor <- est.std[which(est.std$paramHeader == paste0(a.x, ".WITH") &
-                                est.std$param == a.y), "est"]
+        ar.cor <- est.std[which(est.std$paramHeader == paste0(i.x, ".WITH") &
+                                est.std$param == i.y), "est"]
     } else {
         ar.cor <- NA
     }
