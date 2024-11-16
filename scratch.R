@@ -736,3 +736,10 @@ components <- list(
     cors = .buildCors(info, ar = ar, trait = trait, state = stateCors),
     residCors = .buildResidCors(info)
 )
+
+test <- panelcoder(data2, panelModel="gclm", program="mplus")
+testDpm <- panelcoder(data2, panelModel="dpm", program="mplus")
+testStarts <- panelcoder(data2, panelModel="starts", program="mplus")
+
+test2 <- panelcoder(data2, panelModel="gclm", program="mplus", ma=TRUE)
+test2 <- panelcoder(data2, panelModel="gclm", program="mplus", ma=TRUE, clma=TRUE)

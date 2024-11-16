@@ -18,7 +18,15 @@ ARTS | STS
 ![](images/artsWhite.png) | ![](images/stsWhite.png)
 
 
-Finally, the `panelcoder()` command can also create and run lavaan or mplus code for a Dynamic Panel Model (DPM; see Dishop & Deshon, 2021). The DPM is similar to the RI-CLPM, but the autoregressive process is not attached to residualized variables (see Murayama & Gfrörer, 2023). 
+### Dynamic Panel Model
+
+The `panelcoder()` command can also create and run lavaan or mplus code for a Dynamic Panel Model (DPM; see Dishop & Deshon, 2021). The DPM is similar to the RI-CLPM, but the autoregressive process is not attached to residualized variables (see Murayama & Gfrörer, 2023). Use option `panelModel = "dpm" to specify this model.
+
+### General Cross-Lagged Model
+
+The `panelcoder()` command can also create and run lavaan or mplus code for the general cross-lagged panel model (GCLM; see Zyphur et al., 2020). The GCLM is similar to the DPM with slight variations. The GCM can also incorporate moving averages and cross-lagged moving averages. Use option `panelModel = "gclm"` and the `ma` and `gclm` (logical values) options to specify this model. 
+
+### Options
 
 A number of additional options are also available. By default, the model imposes stationarity constraints, which set the variances, stabilities, and cross-lagged paths to be equal across waves; but this constraint can often be removed. It is also possible to remove the lagged paths. Correlations between the components for the two variables in bivariate models can also be included or excluded. 
 

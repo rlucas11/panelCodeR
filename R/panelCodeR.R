@@ -261,11 +261,15 @@
 #'   should be very short. A warning is provided if these exceed 8 characters.
 #' @param title Title of analysis for mplus
 #' @param panelModel Specific model to run. Can be "starts"(the default),
-#'   "riclpm", "clpm", "arts", or "sts". 
+#'   "riclpm", "clpm", "arts", "sts", "dpm", or "gclm". 
 #' @param program Program to use to run code. Can be "lavaan" (the default) or
 #'   "mplus"
 #' @param crossLag Logical value indicating whether to include cross-lagged
 #'   paths. Defaults to `TRUE`.
+#' @param ma Logical value indicating whether to include moving average
+#'   components in the GCLM. Defaults to `FALSE`.
+#' @param clma Logical value indicating whether to include cross-lagged moving
+#'   average components in the GCLM. Defaults to `FALSE`.
 #' @param traitCors Logical value indicating whether to include correlations
 #'   between stable-trait/random-intercept components. Defaults to TRUE.
 #' @param arCors Logical value indicating whether to include correlations
@@ -278,8 +282,8 @@
 #'   variance to be equal across waves when there are multiple indicators.
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values. Defaults to TRUE.
-#' @param stationarity Logical value indicating whether to impose stationarity.
-#'   Defaults to TRUE.
+#' @param stationarity Logical value indicating whether to impose stationarity
+#'   in the autoregressive process. Defaults to TRUE.
 #' @param invariance Logical value indicating whether to constrain loadings for
 #'   the same item to be equal across waves. 
 #' @param mplusAnalysis Quoted text. Specify ANLYSIS command for mplus. Defaults
@@ -295,7 +299,7 @@
 #'   correlations between same indicator at different waves (when there are more
 #'   than one indicator). Not yet implemented
 #' @param run Logical value indicating whether to run the model or to just
-#'   print and return code.
+#'   print and return code. Defaults to `TRUE`.
 #' @param ... Additional options passed to lavaan. Default options are
 #'   meanstructure=TRUE, missing = 'fiml', int.ov.free=TRUE, and
 #'   int.lv.free=FALSE.

@@ -10,6 +10,8 @@ panelcoder(
   panelModel = "starts",
   program = "lavaan",
   crossLag = TRUE,
+  ma = FALSE,
+  clma = FALSE,
   traitCors = TRUE,
   arCors = TRUE,
   stateCors = FALSE,
@@ -39,13 +41,19 @@ should be very short. A warning is provided if these exceed 8 characters.}
 \item{title}{Title of analysis for mplus}
 
 \item{panelModel}{Specific model to run. Can be "starts"(the default),
-"riclpm", "clpm", "arts", or "sts".}
+"riclpm", "clpm", "arts", "sts", "dpm", or "gclm".}
 
 \item{program}{Program to use to run code. Can be "lavaan" (the default) or
 "mplus"}
 
 \item{crossLag}{Logical value indicating whether to include cross-lagged
 paths. Defaults to \code{TRUE}.}
+
+\item{ma}{Logical value indicating whether to include moving average
+components in the GCLM. Defaults to \code{FALSE}.}
+
+\item{clma}{Logical value indicating whether to include cross-lagged moving
+average components in the GCLM. Defaults to \code{FALSE}.}
 
 \item{traitCors}{Logical value indicating whether to include correlations
 between stable-trait/random-intercept components. Defaults to TRUE.}
@@ -65,14 +73,14 @@ variance to be equal across waves when there are multiple indicators.}
 \item{limits}{Logical value indicating whether to constrain variances and
 correlations to possible values. Defaults to TRUE.}
 
-\item{stationarity}{Logical value indicating whether to impose stationarity.
-Defaults to TRUE.}
+\item{stationarity}{Logical value indicating whether to impose stationarity
+in the autoregressive process. Defaults to TRUE.}
 
 \item{invariance}{Logical value indicating whether to constrain loadings for
 the same item to be equal across waves.}
 
 \item{mplusAnalysis}{Quoted text. Specify ANLYSIS command for mplus. Defaults
-to "MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;". If you change thish, including
+to "MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;". If you change this, including
 "MODEL=NOCOVARIANCES" is highly recommended given the way the model is
 specified.}
 
@@ -88,7 +96,7 @@ correlations between same indicator at different waves (when there are more
 than one indicator). Not yet implemented}
 
 \item{run}{Logical value indicating whether to run the model or to just
-print and return code.}
+print and return code. Defaults to \code{TRUE}.}
 
 \item{...}{Additional options passed to lavaan. Default options are
 meanstructure=TRUE, missing = 'fiml', int.ov.free=TRUE, and

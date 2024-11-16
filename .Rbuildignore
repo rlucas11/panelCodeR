@@ -9,3 +9,5 @@
 ^testTidySem\.R$
 ^oldCode$
 info.md
+^testData2\.csv$
+^testDataI\.csv$
