@@ -1,5 +1,8 @@
 # panelCodeR Package
 
+> [!CAUTION]
+> This project is under active development. Please check the model code that this package creates before trusting the results. Please help test the code by running panelcoder with data and models for which you already have results using standard approaches to writing mplus or lavaan code. Please report any issues you find.
+
 This R package generates lavaan and mplus code for models for analyzing panel data. Currently, it can generate code for the univariate and bivariate STARTS model and a number of models nested under this more general model. The diagram below shows the STARTS model and its components, which include a stable-trait (ST) component, an autoregressive trait (ART) component, and a state (S) component for each variable. 
 
 ![Diagram of STARTS Model](images/startsWhite.png)
@@ -26,15 +29,19 @@ The `panelcoder()` command can also create and run lavaan or mplus code for a Dy
 
 The `panelcoder()` command can also create and run lavaan or mplus code for the general cross-lagged panel model (GCLM; see Zyphur et al., 2020). The GCLM is similar to the DPM with slight variations. The GCM can also incorporate moving averages and cross-lagged moving averages. Use option `panelModel = "gclm"` and the `ma` and `gclm` (logical values) options to specify this model. 
 
-### Options
+### Additional Models
 
-A number of additional options are also available. By default, the model imposes stationarity constraints, which set the variances, stabilities, and cross-lagged paths to be equal across waves; but this constraint can often be removed. It is also possible to remove the lagged paths. Correlations between the components for the two variables in bivariate models can also be included or excluded. 
+I am working on implementing latent slopes so a variety of additional models can be specified. 
+
+### Options and Features
+
+A number of additional options and features are also available. By default, the model imposes stationarity constraints, which set the variances, stabilities, and cross-lagged paths to be equal across waves; but this constraint can often be removed. It is also possible to remove the lagged paths. Correlations between the components for the two variables in bivariate models can also be included or excluded. 
 
 The package handles data with multiple indicators per wave (as long as the same indicators are available at each wave). In addition, most models can be run even if some waves are missing. This is accomplished through the use of phantom variables for missing waves, but stationarity constraints must be included for these to work. 
 
 Finally, there are a few helper functions. The package includes a function called `gen_starts()` that generates data from a STARTS model with user specified parameters (e.g., different amounts of variance for each component or different lagged paths). This can be useful for seeing how the models behave under different data-generating processes. There is a related function called `addIndicators()` that can take the data from `gen_starts()` and make multiple indicators for each wave. Finally, the function `parcel()` takes multiple-item scales and creates parcels based on the average loadings across waves. 
 
-There are three functions that are useful after you have run a model. `panelPlot()` will plot the implied stabilities and actual stabilities for increasingly long waves (up to the length of the study). This can be useful for visualizing the ways that the model might not describe the underlying data well. Currently, this only works for manifest-variable models (i.e, not for models with multiple indicators per wave). The function `panelEstimates()` prints all estimates from the model. The function `modelCode()` prints a formatted version of lavaan or mplus code used to run the model. This can be useful for checking that everything was specified correctly or for modifying the basic code for variations that the package cannot handle. Note that the way that panelCodeR specifies code might be a little different than if you were writing the code from scratch. For instance, because of the way the code building is automated, it avoids some of the shortcuts that can be used to write lavaan or mplus code more efficiently. 
+There are three functions that are useful after you have run a model. `panelPlot()` will plot the implied stabilities and actual stabilities for increasingly long waves (up to the length of the study). This can be useful for visualizing the ways that the model might not describe the underlying data well. Currently, this only works for manifest-variable models (i.e, not for models with multiple indicators per wave) and only for variations on the STARTS models (i.e., not for the DPM or GCLM). The function `panelEstimates()` prints all estimates from the model. The function `modelCode()` prints a formatted version of lavaan or mplus code used to run the model. This can be useful for checking that everything was specified correctly or for modifying the basic code for variations that the package cannot handle. Note that the way that panelCodeR specifies code might be a little different than if you were writing the code from scratch. For instance, because of the way the code building is automated, it avoids some of the shortcuts that can be used to write lavaan or mplus code more efficiently. 
 
 
 ## Installation
@@ -63,6 +70,8 @@ panelcoder(data,
            panelModel = "starts",
            program = "lavaan",
            crossLag = TRUE,
+           ma = FALSE,
+           clma = FALSE,
            traitCors = TRUE,
            arCors = TRUE,
            stateCors = FALSE,
@@ -87,7 +96,7 @@ So, for example, to get output for a STARTS model from lavaan with all default s
 modelOutput <- panelcoder(data)
 ```
 
-To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", "sts", or "dpm" model. 
+To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", "sts", "dpm", or "gclm" model. 
 
 ```R
 modelOutput <- panelcoder(data, panelModel = "riclpm")
@@ -102,6 +111,8 @@ modelOutput <- panelcoder(data, program = "mplus")
 The other options are described below (and in the R help functions).
 
 - `crossLag` specifies whether the reciprocal lagged associations between the two variables in a bivariate model are included.
+- `ma` specifies whether to include moving averages (described in the context of the GCLM).
+- `clma` specifies whether to include cross-lagged moving averages (again described in the context of the GCLM).
 - `traitCors` specifies whether to include the correlation between the stable trait components.
 - `arCors` specifies whether to include correlations between AR components in the same wave (in bivariate models).
 - `stateCors` specifies whether to include correlations between state components in the same wave (in bivariate models).
@@ -121,11 +132,11 @@ The other options are described below (and in the R help functions).
 
 When you call the function, it will present a summary of some of the most important results from the model, but it is best to save the output of the command to an object (e.g., `pcOutput <- panelcoder(data)`. This object includes some information used when constructing the model, along with the lavaan or mplus code, the lavaan or mplus output, and information to plot correlations. The following functions help examine this information (these are not yet implemented, but will be soon).
 
-The function `panelplot()` will plot the implied and actual stabilities for increasingly long lags (up to the number of waves in the data). This can show whether the selected model accurately reproduces the actual stability coefficients from the data. Models like the CLPM often underestimate the long-term stability of the variables. 
+The function `panelPlot()` will plot the implied and actual stabilities for increasingly long lags (up to the number of waves in the data). This can show whether the selected model accurately reproduces the actual stability coefficients from the data. Models like the CLPM often underestimate the long-term stability of the variables. 
 
-The function `modelstatement()` will produce a formatted version of the mplus or lavaan code representing the model. This could be used to check that the model was specified correctly, and it can also be copied, pasted, and modified to run models that can't be specified with panelCodeR. 
+The function `modelCode()` will produce a formatted version of the mplus or lavaan code representing the model. This could be used to check that the model was specified correctly, and it can also be copied, pasted, and modified to run models that can't be specified with panelCodeR. 
 
-The function `modelestimates()` will extract and print the lavaan or mplus estimates. The actual lavaan or mplus object that is created from running the model is stored in the panelCodeR output; you can access it by selecting the fourth element of the panelCodeR output (e.g., `pcOutput[[4]]`). 
+The function `modelEstimates()` will extract and print the lavaan or mplus estimates. The actual lavaan or mplus object that is created from running the model is stored in the panelCodeR output; you can access it by selecting the fourth element of the panelCodeR output (e.g., `pcOutput[[4]]`). 
 
 
 

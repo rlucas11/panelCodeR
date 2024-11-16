@@ -53,6 +53,10 @@ write_csv(data2, "testData2.csv")
 dataI <- read_csv("testDataI.csv")
 data2 <- read_csv("testData2.csv")
 
+test <- panelcoder(data2, panelModel="starts", program = "mplus")
+panelPlot(test)
+panelEstimates(test)
+modelCode(test)
 ##################################################################################
 
 data1 <- gen_starts(
