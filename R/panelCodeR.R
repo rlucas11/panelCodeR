@@ -7,6 +7,7 @@
                         residCors = FALSE,
                         limits = TRUE,
                         stationarity = TRUE,
+                        constrainState = TRUE,
                         invariance = TRUE,
                         residVar = FALSE,
                         ma = FALSE,
@@ -201,7 +202,7 @@
     }
 
     ## Constrain state variances
-    if (state == TRUE & stationarity == TRUE) {
+    if (state == TRUE & constrainState == TRUE) {
         model <- .constrainStateVar(model, info)
     }
 
@@ -284,6 +285,8 @@
 #'   correlations to possible values. Defaults to TRUE.
 #' @param stationarity Logical value indicating whether to impose stationarity
 #'   in the autoregressive process. Defaults to TRUE.
+#' @param constrainState Logical value indicating whether to constrain state
+#'   variances to be equal across waves. Defaults to TRUE.
 #' @param invariance Logical value indicating whether to constrain loadings for
 #'   the same item to be equal across waves. 
 #' @param mplusAnalysis Quoted text. Specify ANLYSIS command for mplus. Defaults
@@ -322,6 +325,7 @@ panelcoder <- function(data,
                        residVar = FALSE,
                        limits = TRUE,
                        stationarity = TRUE,
+                       constrainState = TRUE,
                        invariance = TRUE,
                        mplusAnalysis = NULL,
                        mplusOutput = NULL,
@@ -393,6 +397,7 @@ panelcoder <- function(data,
                          arCors = arCors,
                          limits = limits,
                          stationarity = stationarity,
+                         constrainState = constrainState,
                          invariance = invariance,
                          residVar = residVar
                          )

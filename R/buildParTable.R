@@ -765,7 +765,7 @@
 }
 
 
-.buildGclmTrait <- function(info, free=FALSE) {
+.buildGclmTrait <- function(info, free=TRUE) {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
 

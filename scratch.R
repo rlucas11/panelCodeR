@@ -57,6 +57,45 @@ test <- panelcoder(data2, panelModel="starts", program = "mplus")
 panelPlot(test)
 panelEstimates(test)
 modelCode(test)
+
+## Model Summary: 
+## Model: Chi2 (df = 198) = 192.608, p = 0.595
+
+## Fit Indices:
+## CFI = 1.000, TLI = 1.001, SRMR = 0.026
+## RMSEA =  0.000 
+## AIC =  70636.282 , BIC =  70793.330 
+
+## Variance Decomposition: 
+
+## X Variable: 
+## Trait: 0.339, Autoregressive: 0.393, State: 0.268
+## Y Variable: 
+## Trait: 0.300, Autoregressive: 0.344, State: 0.356
+
+## Stability: 
+## X:  0.425 
+## Y:  0.604 
+
+## Cross-Lag Paths: 
+## Y predicted from X: 0.141
+## X predicted from Y: 0.166
+
+## Correlations: 
+
+## Stable Trait:  0.488 
+## Autoregressive Trait:  0.595 
+## State:   
+
+test <- panelcoder(data2, panelModel="starts", stationarity = FALSE, program = "mplus")
+
+test <- panelcoder(data2, panelModel="dpm", program = "mplus")
+panelEstimates(test)
+
+test3 <- panelcoder(data2, panelModel="gclm", program = "mplus")
+panelEstimates(test3)
+
+
 ##################################################################################
 
 data1 <- gen_starts(
