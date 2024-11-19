@@ -10,6 +10,14 @@ load_all()
 
 library(panelCodeR)
 
+dataI <- read_csv("testDataI.csv")
+data2 <- read_csv("testData2.csv")
+
+test <- panelcoder(data2, panelModel="starts", program = "mplus")
+panelPlot(test)
+panelEstimates(test)
+modelCode(test)
+
 
 ################################################################################
 ## Create test data
