@@ -885,6 +885,127 @@
 }
 
 
+.buildSlope <- function(info, free=FALSE, slope=slope) {
+    ## Check if bivariate or univariate
+    yVar <- info$gen$yVar
+
+    xName <- info$x$name
+    if (yVar == TRUE) {
+        yName <- info$y$name
+    }
+
+
+    
+    ## Create initial table
+    initialParTable <- data.frame(
+        lhs = character(),
+        op = character(),
+        rhs = character(),
+        user = integer(),
+        block = integer(),
+        group = integer(),
+        free = integer(),
+        ustart = numeric(),
+        exo = integer(),
+        label = character()
+    )
+
+    ## Create loadings
+    if (slope == "linear") {
+        freeValues <- rep(0, length(info$x$waves))
+        ustartValues <- seq(from = 0, to = length(info$x$waves))
+        xLabelsValues <- rep("", length(info$x$waves))
+        if (yVar == TRUE) {
+            yLabelsValues <- rep("", length(info$y$waves))
+        }
+    } else {
+        freeValues <- c(0, rep(1, (length(info$x$waves)-2)), 0)
+        ustartValues <- c(0, rep(NA, (length(info$x$waves)-2)), 1)
+        xLabelsValues <- rep("", length(info$x$waves))
+        if (yVar == TRUE) {
+            yLabelsValues <- rep("", length(info$y$waves))
+        }
+    }
+
+    for (w in info$x$waves) {
+        loadingParTable <- data.frame(
+            lhs = paste("sl", xName, sep = "_"),
+            op = "=~",
+            rhs = paste("l", xName, w, sep="_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = freeValues[w],
+            ustart = ustartValues[w],
+            exo = 0,
+            label = xLabelsValues[w]
+        )
+        initialParTable <- rbind(
+            initialParTable,
+            loadingParTable
+        )
+    }
+
+    var1ParTable <- data.frame(
+            lhs = paste("sl", xName, sep = "_"),
+            op = "~~",
+            rhs = paste("sl", xName, sep="_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "x_slVar"
+    )
+    initialParTable <- rbind(
+        initialParTable,
+        var1ParTable
+    )
+
+    if (yVar == TRUE) {
+        for (w in info$y$waves) {
+            loadingParTable <- data.frame(
+                lhs = paste("sl", yName, sep = "_"),
+                op = "=~",
+                rhs = paste("l", yName, w, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = freeValues[w],
+                ustart = ustartValues[w],
+                exo = 0,
+                label = yLabelsValues[w]
+            )
+            initialParTable <- rbind(
+                initialParTable,
+                loadingParTable
+            )
+        }
+
+        var1ParTable <- data.frame(
+            lhs = paste("sl", yName, sep = "_"),
+            op = "~~",
+            rhs = paste("sl", yName, sep="_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "y_slVar"
+        )
+        initialParTable <- rbind(
+            initialParTable,
+            var1ParTable
+        )
+    }
+    
+    finalParTable <- initialParTable[order(initialParTable$op), ]
+    finalParTable$from <- "slope"
+    return(finalParTable)  
+}
+
 
 .buildStability <- function(info) {
     ## Check if bivariate or univariate
@@ -1243,7 +1364,11 @@
 }
 
 
-.buildCors <- function(info, ar = TRUE, trait = TRUE, state = TRUE) {
+.buildCors <- function(info,
+                       ar = TRUE,
+                       trait = TRUE,
+                       state = TRUE,
+                       slope = FALSE) {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
     xName <- info$x$name
@@ -1251,7 +1376,7 @@
     if (yVar == TRUE) {
         yName <- info$y$name
 
-        if (trait==TRUE) {
+        if (trait == TRUE) {
             corParTable <- data.frame(
                 lhs = paste("t", xName, sep = "_"),
                 op = "~~",
@@ -1263,11 +1388,40 @@
                 ustart = NA,
                 exo = 0,
                 label = "cov_txty"
-            ) 
+            )
         } else {
             corParTable <- NULL
         }
-        
+
+        if (!is.null(slope)) {
+            slopeCorParTable <- data.frame(
+                lhs = c(
+                    paste("t", xName, sep = "_"),
+                    paste("t", yName, sep = "_"),
+                    paste("sl", xName, sep = "_")
+                ),
+                op = rep("~~",3),
+                rhs = c(
+                    paste("sl", xName, sep = "_"),
+                    paste("sl", yName, sep = "_"),
+                    paste("sl", yName, sep = "_")
+                ),
+                user = rep(1, 3),
+                block = rep(1, 3),
+                group = rep(1, 3),
+                free = rep(1, 3),
+                ustart = rep(NA, 3),
+                exo = rep(0, 3),
+                label = c(
+                    "cov_txsx",
+                    "cov_tysy",
+                    "cov_sxsy"
+                    )
+            )
+        } else {
+            slopeCorParTable <- NULL
+        }
+
         if (ar == TRUE) {
             ## Create initial table
             arCorParTable <- data.frame(
@@ -1303,7 +1457,7 @@
         } else {
             arCorParTable <- NULL
         }
-        
+
         if (state == TRUE) {
             stateCorParTable <- data.frame(
                 lhs = character(),
@@ -1342,8 +1496,35 @@
             rbind,
             list(
                 corParTable,
+                slopeCorParTable,
                 arCorParTable,
                 stateCorParTable
+            )
+        )
+        corParTable <- corParTable[order(corParTable$lhs), ]
+        corParTable$from <- "cors"
+        return(corParTable)
+    } else {
+        if (!is.null(slope)) {
+            slopeCorParTable <- data.frame(
+                lhs = paste("t", xName, sep = "_"),
+                op = "~~",
+                rhs = paste("sl", xName, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = "cov_txsx"
+            )
+        } else {
+            slopeCorParTable <- NULL
+        }
+        corParTable <- do.call(
+            rbind,
+            list(
+                slopeCorParTable,
             )
         )
         corParTable <- corParTable[order(corParTable$lhs), ]
@@ -1531,7 +1712,8 @@
                         dpm = FALSE,
                         gclm = FALSE,
                         ma = FALSE,
-                        clma = FALSE) {
+                        clma = FALSE,
+                        slope = "linear") {
 
     if (dpm == TRUE) {
         trait <- FALSE
@@ -1569,9 +1751,14 @@
         ma = .buildMa(info),
         clma = .buildClMa(info),
         state = .buildState(info),
-        cors = .buildCors(info, ar = ar, trait = traitCors, state = stateCors),
+        cors = .buildCors(info,
+                          ar = ar,
+                          trait = traitCors,
+                          state = stateCors,
+                          slope = slope),
         dpmCors = .buildDpmCors(info),
-        residCors = .buildResidCors(info)
+        residCors = .buildResidCors(info),
+        slopes = .buildSlope(info, slope = slope)
     )
     
     if (ar == FALSE) {
@@ -1609,6 +1796,9 @@
     if (dpm == FALSE) {
         components$dpmCors <- NULL
     }
+    if (slope == FALSE) {
+        components$slopes <- NULL
+    }
            
     
     model <- do.call(
@@ -1630,7 +1820,8 @@
         varNamesInfo$varName1 == "a" |
         varNamesInfo$varName1 == "t" |
         varNamesInfo$varName1 == "s" |
-        varNamesInfo$varName1 == "i"), ]
+        varNamesInfo$varName1 == "i" |
+        varNamesInfo$varName1 == "sl"), ]
     names(latentVarInfo) <- c("varName", "component", "variable", "wave")
     latentVarInfo$indicator <- NA
     if(info$gen$yVar==TRUE) {
@@ -1657,19 +1848,36 @@
     names(model)[16:19] <- c("rhs_c", "rhs_v", "rhs_w", "rhs_i")
 
     ## Create explicit intercepts
-    int.ov <- data.frame(
-        lhs = observedVarInfo$varName,
-        op = rep("~1", length(observedVarInfo$varName)),
-        rhs = rep("", length(observedVarInfo$varName)),
-        user = rep(1, length(observedVarInfo$varName)),
-        block = rep(1, length(observedVarInfo$varName)),
-        group = rep(1, length(observedVarInfo$varName)),
-        free = rep(1, length(observedVarInfo$varName)),
-        ustart = rep(NA, length(observedVarInfo$varName)),
-        exo = rep(0, length(observedVarInfo$varName)),
-        label = rep("", length(observedVarInfo$varName)),
-        from = rep("int.ov", length(observedVarInfo$varName))
-    )
+    if (is.null(slope)) {
+        int.ov <- data.frame(
+            lhs = observedVarInfo$varName,
+            op = rep("~1", length(observedVarInfo$varName)),
+            rhs = rep("", length(observedVarInfo$varName)),
+            user = rep(1, length(observedVarInfo$varName)),
+            block = rep(1, length(observedVarInfo$varName)),
+            group = rep(1, length(observedVarInfo$varName)),
+            free = rep(1, length(observedVarInfo$varName)),
+            ustart = rep(NA, length(observedVarInfo$varName)),
+            exo = rep(0, length(observedVarInfo$varName)),
+            label = rep("", length(observedVarInfo$varName)),
+            from = rep("int.ov", length(observedVarInfo$varName))
+        )
+    } else {
+        int.ov <- data.frame(
+            lhs = observedVarInfo$varName,
+            op = rep("~1", length(observedVarInfo$varName)),
+            rhs = rep("", length(observedVarInfo$varName)),
+            user = rep(1, length(observedVarInfo$varName)),
+            block = rep(1, length(observedVarInfo$varName)),
+            group = rep(1, length(observedVarInfo$varName)),
+            free = rep(0, length(observedVarInfo$varName)),
+            ustart = rep(0, length(observedVarInfo$varName)),
+            exo = rep(0, length(observedVarInfo$varName)),
+            label = rep("", length(observedVarInfo$varName)),
+            from = rep("int.ov", length(observedVarInfo$varName))
+        )
+    }
+
 
     int.lv <- data.frame(
         lhs = latentVarInfo$varName,
@@ -1683,8 +1891,25 @@
         exo = rep(0, length(latentVarInfo$varName)),
         label = rep("", length(latentVarInfo$varName)),
         from = rep("int.lv", length(latentVarInfo$varName))
-        )
+    )
 
+    if (!is.null(slope)) {
+        x_trait_name <- paste("t", info$x$name, sep = "_")
+        x_slope_name <- paste("sl", info$x$name, sep = "_")
+        int.lv[which(int.lv$lhs == x_trait_name), "free"] <- 1
+        int.lv[which(int.lv$lhs == x_slope_name), "free"] <- 1
+        int.lv[which(int.lv$lhs == x_trait_name), "ustart"] <- NA
+        int.lv[which(int.lv$lhs == x_slope_name), "ustart"] <- NA
+        if (info$gen$yVar == TRUE) {
+            y_trait_name <- paste("t", info$y$name, sep = "_")
+            y_slope_name <- paste("sl", info$y$name, sep = "_")
+            int.lv[which(int.lv$lhs == y_trait_name), "free"] <- 1
+            int.lv[which(int.lv$lhs == y_slope_name), "free"] <- 1
+            int.lv[which(int.lv$lhs == y_trait_name), "ustart"] <- NA
+            int.lv[which(int.lv$lhs == y_slope_name), "ustart"] <- NA
+        }
+    }
+    
     keepVars <- c(
         "lhs", "op", "rhs", "free", "label",
         paste0(

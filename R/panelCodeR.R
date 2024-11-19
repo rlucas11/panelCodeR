@@ -11,7 +11,8 @@
                         invariance = TRUE,
                         residVar = FALSE,
                         ma = FALSE,
-                        clma = FALSE
+                        clma = FALSE,
+                        slope = "linear"
                         ) {
     ## Collect basic info
     info <- getInfo(data)
@@ -22,8 +23,16 @@
                           "clpm", "art",
                           "sts",
                           "dpm",
-                          "gclm")) == FALSE) {
+                          "gclm",
+                          "lgcm")) == FALSE) {
         stop("No model with that name")
+    }
+
+    if (!is.null(slope)) {
+        if ((slope %in% c("linear",
+                         "basis")) == FALSE) {
+            stop("Use either 'linear' or 'basis' for slope option.")
+        }
     }
     
     if (panelModel == "starts") {
@@ -40,6 +49,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
+        slope <- NULL
     }
 
     if (panelModel == "riclpm" | panelModel == "start") {
@@ -56,6 +66,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
+        slope <- NULL
     }
 
     if (panelModel == "arts") {
@@ -72,6 +83,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
+        slope <- NULL
     }
 
     if (panelModel == "clpm" | panelModel == "art") {
@@ -88,6 +100,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
+        slope <- NULL
     }
 
     if (panelModel == "sts") {
@@ -104,6 +117,7 @@
         gclm <- FALSE
         ma <- FALSE
         clma <- FALSE
+        slope <- NULL
     }
 
     if (panelModel == "dpm") {
@@ -121,6 +135,7 @@
         stationarity <- FALSE
         ma <- ma
         clma <- clma
+        slope <- NULL
     }
 
     if (panelModel == "gclm") {
@@ -138,6 +153,25 @@
         stationarity <- FALSE
         ma <- ma
         clma <- clma
+        slope <- NULL
+    }
+
+    if (panelModel == "lgcm") {
+        ar <- FALSE
+        trait <- TRUE
+        stability <- FALSE
+        crossLag <- FALSE
+        state <- TRUE
+        traitCors <- TRUE
+        arCors <- FALSE
+        stateCors <- stateCors
+        residCors <- residCors
+        dpm <- FALSE
+        gclm <- FALSE
+        stationarity <- FALSE
+        ma <- FALSE
+        clma <- FALSE
+        slope <- slope
     }
 
     modelInfo <- .buildTable(info,
@@ -153,7 +187,8 @@
         dpm = dpm,
         gclm = gclm,
         ma = ma,
-        clma = clma
+        clma = clma,
+        slope = slope
     )
 
     ## Build table and collect parameters
@@ -281,6 +316,8 @@
 #'   between item-specific residual. Defaults to FALSE.
 #' @param residVar Logical value indicating whether to constrain residual
 #'   variance to be equal across waves when there are multiple indicators.
+#' @param slope String variable indicating what type of slope to specify in
+#'   models that include a slope. Can be "linear" or "basis".
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values. Defaults to TRUE.
 #' @param stationarity Logical value indicating whether to impose stationarity
@@ -323,6 +360,7 @@ panelcoder <- function(data,
                        stateCors = FALSE,
                        residCors = FALSE,
                        residVar = FALSE,
+                       slope = "linear",
                        limits = TRUE,
                        stationarity = TRUE,
                        constrainState = TRUE,
@@ -395,6 +433,7 @@ panelcoder <- function(data,
                          stateCors = stateCors,
                          residCors = residCors,
                          arCors = arCors,
+                         slope = slope,
                          limits = limits,
                          stationarity = stationarity,
                          constrainState = constrainState,
