@@ -52,8 +52,12 @@ for (i in names(data2)) {
     data2 <- addIndicators(data2, i, indicators)
 }
 
-dataI <- data2[,(2*waves+1):(2*waves*indicators)]
+startC <- (2*waves+1)
+endC <- (2*waves)+(2*waves*indicators)
+dataI <- data2[,startC:endC]
 data2 <- data2[,1:(2*waves)]
+
+
 
 write_csv(dataI, "testDataI.csv")
 write_csv(data2, "testData2.csv")

@@ -885,7 +885,7 @@
 }
 
 
-.buildSlope <- function(info, free=FALSE, slope=slope) {
+.buildSlope <- function(info, free=FALSE, slope="linear") {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
 
@@ -914,6 +914,15 @@
     if (slope == "linear") {
         freeValues <- rep(0, length(info$x$waves))
         ustartValues <- seq(from = 0, to = length(info$x$waves))
+        xLabelsValues <- rep("", length(info$x$waves))
+        if (yVar == TRUE) {
+            yLabelsValues <- rep("", length(info$y$waves))
+        }
+    } else if (slope == "centered") {
+        firstLoading <- (1 - median(1:info$gen$maxWaves))
+        freeValues <- rep(0, length(info$x$waves))
+        ustartValues <- seq(from = firstLoading,
+                            to = firstLoading + info$gen$maxWaves)
         xLabelsValues <- rep("", length(info$x$waves))
         if (yVar == TRUE) {
             yLabelsValues <- rep("", length(info$y$waves))
