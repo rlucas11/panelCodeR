@@ -29,13 +29,17 @@ The `panelcoder()` command can also create and run lavaan or mplus code for a Dy
 
 The `panelcoder()` command can also create and run lavaan or mplus code for the general cross-lagged panel model (GCLM; see Zyphur et al., 2020). The GCLM is similar to the DPM with slight variations. The GCM can also incorporate moving averages and cross-lagged moving averages. Use option `panelModel = "gclm"` and the `ma` and `gclm` (logical values) options to specify this model. 
 
+### Latent Growth Curve Model
+
+This package can also create and run code for latent growth curve models. To specify this model, use option "lgcm" for `panelModel`. There is also an option for how to specify the slope, which can be "linear" (loadings for the slope start at 0 and increase by 1 for each wave), "centered" (where the 0 point of loadings is the midpoint of all waves and they decrease or increase by 1 as waves move away from this midpoint) or "basis" (where the first wave is set to 0 and the last wave is set to 1, but all intermediate waves are freely estimated). 
+
 ### Additional Models
 
-I am working on implementing latent slopes so a variety of additional models can be specified. 
+I am working on implementing additional models that include latent slopes with other models like the STARTS or DPM. 
 
 ### Options and Features
 
-A number of additional options and features are also available. By default, the model imposes stationarity constraints, which set the variances, stabilities, and cross-lagged paths to be equal across waves; but this constraint can often be removed. It is also possible to remove the lagged paths. Correlations between the components for the two variables in bivariate models can also be included or excluded. 
+A number of additional options and features are also available. By default, the model imposes stationarity constraints, which set the variances, stabilities, and cross-lagged paths to be equal across waves; but this constraint can often be removed (stationarity options refer to the autoregressive process; state variances are set to be equal with a different option). It is also possible to remove the lagged paths. Correlations between the components for the two variables in bivariate models can also be included or excluded. 
 
 The package handles data with multiple indicators per wave (as long as the same indicators are available at each wave). In addition, most models can be run even if some waves are missing. This is accomplished through the use of phantom variables for missing waves, but stationarity constraints must be included for these to work. 
 

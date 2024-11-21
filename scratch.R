@@ -18,7 +18,8 @@ panelPlot(test)
 panelEstimates(test)
 modelCode(test)
 
-
+test <- panelcoder(data2, panelModel="lgcm", program = "lavaan")
+test2 <- panelcoder(data2, panelModel="lgcm", program = "mplus")
 ################################################################################
 ## Create test data
 ################################################################################
