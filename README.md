@@ -81,8 +81,10 @@ panelcoder(data,
            stateCors = FALSE,
            residCors = FALSE,
            residVar = FALSE,
+           slope = FALSE,
            limits = TRUE,
            stationarity = TRUE,
+           constrainState = TRUE,
            invariance = TRUE,
            mplusAnalysis = NULL,
            mplusOutput = NULL,
@@ -122,12 +124,16 @@ The other options are described below (and in the R help functions).
 - `stateCors` specifies whether to include correlations between state components in the same wave (in bivariate models).
 - `residCors` specifies whether to include correlations between the residuals from a specific indicator at a specific wave with the residuals for the same indicator at other waves. 
 - `residVar` specifies whether to constraint the residuals for specific indicators to be the same across waves
+- `slope` specifies how to set loadings for models that include a latent slope. Can be "linear" (the default), "centered", or "basis".
+  - Linear sets the first loading to 0 and increments by 1.
+  - Centered finds the midpoint of the waves and centers loadings around this.
+  - Basis sets the first wave to 0 and the last wave to 1 and then freely estimates the loading for all other waves.
 - `limits` specifies whether to restrict variances to be greater than zero and correlations to be between -1 and 1. This is sometimes needed to prevent inadmissible solutions when a variance component is very small or zero. 
 - `stationarity` specifies whether to impose stationarity. If true, the following parameters are constrained
   - Stability coefficients
   - Lagged paths
   - Total autoregressive variance
-  - State variance
+- `constrainState` specifies whether to constrain state variances to be equal across waves.
 - `mplusAnalysis` specifies the ANALYSIS command to use for mplus if different from the default.
 - `mplusOutput` specifies the OUTPUT command to use for mplus if different from the default.
 - `mplusDirectory` specifies the directory to store .inp and .out files from mplus. This needs to be created before running the model or the command will fail with a 'file not found' error. 
