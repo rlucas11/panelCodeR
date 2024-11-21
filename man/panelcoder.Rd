@@ -17,8 +17,10 @@ panelcoder(
   stateCors = FALSE,
   residCors = FALSE,
   residVar = FALSE,
+  slope = "linear",
   limits = TRUE,
   stationarity = TRUE,
+  constrainState = TRUE,
   invariance = TRUE,
   mplusAnalysis = NULL,
   mplusOutput = NULL,
@@ -70,11 +72,17 @@ between item-specific residual. Defaults to FALSE.}
 \item{residVar}{Logical value indicating whether to constrain residual
 variance to be equal across waves when there are multiple indicators.}
 
+\item{slope}{String variable indicating what type of slope to specify in
+models that include a slope. Can be "linear" or "basis".}
+
 \item{limits}{Logical value indicating whether to constrain variances and
 correlations to possible values. Defaults to TRUE.}
 
 \item{stationarity}{Logical value indicating whether to impose stationarity
 in the autoregressive process. Defaults to TRUE.}
+
+\item{constrainState}{Logical value indicating whether to constrain state
+variances to be equal across waves. Defaults to TRUE.}
 
 \item{invariance}{Logical value indicating whether to constrain loadings for
 the same item to be equal across waves.}
