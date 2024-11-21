@@ -1530,12 +1530,7 @@
         } else {
             slopeCorParTable <- NULL
         }
-        corParTable <- do.call(
-            rbind,
-            list(
-                slopeCorParTable,
-            )
-        )
+        corParTable <- slopeCorParTable
         corParTable <- corParTable[order(corParTable$lhs), ]
         corParTable$from <- "cors"
         return(corParTable)
