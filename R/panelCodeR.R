@@ -49,7 +49,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
-        slope <- NULL
+        slope <- "none"
     }
 
     if (panelModel == "riclpm" | panelModel == "start") {
@@ -66,7 +66,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
-        slope <- NULL
+        slope <- "none"
     }
 
     if (panelModel == "arts") {
@@ -83,7 +83,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
-        slope <- NULL
+        slope <- "none"
     }
 
     if (panelModel == "clpm" | panelModel == "art") {
@@ -100,7 +100,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
-        slope <- NULL
+        slope <- "none"
     }
 
     if (panelModel == "sts") {
@@ -117,7 +117,7 @@
         gclm <- FALSE
         ma <- FALSE
         clma <- FALSE
-        slope <- NULL
+        slope <- "none"
     }
 
     if (panelModel == "dpm") {
@@ -135,7 +135,7 @@
         stationarity <- FALSE
         ma <- ma
         clma <- clma
-        slope <- NULL
+        slope <- "none"
     }
 
     if (panelModel == "gclm") {
@@ -153,7 +153,7 @@
         stationarity <- FALSE
         ma <- ma
         clma <- clma
-        slope <- NULL
+        slope <- "none"
     }
 
     if (panelModel == "lgcm") {

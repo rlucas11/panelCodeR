@@ -927,14 +927,15 @@
         if (yVar == TRUE) {
             yLabelsValues <- rep("", length(info$y$waves))
         }
-    } else {
+    } else if (slope == "basis") {
         freeValues <- c(0, rep(1, (length(info$x$waves)-2)), 0)
         ustartValues <- c(0, rep(NA, (length(info$x$waves)-2)), 1)
         xLabelsValues <- rep("", length(info$x$waves))
         if (yVar == TRUE) {
             yLabelsValues <- rep("", length(info$y$waves))
         }
-    }
+    } else
+        return(NULL)
 
     for (w in info$x$waves) {
         loadingParTable <- data.frame(
@@ -1402,7 +1403,7 @@
             corParTable <- NULL
         }
 
-        if (!is.null(slope)) {
+        if (slope != "none") {
             slopeCorParTable <- data.frame(
                 lhs = c(
                     paste("t", xName, sep = "_"),
@@ -1800,7 +1801,7 @@
     if (dpm == FALSE) {
         components$dpmCors <- NULL
     }
-    if (slope == FALSE) {
+    if (slope == "none") {
         components$slopes <- NULL
     }
            
