@@ -12,7 +12,7 @@
                         residVar = FALSE,
                         ma = FALSE,
                         clma = FALSE,
-                        slope = "none"
+                        slope = slope
                         ) {
     ## Collect basic info
     info <- getInfo(data)
@@ -28,13 +28,12 @@
         stop("No model with that name")
     }
 
-    if (!is.null(slope)) {
-        if ((slope %in% c("linear",
-                          "basis",
-                          "centered"
-                          )) == FALSE) {
-            stop("Use either 'linear' or 'basis' for slope option.")
-        }
+    if ((slope %in% c("linear",
+                      "basis",
+                      "centered",
+                      "none"
+                      )) == FALSE) {
+        stop("Use either 'linear', 'basis', or 'centered' for slope option, or specify 'none'.")
     }
     
     if (panelModel == "starts") {
@@ -362,7 +361,7 @@ panelcoder <- function(data,
                        stateCors = FALSE,
                        residCors = FALSE,
                        residVar = FALSE,
-                       slope = "linear",
+                       slope = "none",
                        limits = TRUE,
                        stationarity = TRUE,
                        constrainState = TRUE,
