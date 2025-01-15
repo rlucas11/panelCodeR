@@ -12,7 +12,7 @@
                         residVar = FALSE,
                         ma = FALSE,
                         clma = FALSE,
-                        slope = "linear"
+                        slope = "none"
                         ) {
     ## Collect basic info
     info <- getInfo(data)
@@ -30,7 +30,9 @@
 
     if (!is.null(slope)) {
         if ((slope %in% c("linear",
-                         "basis")) == FALSE) {
+                          "basis",
+                          "centered"
+                          )) == FALSE) {
             stop("Use either 'linear' or 'basis' for slope option.")
         }
     }
@@ -49,7 +51,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
-        slope <- "none"
+        slope <- slope
     }
 
     if (panelModel == "riclpm" | panelModel == "start") {
@@ -66,7 +68,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
-        slope <- "none"
+        slope <- slope
     }
 
     if (panelModel == "arts") {
@@ -83,7 +85,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
-        slope <- "none"
+        slope <- slope
     }
 
     if (panelModel == "clpm" | panelModel == "art") {
@@ -100,7 +102,7 @@
         gclm <- FALSE
         ma <- ma
         clma <- clma
-        slope <- "none"
+        slope <- slope
     }
 
     if (panelModel == "sts") {
@@ -117,7 +119,7 @@
         gclm <- FALSE
         ma <- FALSE
         clma <- FALSE
-        slope <- "none"
+        slope <- slope
     }
 
     if (panelModel == "dpm") {
@@ -135,7 +137,7 @@
         stationarity <- FALSE
         ma <- ma
         clma <- clma
-        slope <- "none"
+        slope <- slope
     }
 
     if (panelModel == "gclm") {
@@ -153,7 +155,7 @@
         stationarity <- FALSE
         ma <- ma
         clma <- clma
-        slope <- "none"
+        slope <- slope
     }
 
     if (panelModel == "lgcm") {

@@ -885,7 +885,7 @@
 }
 
 
-.buildSlope <- function(info, free=FALSE, slope="linear") {
+.buildSlope <- function(info, free=FALSE, slope="none") {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
 
