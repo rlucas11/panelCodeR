@@ -1853,7 +1853,7 @@
     names(model)[16:19] <- c("rhs_c", "rhs_v", "rhs_w", "rhs_i")
 
     ## Create explicit intercepts
-    if (is.null(slope)) {
+    if (slope == "none") {
         int.ov <- data.frame(
             lhs = observedVarInfo$varName,
             op = rep("~1", length(observedVarInfo$varName)),
@@ -1898,7 +1898,7 @@
         from = rep("int.lv", length(latentVarInfo$varName))
     )
 
-    if (!is.null(slope)) {
+    if (slope != "none") {
         x_trait_name <- paste("t", info$x$name, sep = "_")
         x_slope_name <- paste("sl", info$x$name, sep = "_")
         int.lv[which(int.lv$lhs == x_trait_name), "free"] <- 1
