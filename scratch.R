@@ -18,8 +18,8 @@ panelPlot(test)
 panelEstimates(test)
 modelCode(test)
 
-test <- panelcoder(data2, panelModel="lgcm", program = "lavaan")
-test2 <- panelcoder(data2, panelModel="lgcm", program = "mplus")
+testG <- panelcoder(data2, panelModel="lgcm", program = "lavaan")
+testG2 <- panelcoder(data2, panelModel="lgcm", program = "mplus")
 testD <- panelcoder(data2, panelModel="dpm", program = "mplus", title = "dpm")
 testR <- panelcoder(data2, panelModel="riclpm", program = "mplus", title = "riclpm")
 ################################################################################

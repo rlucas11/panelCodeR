@@ -81,7 +81,7 @@ panelcoder(data,
            stateCors = FALSE,
            residCors = FALSE,
            residVar = FALSE,
-           slope = FALSE,
+           slope = "none",
            limits = TRUE,
            stationarity = TRUE,
            constrainState = TRUE,
@@ -102,7 +102,7 @@ So, for example, to get output for a STARTS model from lavaan with all default s
 modelOutput <- panelcoder(data)
 ```
 
-To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", "sts", "dpm", or "gclm" model. 
+To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", "sts", "dpm", "gclm", or "lgcm" model (more options coming soon). 
 
 ```R
 modelOutput <- panelcoder(data, panelModel = "riclpm")
@@ -124,15 +124,12 @@ The other options are described below (and in the R help functions).
 - `stateCors` specifies whether to include correlations between state components in the same wave (in bivariate models).
 - `residCors` specifies whether to include correlations between the residuals from a specific indicator at a specific wave with the residuals for the same indicator at other waves. 
 - `residVar` specifies whether to constraint the residuals for specific indicators to be the same across waves
-- `slope` specifies how to set loadings for models that include a latent slope. Can be "linear" (the default), "centered", or "basis".
+- `slope` specifies how to set loadings for models that include a latent slope. Can be "none" (the default), "linear", "centered", or "basis".
   - Linear sets the first loading to 0 and increments by 1.
   - Centered finds the midpoint of the waves and centers loadings around this.
   - Basis sets the first wave to 0 and the last wave to 1 and then freely estimates the loading for all other waves.
-- `limits` specifies whether to restrict variances to be greater than zero and correlations to be between -1 and 1. This is sometimes needed to prevent inadmissible solutions when a variance component is very small or zero. 
-- `stationarity` specifies whether to impose stationarity. If true, the following parameters are constrained
-  - Stability coefficients
-  - Lagged paths
-  - Total autoregressive variance
+- `limits` specifies whether to restrict variances to be greater than zero and correlations to be between -1 and 1. This is sometimes needed to prevent inadmissible solutions when a variance component is very small or zero. This is not currently implemented perfectly unless stationarity is imposed.
+- `stationarity` specifies whether to impose stationarity. This can be set to "paths" (the default), "full", or "none". In the STARTS and derivatives, full stationarity can be achieved by setting autoregressive paths, cross-lagged paths, and variance of the autoregressive processes to be equal across waves. The "full" setting does this. As discussed by Andersen (2022), however, stationarity can also be achieved without constraining the variances of the autoregressive processes (which is difficult to do in the DPM). If set to "paths" only the autoregressive paths and cross-lagged paths are set to be equal across waves. 
 - `constrainState` specifies whether to constrain state variances to be equal across waves.
 - `mplusAnalysis` specifies the ANALYSIS command to use for mplus if different from the default.
 - `mplusOutput` specifies the OUTPUT command to use for mplus if different from the default.

@@ -6,7 +6,7 @@
                         stateCors = FALSE,
                         residCors = FALSE,
                         limits = TRUE,
-                        stationarity = TRUE,
+                        stationarity = "paths",
                         constrainState = TRUE,
                         invariance = TRUE,
                         residVar = FALSE,
@@ -133,7 +133,7 @@
         residCors <- residCors
         dpm <- TRUE
         gclm <- FALSE
-        stationarity <- FALSE
+        stationarity <- "paths"
         ma <- ma
         clma <- clma
         slope <- slope
@@ -169,7 +169,7 @@
         residCors <- residCors
         dpm <- FALSE
         gclm <- FALSE
-        stationarity <- FALSE
+        stationarity <- "none"
         ma <- FALSE
         clma <- FALSE
         slope <- slope
@@ -196,7 +196,7 @@
     model <- modelInfo$model
 
     ## Build final model based on options
-    if (ar == TRUE & (stationarity == TRUE | dpm == TRUE | gclm == TRUE )) {
+    if (ar == TRUE & (stationarity ==  "paths" | stationarity == "full")) {
         model <- .constrainStability(model, info)
     }
 
@@ -213,21 +213,21 @@
     ## Constrain cross-lagged paths if necessary
     if (info$gen$yVar == TRUE &
         ar == TRUE) {
-        if (stationarity == TRUE | dpm == TRUE | gclm == TRUE ) {
+        if (stationarity == "paths" | stationarity == "full") {
             if (crossLag == FALSE) {
                 zero <- TRUE
             } else {
                 zero <- FALSE
             }
             model <- .constrainCl(model, info, zero)
-        } else if (stationarity == FALSE & crossLag == FALSE) {
+        } else if (stationarity == "none" & crossLag == FALSE) {
             zero <- TRUE
             model <- .constrainCl(model, info, zero)
         }
     }
 
     ## Impose stationarity if requested
-    if (stationarity == TRUE &
+    if (stationarity == "full" &
         ar == TRUE) {
         if (arCors == FALSE) {
             zero <- TRUE
@@ -321,8 +321,11 @@
 #'   models that include a slope. Can be "linear" or "basis".
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values. Defaults to TRUE.
-#' @param stationarity Logical value indicating whether to impose stationarity
-#'   in the autoregressive process. Defaults to TRUE.
+#' @param stationarity Logical value indicating whether and how to impose
+#'   stationarity in the autoregressive process. Defaults to "paths" which
+#'   constrains the stability and cross-lagged paths to be equal. Can also be
+#'   set to "full" which also constrains variance in the autoregressive
+#'   process to be equal across waves or "none" which removes all constraints.
 #' @param constrainState Logical value indicating whether to constrain state
 #'   variances to be equal across waves. Defaults to TRUE.
 #' @param invariance Logical value indicating whether to constrain loadings for
@@ -363,7 +366,7 @@ panelcoder <- function(data,
                        residVar = FALSE,
                        slope = "none",
                        limits = TRUE,
-                       stationarity = TRUE,
+                       stationarity = "paths",
                        constrainState = TRUE,
                        invariance = TRUE,
                        mplusAnalysis = NULL,
@@ -397,15 +400,15 @@ panelcoder <- function(data,
 
     ## Check for phantom variables
     if (length(info$x$waves) != length(info$x$actualWaves) &
-        stationarity == FALSE) {
-        stop("Can't have phantom variables when stationarity is not set",
+        stationarity != "full") {
+        stop("Can't have phantom variables when full stationarity is not set",
              call. = FALSE)
     }
 
     if (info$gen$yVar == TRUE) {
         if (length(info$y$waves) != length(info$y$actualWaves) &
-            stationarity == FALSE) {
-            stop("Can't have phantom variables when stationarity is not set",
+            stationarity != "full") {
+            stop("Can't have phantom variables when full stationarity is not set",
                  call. = FALSE)
         }
     }
