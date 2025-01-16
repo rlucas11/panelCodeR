@@ -35,6 +35,10 @@
                       )) == FALSE) {
         stop("Use either 'linear', 'basis', or 'centered' for slope option, or specify 'none'.")
     }
+
+    if (panelModel == "lgcm" & slope == "none") {
+        stop("Need to specify 'linear', 'centered', or 'basis' for slope option when using LGCM")
+    }
     
     if (panelModel == "starts") {
         ar <- TRUE
