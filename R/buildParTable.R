@@ -1538,6 +1538,33 @@
     }
 }
 
+.buildDpmTraitCors <- function(info) {
+
+    yVar <- info$gen$yVar
+    xName <- info$x$name
+
+    if (yVar == TRUE) {
+        yName <- info$y$name
+        corParTable <- data.frame(
+            lhs = paste("t", xName, sep = "_"),
+            op = "~~",
+            rhs = paste("t", yName, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "cov_txty"
+        )
+        corParTable$from <- "dpmTraitCors"
+        return(corParTable)
+    } else {
+        return(NULL)
+    }
+}
+  
+
 .buildDpmCors <- function(info) {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
@@ -1595,19 +1622,91 @@
             label = "cov_TyAx"
         )
         corParTable <- do.call(
-        rbind,
-        list(
-            corParTable,
-            ytCorParTable,
-            xyCorParTable,
-            yxCorParTable
+            rbind,
+            list(
+                corParTable,
+                ytCorParTable,
+                xyCorParTable,
+                yxCorParTable
+            )
         )
-    )
     }
     
     corParTable$from <- "dpmCors"
     return(corParTable)
 }
+
+.buildDpmLoadings <- function(info) {
+    ## Check if bivariate or univariate
+    yVar <- info$gen$yVar
+    xName <- info$x$name
+
+    loadParTable <- data.frame(
+        lhs = paste("t", xName, sep = "_"),
+        op = "=~",
+        rhs = paste("a", xName, 1, sep = "_"),
+        user = 1,
+        block = 1,
+        group = 1,
+        free = 1,
+        ustart = NA,
+        exo = 0,
+        label = "d_a"
+    )
+    
+    if (yVar == TRUE) {
+        yName <- info$y$name
+        xyLoadParTable <- data.frame(
+            lhs = paste("t", xName, sep = "_"),
+            op = "=~",
+            rhs = paste("a", yName, 1, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "d_b"
+        )
+        yxLoadParTable <- data.frame(
+            lhs = paste("t", yName, sep = "_"),
+            op = "=~",
+            rhs = paste("a", xName, 1, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "d_d"
+        )
+        yyLoadParTable <- data.frame(
+            lhs = paste("t", yName, sep = "_"),
+            op = "=~",
+            rhs = paste("a", yName, 1, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "d_c"
+        )
+        loadTable <- do.call(
+        rbind,
+        list(
+            loadParTable,
+            xyLoadParTable,
+            yxLoadParTable,
+            yyLoadParTable
+        )
+    )
+    }
+    
+    loadTable$from <- "dpmLoadings"
+    return(loadTable)
+}
+
 
 
 .buildResidCors <- function(info) {
@@ -1714,13 +1813,14 @@
                         arCors = TRUE,
                         stateCors = TRUE,
                         residCors = TRUE,
-                        dpm = FALSE,
+                        dpm_c = FALSE,
+                        dpm_p = FALSE,
                         gclm = FALSE,
                         ma = FALSE,
                         clma = FALSE,
                         slope = "linear") {
 
-    if (dpm == TRUE) {
+    if (dpm_c == TRUE | dpm_p == TRUE) {
         trait <- FALSE
         state <- FALSE
     }
@@ -1761,7 +1861,9 @@
                           trait = traitCors,
                           state = stateCors,
                           slope = slope),
+        dpmTraitCors = .buildDpmTraitCors(info),
         dpmCors = .buildDpmCors(info),
+        dpmLoadings = .buildDpmLoadings(info),
         residCors = .buildResidCors(info),
         slopes = .buildSlope(info, slope = slope)
     )
@@ -1774,8 +1876,9 @@
     if (trait == FALSE) {
         components$trait <- NULL
     }
-    if (dpm == FALSE) {
+    if (dpm_c == FALSE & dpm_p == FALSE) {
         components$dpmTrait <- NULL
+        components$dpmTraitCors <- NULL
     }
     if (gclm == FALSE) {
         components$gclmTrait <- NULL
@@ -1798,8 +1901,11 @@
     if (residCors == FALSE) {
         components$residCors <- NULL
     }
-    if (dpm == FALSE) {
+    if (dpm_p == FALSE) {
         components$dpmCors <- NULL
+    }
+    if (dpm_c == FALSE) {
+        components$dpmLoadings <- NULL
     }
     if (slope == "none") {
         components$slopes <- NULL

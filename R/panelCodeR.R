@@ -22,7 +22,7 @@
                           "arts",
                           "clpm", "art",
                           "sts",
-                          "dpm",
+                          "dpm_c", "dpm_p",
                           "gclm",
                           "lgcm")) == FALSE) {
         stop("No model with that name")
@@ -50,7 +50,8 @@
         arCors <- arCors
         stateCors <- stateCors
         residCors <- residCors
-        dpm <- FALSE
+        dpm_c <- FALSE
+        dpm_p <- FALSE
         gclm <- FALSE
         ma <- ma
         clma <- clma
@@ -67,7 +68,8 @@
         arCors <- arCors
         stateCors <- FALSE
         residCors <- residCors
-        dpm <- FALSE
+        dpm_c <- FALSE
+        dpm_p <- FALSE
         gclm <- FALSE
         ma <- ma
         clma <- clma
@@ -84,7 +86,8 @@
         arCors <- arCors
         stateCors <- stateCors
         residCors <- residCors
-        dpm <- FALSE
+        dpm_c <- FALSE
+        dpm_p <- FALSE
         gclm <- FALSE
         ma <- ma
         clma <- clma
@@ -101,12 +104,14 @@
         arCors <- arCors
         stateCors <- FALSE
         residCors <- residCors
-        dpm <- FALSE
+        dpm_c <- FALSE
+        dpm_p <- FALSE
         gclm <- FALSE
         ma <- ma
         clma <- clma
         slope <- slope
     }
+    
 
     if (panelModel == "sts") {
         ar <- FALSE
@@ -118,14 +123,15 @@
         arCors <- FALSE
         stateCors <- stateCors
         residCors <- residCors
-        dpm <- FALSE
+        dpm_c <- FALSE
+        dpm_p <- FALSE
         gclm <- FALSE
         ma <- FALSE
         clma <- FALSE
         slope <- slope
     }
 
-    if (panelModel == "dpm") {
+    if (panelModel == "dpm_c") {
         ar <- TRUE
         trait <- FALSE
         stability <- TRUE
@@ -135,13 +141,32 @@
         arCors <- arCors
         stateCors <- FALSE
         residCors <- residCors
-        dpm <- TRUE
+        dpm_c <- TRUE
+        dpm_p <- FALSE
         gclm <- FALSE
         ma <- ma
         clma <- clma
         slope <- slope
     }
 
+    if (panelModel == "dpm_p") {
+        ar <- TRUE
+        trait <- FALSE
+        stability <- TRUE
+        crossLag <- TRUE
+        state <- FALSE
+        traitCors <- FALSE
+        arCors <- arCors
+        stateCors <- FALSE
+        residCors <- residCors
+        dpm_c <- FALSE
+        dpm_p <- TRUE
+        gclm <- FALSE
+        ma <- ma
+        clma <- clma
+        slope <- slope
+    }
+        
     if (panelModel == "gclm") {
         ar <- TRUE
         trait <- FALSE
@@ -152,7 +177,8 @@
         arCors <- arCors
         stateCors <- FALSE
         residCors <- residCors
-        dpm <- FALSE
+        dpm_c <- FALSE
+        dpm_p <- FALSE
         gclm <- TRUE
         ma <- ma
         clma <- clma
@@ -169,7 +195,8 @@
         arCors <- FALSE
         stateCors <- stateCors
         residCors <- residCors
-        dpm <- FALSE
+        dpm_c <- FALSE
+        dpm_p <- FALSE
         gclm <- FALSE
         stationarity <- "none"
         ma <- FALSE
@@ -187,7 +214,8 @@
         arCors = arCors,
         stateCors = stateCors,
         residCors = residCors,
-        dpm = dpm,
+        dpm_c <- dpm_c,
+        dpm_p <- dpm_p,
         gclm = gclm,
         ma = ma,
         clma = clma,
@@ -256,7 +284,10 @@
     if (residVar == TRUE) {
         model <- .constrainResidVar(model, info)
     }
-    
+
+    if (dpm_c == TRUE) {
+        model <- .constrainDpmLoadings(model, info)
+    }
 
     ## Impose limits on variances and covariances
     ## Eventually change to allow for no correlations
@@ -421,7 +452,7 @@ panelcoder <- function(data,
                  call. = FALSE)
         }
     }
-    if (panelModel == "dpm" | panelModel == "gclpm") {
+    if (panelModel == "dpm_c" |panelModel == "dpm_p" | panelModel == "gclpm") {
         if (info$gen$yVar == TRUE) {    
             if (length(info$y$waves) != length(info$y$actualWaves)) {
                 stop("Can't have phantom variables when fitting the dynamic panel model or generalized cross-lagged panel model",
@@ -524,5 +555,3 @@ panelcoder <- function(data,
     summary(pcSum)
     return(pcOutput)
 }
-
-    

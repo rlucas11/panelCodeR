@@ -381,6 +381,49 @@
     return(parTable)
 }
 
+
+.constrainDpmLoadings <- function(parTable, info) {
+    if (info$gen$yVar == TRUE) {
+        aVals <- list(
+            parTable,
+            "d_a",
+            "==",
+            "(1-b2)/((1-a2)*(1-b2)-(c2*d2))"
+        )
+        parTable <- do.call(.buildConstraint, aVals)
+        bVals <- list(
+            parTable,
+            "d_b",
+            "==",
+            "c2/((1-a2)*(1-b2)-(c2*d2))"
+        )
+        parTable <- do.call(.buildConstraint, bVals)
+        cVals <- list(
+            parTable,
+            "d_c",
+            "==",
+            "(1-a2)/((1-a2)*(1-b2)-(c2*d2))"
+        )
+        parTable <- do.call(.buildConstraint, cVals)
+        dVals <- list(
+            parTable,
+            "d_d",
+            "==",
+            "d2/((1-a2)*(1-b2)-(c2*d2))"
+        )
+        parTable <- do.call(.buildConstraint, dVals)
+    } else {
+        aVals <- list(
+            parTable,
+            "d_a",
+            "==",
+            "1/(1-a2)"
+        )
+        parTable <- do.call(.buildConstraint, aVals)
+    }
+    return(parTable)
+}
+
         
 
 .buildLimits <- function(parTable,

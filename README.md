@@ -23,11 +23,11 @@ ARTS | STS
 
 ### Dynamic Panel Model
 
-The `panelcoder()` command can also create and run lavaan or mplus code for a Dynamic Panel Model (DPM; see Dishop & Deshon, 2021). The DPM is similar to the RI-CLPM, but the autoregressive process is not attached to residualized variables (see Murayama & Gfrörer, 2023). Use option `panelModel = "dpm" to specify this model.
+The `panelcoder()` command can also create and run lavaan or mplus code for a Dynamic Panel Model (DPM; see Dishop & Deshon, 2021). The DPM is similar to the RI-CLPM, but the autoregressive process is not attached to residualized variables (see Murayama & Gfrörer, 2023). Andersen (2022) noted that the RI-CLPM is nested within a 'constrained' version of the DPM. There are two versions of the DPM that can be fit, a 'constrained' version that uses formulas from Andersen (2022) to set the paths from the individual factor to the first waves of the X and Y variables, and a 'predetermined' version that is specified in Dishop & Deshon (2021). In this version, the individual factor is allowed to correlate with each first-wave variable. Use option `panelModel = "dpm_c"` to specify the constrained DPM and `panelModel = "dpm_p" for the predetermined version.
 
 ### General Cross-Lagged Model
 
-The `panelcoder()` command can also create and run lavaan or mplus code for the general cross-lagged panel model (GCLM; see Zyphur et al., 2020). The GCLM is similar to the DPM with slight variations. The GCM can also incorporate moving averages and cross-lagged moving averages. Use option `panelModel = "gclm"` and the `ma` and `gclm` (logical values) options to specify this model. 
+The `panelcoder()` command can also create and run lavaan or mplus code for the general cross-lagged panel model (GCLM; see Zyphur et al., 2020). The GCLM is similar to the DPM with slight variations. Specifically, in the default version, the loadings of each wave on the individual factor are allowed to vary. The GCM can also incorporate moving averages and cross-lagged moving averages. Use option `panelModel = "gclm"` and the `ma` and `clma` (logical values) options to specify this model. 
 
 ### Latent Growth Curve Model
 
