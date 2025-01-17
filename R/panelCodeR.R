@@ -33,7 +33,7 @@
                       "centered",
                       "none"
                       )) == FALSE) {
-        stop("Use either 'linear', 'basis', or 'centered' for slope option, or specify 'none'.")
+        stop("Use 'linear', 'basis', or 'centered' for slope option, or specify 'none'.")
     }
 
     if (panelModel == "lgcm" & slope == "none") {
@@ -137,7 +137,6 @@
         residCors <- residCors
         dpm <- TRUE
         gclm <- FALSE
-        stationarity <- "paths"
         ma <- ma
         clma <- clma
         slope <- slope
@@ -155,7 +154,6 @@
         residCors <- residCors
         dpm <- FALSE
         gclm <- TRUE
-        stationarity <- FALSE
         ma <- ma
         clma <- clma
         slope <- slope
