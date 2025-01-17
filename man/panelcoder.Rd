@@ -17,9 +17,9 @@ panelcoder(
   stateCors = FALSE,
   residCors = FALSE,
   residVar = FALSE,
-  slope = "linear",
+  slope = "none",
   limits = TRUE,
-  stationarity = TRUE,
+  stationarity = "paths",
   constrainState = TRUE,
   invariance = TRUE,
   mplusAnalysis = NULL,
@@ -78,8 +78,11 @@ models that include a slope. Can be "linear" or "basis".}
 \item{limits}{Logical value indicating whether to constrain variances and
 correlations to possible values. Defaults to TRUE.}
 
-\item{stationarity}{Logical value indicating whether to impose stationarity
-in the autoregressive process. Defaults to TRUE.}
+\item{stationarity}{Logical value indicating whether and how to impose
+stationarity in the autoregressive process. Defaults to "paths" which
+constrains the stability and cross-lagged paths to be equal. Can also be
+set to "full" which also constrains variance in the autoregressive
+process to be equal across waves or "none" which removes all constraints.}
 
 \item{constrainState}{Logical value indicating whether to constrain state
 variances to be equal across waves. Defaults to TRUE.}
