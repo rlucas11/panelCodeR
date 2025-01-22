@@ -517,7 +517,18 @@ panelcoder <- function(data,
                                                   title,
                                                   ".inp"),
                                 run = 1)
-            pcSum <- .summarizeMplus(panelModel, info, fit)
+            pcSum <- .summarizeMplus(panelModel,
+                                     info,
+                                     fit,
+                                     crossLag = crossLag,
+                                     ma = ma,
+                                     clma = clma,
+                                     traitCors = traitCors,
+                                     arCors = arCors,
+                                     stateCors = stateCors,
+                                     residCors = residCors,
+                                     slope = slope,
+                                     stationarity = stationarity)
         } else {
             cat(modelCode)
             return(modelCode)

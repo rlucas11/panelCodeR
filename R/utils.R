@@ -261,7 +261,19 @@ getInfo <- function(df) {
 #' @param info information object generated from `getInfo()`
 #' @param fitObject mplus object with output
 #' @noRd
-.summarizeMplus <- function(panelModel, info, fitObject) {
+.summarizeMplus <- function(panelModel,
+                            info,
+                            fitObject,
+                            crossLag = crossLag,
+                            ma = ma,
+                            clma = ma,
+                            traitCors = traitCors,
+                            arCors = arCors,
+                            stateCors = stateCors,
+                            residCors = residCors,
+                            slope = slope,
+                            stationarity = stationarity
+                            ) {
     ## Extract estimates and fit info
     est <- fitObject$results$parameters$unstandardized
     est.std <- fitObject$results$parameters$stdyx.standardized
@@ -452,35 +464,49 @@ getInfo <- function(df) {
     if (length(est[which(est$paramHeader == "Variances" &
                          est$param == sl.x), "est"]) == 0) {
         slope.var.x <- 0
+        slope.var.se.x <- NA
     } else {
         slope.var.x <- est[which(est$paramHeader == "Variances" &
-                             est$param == sl.x), "est"]
+                                 est$param == sl.x), "est"]
+        slope.var.se.x <- est[which(est$paramHeader == "Variances" &
+                             est$param == sl.x), "se"]
     }
     if (length(est[which(est$paramHeader == "Means" &
                          est$param == sl.x), "est"]) == 0) {
         slope.mean.x <- 0
+        slope.mean.se.x <- NA
     } else {
         slope.mean.x <- est[which(est$paramHeader == "Means" &
-                             est$param == sl.x), "est"]
+                                  est$param == sl.x), "est"]
+        slope.mean.se.x <- est[which(est$paramHeader == "Means" &
+                             est$param == sl.x), "se"]
     }
     if (info$gen$yVar == TRUE) {
         if (length(est[which(est$paramHeader == "Variances" &
             est$param == sl.y), "est"]) == 0) {
             slope.var.y <- 0
+            slope.var.se.y <- NA
         } else {
             slope.var.y <- est[which(est$paramHeader == "Variances" &
-                est$param == sl.y), "est"]
+                                     est$param == sl.y), "est"]
+            slope.var.se.y <- est[which(est$paramHeader == "Variances" &
+                                     est$param == sl.y), "se"]
         }
         if (length(est[which(est$paramHeader == "Means" &
             est$param == sl.y), "est"]) == 0) {
             slope.mean.y <- 0
+            slope.mean.se.y <- NA
         } else {
             slope.mean.y <- est[which(est$paramHeader == "Means" &
-                est$param == sl.y), "est"]
+                                      est$param == sl.y), "est"]
+            slope.mean.se.y <- est[which(est$paramHeader == "Means" &
+                                      est$param == sl.y), "se"]
         }
     } else {
         slope.var.y <- NULL
+        slope.var.se.y <- NULL
         slope.mean.y <- NULL
+        slope.mean.se.y <- NULL
     }
          
     
@@ -562,8 +588,19 @@ getInfo <- function(df) {
     aic <- fit[["AIC"]]
     bic <- fit[["BIC"]]
     outputList <- list(
+        info = info,
         model = panelModel,
         mName = mName,
+        program = "Mplus",
+        crossLag = crossLag,
+        ma = ma,
+        clma = clma,
+        traitCors = traitCors,
+        arCors = arCors,
+        stateCors = stateCors,
+        residCors = residCors,
+        stationarity = stationarity,
+        slope = slope,
         x.name = x.name,
         y.name = y.name,
         trait.x = trait.x.p,
@@ -574,9 +611,13 @@ getInfo <- function(df) {
         state.y = state.y.p,
         var_table = var_table,
         slope.var.x = slope.var.x,
+        slope.var.se.x = slope.var.se.x,
         slope.mean.x = slope.mean.x,
+        slope.mean.se.x = slope.mean.se.x,
         slope.var.y = slope.var.y,
+        slope.var.se.y = slope.var.se.y,
         slope.mean.y = slope.mean.y,
+        slope.mean.se.y = slope.mean.se.y,
         trait.cor = trait.cor,
         slope.cor = slope.cor,
         ar.cor = ar.cor,
@@ -677,6 +718,117 @@ summary.pcSum <- function(object, ...) {
     cat("Autoregressive Trait: ", sprintf("%.3f", object$ar.cor), "\n")
     cat("State: ", sprintf("%.3f", object$state.cor), "\n")
     }
+
+#' Prints results from `panelcoder()`
+#'
+#' @param object Results from `panelcoder()`.
+#' @param ... Additional arguments to `print()`.
+#'
+#' @export
+print.pcSum <- function(x, ...) {
+    cat(x$mName, "\n")
+    cat("Estimated with ", x$program, "\n")
+    cat("X Variable: ", x$x.name, "\n")
+    if (x$info$gen$yVar == TRUE) {
+        cat("Y Variable: ", x$y.name, "\n")
+    }
+    cat("Number of Waves: ", x$info$gen$maxWaves, "\n")
+    cat("\n")
+    cat("Model Summary: \n")
+    cat("Model: Chi2 (df = ",
+        sprintf("%i", x$chi2df), ") = ",
+        sprintf("%.3f", x$chi2), ", p = ",
+        sprintf("%.3f", x$chi2p), "\n",
+        sep="")
+    cat("\n")
+    cat("Fit Indices:")
+    cat("\n")
+    cat("CFI = ",
+        sprintf("%.3f", x$cfi),
+        ", TLI = ",
+        sprintf("%.3f", x$tli),
+        ", SRMR = ",
+        sprintf("%.3f", x$srmr), "\n",
+        sep="")
+    cat("RMSEA = ",
+        sprintf("%.3f", x$rmsea),
+        "\n")
+    cat("AIC = ",
+        sprintf("%.3f", x$aic),
+        ", BIC = ",
+        sprintf("%.3f", x$bic), "\n")
+    cat("\n")
+    cat("\n")
+    cat("Variances (First Wave if No Stationarity): \n")
+    if (x$info$gen$yVar == TRUE){
+        print(x$var_table)
+    } else {
+        print(x$var_table[1,])
+    }
+    cat("\n")
+    if (x$stationarity == "full") {
+        cat("Variance Decompostion (With Stationarity) \n")
+        cat("X Variable: \n")
+        cat("Trait: ",
+            sprintf("%.2f", 100*x$trait.x),
+            "%, AR: ",
+            sprintf("%.2f", 100*x$ar.x),
+            "%, State: ",
+            sprintf("%.2f", 100*x$state.x),
+            "% \n",
+            sep="")
+        if (x$info$gen$yVar == TRUE) {
+            cat("Y Variable: \n")
+            cat("Trait: ",
+                sprintf("%.4f", 100*x$trait.y),
+                "%, AR: ",
+                sprintf("%.4f", 100*x$ar.y),
+                "%, State: ",
+                sprintf("%.4f", 100*x$state.y),
+                "% \n",
+                sep="")
+        }
+    }
+    cat("\n")
+    if (x$slope != "none") {
+        cat("Slopes: \n")
+        cat("X:   ")
+        cat("Variance: ", sprintf("%.3f", x$slope.var.x), " (",
+            sprintf("%.3f", x$slope.var.se.x), 
+            ")  Mean: ",
+            sprintf("%.3f", x$slope.mean.x), " (",
+            sprintf("%.3f", x$slope.mean.se.x),
+            ") \n")
+        if (x$info$gen$yVar == TRUE) {
+            cat("Y:   ")
+            cat("Variance: ", sprintf("%.3f", x$slope.var.y), " (",
+                sprintf("%.3f", x$slope.var.se.y), 
+                ")  Mean: ",
+                sprintf("%.3f", x$slope.mean.y), " (",
+                sprintf("%.3f", x$slope.mean.se.y),
+                ") \n")
+        }
+        cat("\n")
+    }
+    if (x$model != "lgcm") {
+        cat("Stability: \n")
+        cat("X: ", sprintf("%.3f", x$x.stab), "\n")
+        if (x$info$gen$yVar == TRUE) {
+            cat("Y: ", sprintf("%.3f", x$y.stab), "\n")
+        }
+        cat("\n")
+    }
+    cat("Cross-Lag Paths: \n")
+    cat("Y predicted from X: ", sprintf("%.3f", x$yOnX) ,"\n", sep="")
+    cat("X predicted from Y: ", sprintf("%.3f", x$xOnY),"\n", sep="")
+    cat("\n")
+    cat("Correlations: \n")
+    cat("\n")
+    cat("Stable Trait: ", sprintf("%.3f", x$trait.cor), "\n")
+    cat("Autoregressive Trait: ", sprintf("%.3f", x$ar.cor), "\n")
+    cat("State: ", sprintf("%.3f", x$state.cor), "\n")
+    }
+
 
 
 
