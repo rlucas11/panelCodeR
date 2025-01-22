@@ -1515,7 +1515,7 @@
         corParTable$from <- "cors"
         return(corParTable)
     } else {
-        if (!is.null(slope)) {
+        if (slope != "none") {
             slopeCorParTable <- data.frame(
                 lhs = paste("t", xName, sep = "_"),
                 op = "~~",
@@ -1528,12 +1528,12 @@
                 exo = 0,
                 label = "cov_txsx"
             )
+            corParTable <- slopeCorParTable
+            corParTable <- corParTable[order(corParTable$lhs), ]
+            corParTable$from <- "cors"
         } else {
-            slopeCorParTable <- NULL
+            corParTable <- NULL
         }
-        corParTable <- slopeCorParTable
-        corParTable <- corParTable[order(corParTable$lhs), ]
-        corParTable$from <- "cors"
         return(corParTable)
     }
 }
@@ -1821,7 +1821,7 @@
                         gclm = FALSE,
                         ma = FALSE,
                         clma = FALSE,
-                        slope = "linear") {
+                        slope = "none") {
 
     if (dpm_c == TRUE | dpm_p == TRUE) {
         trait <- FALSE

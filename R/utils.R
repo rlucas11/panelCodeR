@@ -478,8 +478,11 @@ getInfo <- function(df) {
             slope.mean.y <- est[which(est$paramHeader == "Means" &
                 est$param == sl.y), "est"]
         }
+    } else {
+        slope.var.y <- NULL
+        slope.mean.y <- NULL
     }
-      
+         
     
     ## Correlations
     if (info$gen$yVar == TRUE) {
