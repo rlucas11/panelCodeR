@@ -489,7 +489,7 @@ panelcoder <- function(data,
                           int.ov.free=TRUE,
                           int.lv.free=FALSE,
                           ...)
-            pcSum <- .summarizeLavaan(fit)
+            pcSum <- .summarizeLavaan(panelModel, fit)
         } else {
             cat(modelCode)
             return(modelCode)
@@ -517,7 +517,7 @@ panelcoder <- function(data,
                                                   title,
                                                   ".inp"),
                                 run = 1)
-            pcSum <- .summarizeMplus(info, fit)
+            pcSum <- .summarizeMplus(panelModel, info, fit)
         } else {
             cat(modelCode)
             return(modelCode)

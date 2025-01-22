@@ -122,16 +122,44 @@ getInfo <- function(df) {
 #' Get summary data from lavaan output
 #' @param fitObject Lavaan object
 #' @noRd
-.summarizeLavaan <- function(fitObject) {
+.summarizeLavaan <- function(panelModel, fitObject) {
     ## Calculate values for summary
     parEst <- lavaan::parameterEstimates(fitObject)
     stdEst <- lavaan::standardizedSolution(fitObject)
     fit <- lavaan::fitMeasures(fitObject)
+
+        ## Set Model Name
+    if (panelModel == "starts") {
+        mName <- "Stable Trait Autoregressive Trait State Model"
+    } else if (panelModel == "riclpm") {
+        mName <- "Random Intercept Cross-Lagged Panel Model"
+    } else if (panelModel == "clpm") {
+        mName <- "Cross-Lagged Panel Model"
+    } else if (panelModel == "arts") {
+        mName <- "Autoregressive Trait State Model"
+    } else if (panelModel == "art") {
+        mName <- "Autoregressive Trait Model"
+    } else if (panelModel == "sts") {
+        mName <- "Stable Trait State Model"
+    } else if (panelModel == "gclm") {
+        mName <- "General Cross-Lagged Model"
+    } else if (panelModel == "dpm_c") {
+        mName <- "Constrained Dynamic Panel Model"
+    } else if (panelModel == "dpm_p") {
+        mName <- "Predetermined Dynamic Panel Model"
+    } else if (panelModel == "lgcm") {
+        mName <- "Latent Growth Curve Model"
+    }
+
+    
+    
     ## Variance Decomp
     if(length(parEst[which(parEst$label=="x_tVar"), "est"]) == 0) {
         trait.x <- 0
+        trait.x.se <- 0
     } else {
         trait.x <- parEst[which(parEst$label=="x_tVar"), "est"]
+        trait.x.se <- parEst[which(parEst$label=="x_tVar"), "est"]
     }
     if(length(parEst[which(parEst$label=="y_tVar"), "est"]) == 0) {
         trait.y <- 0
@@ -201,6 +229,8 @@ getInfo <- function(df) {
     aic <- fit[["aic"]]
     bic <- fit[["bic"]]
     outputList <- list(
+        model = panelModel,
+        mName = mName,
         trait.x = trait.x.p,
         trait.y = trait.y.p,
         ar.x = ar.x.p,
@@ -231,16 +261,53 @@ getInfo <- function(df) {
 #' @param info information object generated from `getInfo()`
 #' @param fitObject mplus object with output
 #' @noRd
-.summarizeMplus <- function(info, fitObject) {
+.summarizeMplus <- function(panelModel, info, fitObject) {
     ## Extract estimates and fit info
     est <- fitObject$results$parameters$unstandardized
     est.std <- fitObject$results$parameters$stdyx.standardized
     fit <- fitObject$results$summaries
 
+    ## Set Model Name
+    if (panelModel == "starts") {
+        mName <- "Stable Trait Autoregressive Trait State Model"
+    } else if (panelModel == "riclpm") {
+        mName <- "Random Intercept Cross-Lagged Panel Model"
+    } else if (panelModel == "clpm") {
+        mName <- "Cross-Lagged Panel Model"
+    } else if (panelModel == "arts") {
+        mName <- "Autoregressive Trait State Model"
+    } else if (panelModel == "art") {
+        mName <- "Autoregressive Trait Model"
+    } else if (panelModel == "sts") {
+        mName <- "Stable Trait State Model"
+    } else if (panelModel == "gclm") {
+        mName <- "General Cross-Lagged Model"
+    } else if (panelModel == "dpm_c") {
+        mName <- "Constrained Dynamic Panel Model"
+    } else if (panelModel == "dpm_p") {
+        mName <- "Predetermined Dynamic Panel Model"
+    } else if (panelModel == "lgcm") {
+        mName <- "Latent Growth Curve Model"
+    }
+
+
+
     ## Set names
+    x.name <- info$x$name
+    if (info$gen$yVar == TRUE) {
+        y.name <- info$y$name
+    } else {
+        y.name <- NULL
+    }
+    
     t.x  <- paste("T", toupper(info$x$name), sep = "_")
     if (info$gen$yVar == TRUE) {
         t.y <- paste("T", toupper(info$y$name), sep = "_")
+    } 
+    ## Slope
+    sl.x <- paste("SL", toupper(info$x$name), sep = "_")
+    if (info$gen$yVar == TRUE) {
+        sl.y <- paste("SL", toupper(info$y$name), sep = "_")
     }
     ## AR Variance is captured in impulses
     a.x  <- paste("A", toupper(info$x$name), "1", sep = "_")
@@ -264,59 +331,80 @@ getInfo <- function(df) {
     if (length(est[which(est$paramHeader == "Variances" &
                          est$param == t.x), "est"]) == 0) {
         trait.x <- 0
+        trait.x.se <- NA
     } else {
         trait.x <- est[which(est$paramHeader == "Variances" &
                              est$param == t.x), "est"]
+        trait.x.se <- est[which(est$paramHeader == "Variances" &
+                             est$param == t.x), "se"]
     }
     
     if (info$gen$yVar == TRUE) {
         if (length(est[which(est$paramHeader == "Variances" &
                              est$param == t.y), "est"]) == 0) {
             trait.y <- 0
+            trait.y.se <- NA
         } else {
             trait.y <- est[which(est$paramHeader == "Variances" &
                                  est$param == t.y), "est"]
+            trait.y.se <- est[which(est$paramHeader == "Variances" &
+                                 est$param == t.y), "se"]
         }
     } else {
         trait.y <- NA
+        trait.y.se <- NA
     }
 
     if (length(est[which(est$paramHeader == "Variances" &
                          est$param == i.x), "est"]) == 0) {
         ar.x <- 0
+        ar.x.se <- NA
     } else {
         ar.x <- est[which(est$paramHeader == "Variances" &
                           est$param == i.x), "est"]
+        ar.x.se <- est[which(est$paramHeader == "Variances" &
+                          est$param == i.x), "se"]
     }
     
     if (info$gen$yVar == TRUE) {
         if (length(est[which(est$paramHeader == "Variances" &
                              est$param == i.y), "est"]) == 0) {
             ar.y <- 0
+            ar.y.se <- NA
         } else {
             ar.y <- est[which(est$paramHeader == "Variances" &
                               est$param == i.y), "est"]
+            ar.y.se <- est[which(est$paramHeader == "Variances" &
+                              est$param == i.y), "se"]
         }
     } else {
         ar.y <- NA
+        ar.y.se <- NA
     }
     if (length(est[which(est$paramHeader == "Variances" &
                          est$param == s.x), "est"]) == 0) {
         state.x <- 0
+        state.x.se <- NA
     } else {
         state.x <- est[which(est$paramHeader == "Variances" &
                              est$param == s.x), "est"]
+        state.x.se <- est[which(est$paramHeader == "Variances" &
+                             est$param == s.x), "se"]
     }
     if (info$gen$yVar == TRUE) {
         if (length(est[which(est$paramHeader == "Variances" &
                              est$param == s.y), "est"]) == 0) {
             state.y <- 0
+            state.y.se <- 0
         } else {
             state.y <- est[which(est$paramHeader == "Variances" &
                                  est$param == s.y), "est"]
+            state.y.se <- est[which(est$paramHeader == "Variances" &
+                                 est$param == s.y), "se"]
         }
     } else {
         state.y <- NA
+        state.y.se <- NA
     }
     trait.x.p <- trait.x/(sum(trait.x, ar.x, state.x))
     trait.y.p <- trait.y/(sum(trait.y, ar.y, state.y))
@@ -324,6 +412,74 @@ getInfo <- function(df) {
     ar.y.p <- ar.y/(sum(trait.y, ar.y, state.y))
     state.x.p <- state.x/(sum(trait.x, ar.x, state.x))
     state.y.p <- state.y/(sum(trait.y, ar.y, state.y))
+
+    var_table <- data.frame(
+        Variable = c("X", "Y"),
+        Trait = c(
+            paste0(round(trait.x,3),
+                   " (",
+                   round(trait.x.se,3),
+                   ")"),
+            paste0(round(trait.y, 3),
+                   " (",
+                   round(trait.y.se, 3),
+                   ")")
+        ),
+        AR = c(
+            paste0(round(ar.x, 3),
+                   " (",
+                   round(ar.x.se, 3),
+                   ")"),
+            paste0(round(ar.y, 3),
+                   " (",
+                   round(ar.y.se, 3),
+                   ")")
+        ),
+        State = c(
+            paste0(round(state.x, 3),
+                   " (",
+                   round(state.x.se, 3),
+                   ")"),
+            paste0(round(state.y, 3),
+                   " (",
+                   round(state.y.se, 3),
+                   ")")
+        )
+    )
+    
+
+    ## Slope
+    if (length(est[which(est$paramHeader == "Variances" &
+                         est$param == sl.x), "est"]) == 0) {
+        slope.var.x <- 0
+    } else {
+        slope.var.x <- est[which(est$paramHeader == "Variances" &
+                             est$param == sl.x), "est"]
+    }
+    if (length(est[which(est$paramHeader == "Means" &
+                         est$param == sl.x), "est"]) == 0) {
+        slope.mean.x <- 0
+    } else {
+        slope.mean.x <- est[which(est$paramHeader == "Means" &
+                             est$param == sl.x), "est"]
+    }
+    if (info$gen$yVar == TRUE) {
+        if (length(est[which(est$paramHeader == "Variances" &
+            est$param == sl.y), "est"]) == 0) {
+            slope.var.y <- 0
+        } else {
+            slope.var.y <- est[which(est$paramHeader == "Variances" &
+                est$param == sl.y), "est"]
+        }
+        if (length(est[which(est$paramHeader == "Means" &
+            est$param == sl.y), "est"]) == 0) {
+            slope.mean.y <- 0
+        } else {
+            slope.mean.y <- est[which(est$paramHeader == "Means" &
+                est$param == sl.y), "est"]
+        }
+    }
+      
     
     ## Correlations
     if (info$gen$yVar == TRUE) {
@@ -332,6 +488,14 @@ getInfo <- function(df) {
     } else {
         trait.cor <- NA
     }
+
+    if (info$gen$yVar == TRUE) {
+        slope.cor <- est.std[which(est.std$paramHeader == paste0(sl.x, ".WITH") &
+                                   est.std$param == sl.y), "est"]
+    } else {
+        slope.cor <- NA
+    }
+    
     if (info$gen$yVar == TRUE) {
         ar.cor <- est.std[which(est.std$paramHeader == paste0(i.x, ".WITH") &
                                 est.std$param == i.y), "est"]
@@ -395,13 +559,23 @@ getInfo <- function(df) {
     aic <- fit[["AIC"]]
     bic <- fit[["BIC"]]
     outputList <- list(
+        model = panelModel,
+        mName = mName,
+        x.name = x.name,
+        y.name = y.name,
         trait.x = trait.x.p,
         trait.y = trait.y.p,
         ar.x = ar.x.p,
         ar.y = ar.y.p,
         state.x = state.x.p,
         state.y = state.y.p,
+        var_table = var_table,
+        slope.var.x = slope.var.x,
+        slope.mean.x = slope.mean.x,
+        slope.var.y = slope.var.y,
+        slope.mean.y = slope.mean.y,
         trait.cor = trait.cor,
+        slope.cor = slope.cor,
         ar.cor = ar.cor,
         state.cor = state.cor,
         x.stab = x.stab,
@@ -428,6 +602,10 @@ getInfo <- function(df) {
 #'
 #' @export
 summary.pcSum <- function(object, ...) {
+    cat(object$mName, "\n")
+    cat("X Variable: ", object$x.name, "\n")
+    cat("Y Variable: ", object$y.name, "\n")
+    cat("\n")
     cat("Model Summary: \n")
     cat("Model: Chi2 (df = ",
         sprintf("%i", object$chi2df), ") = ",
@@ -471,6 +649,16 @@ summary.pcSum <- function(object, ...) {
         ", State: ",
         sprintf("%.3f", object$state.y), "\n",
         sep="")
+    cat("\n")
+    print(object$var_table)
+    cat("\n")
+    cat("Slopes: \n")
+    cat("X: \n")
+    cat("Var: ", sprintf("%.3f", object$slope.var.x), "  Mean: ",
+        sprintf("%.3f", object$slope.mean.x), "\n")
+    cat("Y: \n")
+    cat("Var: ", sprintf("%.3f", object$slope.var.y), "  Mean: ",
+        sprintf("%.3f", object$slope.mean.y), "\n")
     cat("\n")
     cat("Stability: \n")
     cat("X: ", sprintf("%.3f", object$x.stab), "\n")

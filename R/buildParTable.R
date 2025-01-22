@@ -1693,15 +1693,18 @@
             label = "d_c"
         )
         loadTable <- do.call(
-        rbind,
-        list(
-            loadParTable,
-            xyLoadParTable,
-            yxLoadParTable,
-            yyLoadParTable
+            rbind,
+            list(
+                loadParTable,
+                xyLoadParTable,
+                yxLoadParTable,
+                yyLoadParTable
+            )
         )
-    )
+    } else {
+        loadTable <- loadParTable
     }
+    
     
     loadTable$from <- "dpmLoadings"
     return(loadTable)
