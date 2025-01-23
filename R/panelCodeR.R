@@ -489,7 +489,18 @@ panelcoder <- function(data,
                           int.ov.free=TRUE,
                           int.lv.free=FALSE,
                           ...)
-            pcSum <- .summarizeLavaan(panelModel, fit)
+            pcSum <- .summarizeLavaan(panelModel,
+                                      info = info,
+                                      fitObject = fit,
+                                      crossLag = crossLag,
+                                      ma = ma,
+                                      clma = clma,
+                                      traitCors = traitCors,
+                                      arCors = arCors,
+                                      stateCors = stateCors,
+                                      residCors = residCors,
+                                      slope = slope,
+                                      stationarity = stationarity)
         } else {
             cat(modelCode)
             return(modelCode)
@@ -566,3 +577,5 @@ panelcoder <- function(data,
     print(pcSum)
     return(pcOutput)
 }
+
+

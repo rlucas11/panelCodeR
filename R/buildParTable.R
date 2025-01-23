@@ -764,7 +764,7 @@
     return(finalParTable)  
 }
 
-
+#' @importFrom stats median
 .buildGclmTrait <- function(info, free=TRUE) {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
