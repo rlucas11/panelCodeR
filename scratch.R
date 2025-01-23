@@ -14,6 +14,14 @@ dataI <- read_csv("testDataI.csv")
 data2 <- read_csv("testData2.csv")
 
 test <- panelcoder(data2, panelModel="starts", program = "mplus")
+testLavaan <- panelcoder(data2[c(1:6,11:16)], panelModel="starts", program = "lavaan", stationarity = "full")
+
+
+testX <- panelcoder(data2[c(1:6,11:16)],
+                    panelModel="starts",
+                    program = "mplus",
+                    slope = "linear")
+
 panelPlot(test)
 panelEstimates(test)
 modelCode(test)
@@ -22,6 +30,7 @@ testG <- panelcoder(data2, panelModel="lgcm", program = "lavaan", slope = "linea
 testG2 <- panelcoder(data2, panelModel="lgcm", program = "mplus", slope = "linear")
 testD <- panelcoder(data2, panelModel="dpm", program = "mplus", title = "dpm")
 testR <- panelcoder(data2, panelModel="riclpm", program = "mplus", title = "riclpm")
+testL <- panelcoder(data2, panelModel="lgcm", program = "mplus", title = "lgcm", slope = "linear")
 ################################################################################
 ## Create test data
 ################################################################################

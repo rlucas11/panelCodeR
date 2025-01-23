@@ -764,7 +764,7 @@
     return(finalParTable)  
 }
 
-
+#' @importFrom stats median
 .buildGclmTrait <- function(info, free=TRUE) {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
@@ -1515,7 +1515,7 @@
         corParTable$from <- "cors"
         return(corParTable)
     } else {
-        if (!is.null(slope)) {
+        if (slope != "none") {
             slopeCorParTable <- data.frame(
                 lhs = paste("t", xName, sep = "_"),
                 op = "~~",
@@ -1528,12 +1528,12 @@
                 exo = 0,
                 label = "cov_txsx"
             )
+            corParTable <- slopeCorParTable
+            corParTable <- corParTable[order(corParTable$lhs), ]
+            corParTable$from <- "cors"
         } else {
-            slopeCorParTable <- NULL
+            corParTable <- NULL
         }
-        corParTable <- slopeCorParTable
-        corParTable <- corParTable[order(corParTable$lhs), ]
-        corParTable$from <- "cors"
         return(corParTable)
     }
 }
@@ -1693,15 +1693,18 @@
             label = "d_c"
         )
         loadTable <- do.call(
-        rbind,
-        list(
-            loadParTable,
-            xyLoadParTable,
-            yxLoadParTable,
-            yyLoadParTable
+            rbind,
+            list(
+                loadParTable,
+                xyLoadParTable,
+                yxLoadParTable,
+                yyLoadParTable
+            )
         )
-    )
+    } else {
+        loadTable <- loadParTable
     }
+    
     
     loadTable$from <- "dpmLoadings"
     return(loadTable)
@@ -1818,7 +1821,7 @@
                         gclm = FALSE,
                         ma = FALSE,
                         clma = FALSE,
-                        slope = "linear") {
+                        slope = "none") {
 
     if (dpm_c == TRUE | dpm_p == TRUE) {
         trait <- FALSE

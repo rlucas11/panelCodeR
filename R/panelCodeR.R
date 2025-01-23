@@ -489,7 +489,18 @@ panelcoder <- function(data,
                           int.ov.free=TRUE,
                           int.lv.free=FALSE,
                           ...)
-            pcSum <- .summarizeLavaan(fit)
+            pcSum <- .summarizeLavaan(panelModel,
+                                      info = info,
+                                      fitObject = fit,
+                                      crossLag = crossLag,
+                                      ma = ma,
+                                      clma = clma,
+                                      traitCors = traitCors,
+                                      arCors = arCors,
+                                      stateCors = stateCors,
+                                      residCors = residCors,
+                                      slope = slope,
+                                      stationarity = stationarity)
         } else {
             cat(modelCode)
             return(modelCode)
@@ -517,7 +528,18 @@ panelcoder <- function(data,
                                                   title,
                                                   ".inp"),
                                 run = 1)
-            pcSum <- .summarizeMplus(info, fit)
+            pcSum <- .summarizeMplus(panelModel,
+                                     info,
+                                     fit,
+                                     crossLag = crossLag,
+                                     ma = ma,
+                                     clma = clma,
+                                     traitCors = traitCors,
+                                     arCors = arCors,
+                                     stateCors = stateCors,
+                                     residCors = residCors,
+                                     slope = slope,
+                                     stationarity = stationarity)
         } else {
             cat(modelCode)
             return(modelCode)
@@ -552,6 +574,8 @@ panelcoder <- function(data,
     }
     pcOutput <- list(pcSum, info, model, fit, corSummary, modelCode)
     class(pcOutput) <- "pcOutput"
-    summary(pcSum)
+    print(pcSum)
     return(pcOutput)
 }
+
+
