@@ -12,7 +12,8 @@
                         residVar = FALSE,
                         ma = FALSE,
                         clma = FALSE,
-                        slope = slope
+                        slope = slope,
+                        state = state
                         ) {
     ## Collect basic info
     info <- getInfo(data)
@@ -136,7 +137,7 @@
         trait <- FALSE
         stability <- TRUE
         crossLag <- TRUE
-        state <- FALSE
+        state <- state
         traitCors <- FALSE
         arCors <- arCors
         stateCors <- FALSE
@@ -154,7 +155,7 @@
         trait <- FALSE
         stability <- TRUE
         crossLag <- TRUE
-        state <- FALSE
+        state <- state
         traitCors <- FALSE
         arCors <- arCors
         stateCors <- FALSE
@@ -172,7 +173,7 @@
         trait <- FALSE
         stability <- TRUE
         crossLag <- TRUE
-        state <- FALSE
+        state <- state
         traitCors <- TRUE
         arCors <- arCors
         stateCors <- FALSE
@@ -352,6 +353,10 @@
 #'   variance to be equal across waves when there are multiple indicators.
 #' @param slope String variable indicating what type of slope to specify in
 #'   models that include a slope. Can be "linear" or "basis".
+#' @param state Logical value indicating whether to include a state component.
+#'   This is automatically included in some models (e.g., STARTS), but this
+#'   option allows for the inclusion of a state component in additional models
+#'   including the DPM and GCLM.
 #' @param limits Logical value indicating whether to constrain variances and
 #'   correlations to possible values. Defaults to TRUE.
 #' @param stationarity Logical value indicating whether and how to impose
@@ -398,6 +403,7 @@ panelcoder <- function(data,
                        residCors = FALSE,
                        residVar = FALSE,
                        slope = "none",
+                       state = FALSE,
                        limits = TRUE,
                        stationarity = "paths",
                        constrainState = TRUE,
@@ -429,8 +435,6 @@ panelcoder <- function(data,
         arCors <- FALSE
     }
     
-        
-
     ## Check for phantom variables
     if (length(info$x$waves) != length(info$x$actualWaves) &
         stationarity != "full") {
@@ -471,6 +475,7 @@ panelcoder <- function(data,
                          residCors = residCors,
                          arCors = arCors,
                          slope = slope,
+                         state = state,
                          limits = limits,
                          stationarity = stationarity,
                          constrainState = constrainState,

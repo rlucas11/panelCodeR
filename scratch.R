@@ -28,9 +28,12 @@ modelCode(test)
 
 testG <- panelcoder(data2, panelModel="lgcm", program = "lavaan", slope = "linear")
 testG2 <- panelcoder(data2, panelModel="lgcm", program = "mplus", slope = "linear")
-testD <- panelcoder(data2, panelModel="dpm", program = "mplus", title = "dpm")
+testD <- panelcoder(data2, panelModel="dpm_p", program = "mplus", title = "dpm")
 testR <- panelcoder(data2, panelModel="riclpm", program = "mplus", title = "riclpm")
 testL <- panelcoder(data2, panelModel="lgcm", program = "mplus", title = "lgcm", slope = "linear")
+testA <- panelcoder(data2, panelModel = "arts", program = "mplus", title = "arts", stationarity = "full")
+testS <- panelcoder(data2, panelModel = "sts", program = "mplus", title = "sts")
+testC <- panelcoder(data2, panelModel = "clpm", program = "mplus", title = "clpm")
 ################################################################################
 ## Create test data
 ################################################################################

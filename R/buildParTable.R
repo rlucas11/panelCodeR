@@ -1825,12 +1825,10 @@
 
     if (dpm_c == TRUE | dpm_p == TRUE) {
         trait <- FALSE
-        state <- FALSE
     }
 
     if (gclm == TRUE) {
         trait <- FALSE
-        state <- FALSE
     }
 
     if (trait == FALSE & gclm == FALSE) {
