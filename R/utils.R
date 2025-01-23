@@ -428,33 +428,33 @@ getInfo <- function(df) {
     var_table <- data.frame(
         Variable = c("X", "Y"),
         Trait = c(
-            paste0(round(trait.x,3),
+            paste0(sprintf("%.3f", round(trait.x, 3)),
                    " (",
-                   round(trait.x.se,3),
+                   sprintf("%.3f", round(trait.x.se, 3)),
                    ")"),
-            paste0(round(trait.y, 3),
+            paste0(sprintf("%.3f", round(trait.y, 3)),
                    " (",
-                   round(trait.y.se, 3),
+                   sprintf("%.3f", round(trait.y.se, 3)),
                    ")")
         ),
         AR = c(
-            paste0(round(ar.x, 3),
+            paste0(sprintf("%.3f", round(ar.x, 3)),
                    " (",
-                   round(ar.x.se, 3),
+                   sprintf("%.3f", round(ar.x.se, 3)),
                    ")"),
-            paste0(round(ar.y, 3),
+            paste0(sprintf("%.3f", round(ar.y, 3)),
                    " (",
-                   round(ar.y.se, 3),
+                   sprintf("%.3f", round(ar.y.se, 3)),
                    ")")
         ),
         State = c(
-            paste0(round(state.x, 3),
+            paste0(sprintf("%.3f", round(state.x, 3)),
                    " (",
-                   round(state.x.se, 3),
+                   sprintf("%.3f", round(state.x.se, 3)),
                    ")"),
-            paste0(round(state.y, 3),
+            paste0(sprintf("%.3f", round(state.y, 3)),
                    " (",
-                   round(state.y.se, 3),
+                   sprintf("%.3f", round(state.y.se, 3)),
                    ")")
         )
     )
@@ -514,67 +514,121 @@ getInfo <- function(df) {
     if (info$gen$yVar == TRUE) {
         trait.cor <- est.std[which(est.std$paramHeader == paste0(t.x, ".WITH") &
                                    est.std$param == t.y), "est"]
+        trait.cor.u <- est[which(est$paramHeader == paste0(t.x, ".WITH") &
+                                   est$param == t.y), "est"]
+        trait.cor.se <- est[which(est$paramHeader == paste0(t.x, ".WITH") &
+                                   est$param == t.y), "se"]
     } else {
         trait.cor <- NA
+        trait.cor.u <- NA
+        trait.cor.se <- NA
     }
 
     if (info$gen$yVar == TRUE) {
         slope.cor <- est.std[which(est.std$paramHeader == paste0(sl.x, ".WITH") &
                                    est.std$param == sl.y), "est"]
+        slope.cor.u <- est[which(est$paramHeader == paste0(sl.x, ".WITH") &
+                                   est$param == sl.y), "est"]
+        slope.cor.se <- est[which(est$paramHeader == paste0(sl.x, ".WITH") &
+                                   est$param == sl.y), "se"]
     } else {
         slope.cor <- NA
+        slope.cor.u <- NA
+        slope.cor.se <- NA
     }
     
     if (info$gen$yVar == TRUE) {
         ar.cor <- est.std[which(est.std$paramHeader == paste0(i.x, ".WITH") &
                                 est.std$param == i.y), "est"]
+        ar.cor.u <- est[which(est$paramHeader == paste0(i.x, ".WITH") &
+                                est$param == i.y), "est"]
+        ar.cor.se <- est[which(est$paramHeader == paste0(i.x, ".WITH") &
+                                est$param == i.y), "se"]
     } else {
         ar.cor <- NA
+        ar.cor.u <- NA
+        ar.cor.se <- NA
     }
     if (info$gen$yVar == TRUE) {
         state.cor <- est.std[which(est.std$paramHeader == paste0(s.x, ".WITH") &
                                    est.std$param == s.y), "est"]
+        state.cor.u <- est[which(est$paramHeader == paste0(s.x, ".WITH") &
+                                   est$param == s.y), "est"]
+        state.cor.se <- est[which(est$paramHeader == paste0(s.x, ".WITH") &
+                                   est$param == s.y), "se"]
     } else {
         state.cor <- NA
+        state.cor.u <- NA
+        state.cor.se <- NA
     }
     
     ## Stability
     if (length(est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
                              est.std$param == a.x), "est"]) == 0) {
         x.stab <- NA
+        x.stab.u <- NA
+        x.stab.se <- NA
     } else {
         x.stab <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
                                 est.std$param == a.x), "est"]
+        x.stab.u <- est[which(est$paramHeader == paste0(a.x2, ".ON") &
+                                est$param == a.x), "est"]
+        x.stab.se <- est[which(est$paramHeader == paste0(a.x2, ".ON") &
+                                est$param == a.x), "se"]
     }
     if (info$gen$yVar == TRUE) {
         if (length(est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
                                  est.std$param == a.y), "est"]) == 0) {
             y.stab <- NA
+            y.stab.u <- NA
+            y.stab.se <- NA
         } else {
             y.stab <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
                                     est.std$param == a.y), "est"]
+            y.stab.u <- est[which(est$paramHeader == paste0(a.y2, ".ON") &
+                                    est$param == a.y), "est"]
+            y.stab.se <- est[which(est$paramHeader == paste0(a.y2, ".ON") &
+                                    est$param == a.y), "se"]
         }
     } else {
         y.stab <- NA
+        y.stab.u <- NA
+        y.stab.se <- NA
     }
     
     ## Cross-lags
     if (info$gen$yVar == TRUE) {
         if (length(est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
-            est.std$param == a.x), "est"]) > 0 &
+                                 est.std$param == a.x), "est"]) > 0 &
             length(est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
-                est.std$param == a.y), "est"]) > 0) {
+                                 est.std$param == a.y), "est"]) > 0) {
             yOnX <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
-                est.std$param == a.x), "est"]
+                                  est.std$param == a.x), "est"]
             xOnY <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
-                est.std$param == a.y), "est"]
+                                  est.std$param == a.y), "est"]
+            yOnX.u <- est[which(est$paramHeader == paste0(a.y2, ".ON") &
+                                  est$param == a.x), "est"]
+            xOnY.u <- est[which(est$paramHeader == paste0(a.x2, ".ON") &
+                                  est$param == a.y), "est"]
+            yOnX.se <- est[which(est$paramHeader == paste0(a.y2, ".ON") &
+                                  est$param == a.x), "se"]
+            xOnY.se <- est[which(est$paramHeader == paste0(a.x2, ".ON") &
+                                  est$param == a.y), "se"]
         } else {
             yOnX <- NA
             xOnY <- NA
+            yOnX.u <- NA
+            xOnY.u <- NA
+            yOnX.se <- NA
+            xOnY.se <- NA
         }
     } else {
         yOnX <- NA
         xOnY <- NA
+        yOnX.u <- NA
+        xOnY.u <- NA
+        yOnX.se <- NA
+        xOnY.se <- NA
     }
     
     ## Fit
@@ -619,13 +673,29 @@ getInfo <- function(df) {
         slope.mean.y = slope.mean.y,
         slope.mean.se.y = slope.mean.se.y,
         trait.cor = trait.cor,
+        trait.cor.u = trait.cor.u,
+        trait.cor.se = trait.cor.se,
         slope.cor = slope.cor,
+        slope.cor.u = slope.cor.u,
+        slope.cor.se = slope.cor.se,
         ar.cor = ar.cor,
+        ar.cor.u = ar.cor.u,
+        ar.cor.se = ar.cor.se,
         state.cor = state.cor,
+        state.cor.u = state.cor.u,
+        state.cor.se = state.cor.se,
         x.stab = x.stab,
+        x.stab.u = x.stab.u,
+        x.stab.se = x.stab.se,
         y.stab = y.stab,
+        y.stab.u = y.stab.u,
+        y.stab.se = y.stab.se,
         yOnX = yOnX,
         xOnY = xOnY,
+        yOnX.u = yOnX.u,
+        xOnY.u = xOnY.u,
+        yOnX.se = yOnX.se,
+        xOnY.se = xOnY.se,
         chi2 = chi2,
         chi2df = chi2df,
         chi2p = chi2p,
@@ -759,7 +829,9 @@ print.pcSum <- function(x, ...) {
         sprintf("%.3f", x$bic), "\n")
     cat("\n")
     cat("\n")
-    cat("Variances (First Wave if No Stationarity): \n")
+    cat("Estimates (First Wave if No Stationarity) \n")
+    cat("\n")
+    cat("Variances: \n")
     if (x$info$gen$yVar == TRUE){
         print(x$var_table)
     } else {
@@ -788,8 +860,8 @@ print.pcSum <- function(x, ...) {
                 "% \n",
                 sep="")
         }
+        cat("\n")
     }
-    cat("\n")
     if (x$slope != "none") {
         cat("Slopes: \n")
         cat("X:   ")
@@ -798,7 +870,7 @@ print.pcSum <- function(x, ...) {
             ")  Mean: ",
             sprintf("%.3f", x$slope.mean.x), " (",
             sprintf("%.3f", x$slope.mean.se.x),
-            ") \n")
+            ") \n", sep = "")
         if (x$info$gen$yVar == TRUE) {
             cat("Y:   ")
             cat("Variance: ", sprintf("%.3f", x$slope.var.y), " (",
@@ -806,28 +878,79 @@ print.pcSum <- function(x, ...) {
                 ")  Mean: ",
                 sprintf("%.3f", x$slope.mean.y), " (",
                 sprintf("%.3f", x$slope.mean.se.y),
-                ") \n")
+                ") \n", sep = "")
         }
         cat("\n")
     }
     if (x$model != "lgcm") {
         cat("Stability: \n")
-        cat("X: ", sprintf("%.3f", x$x.stab), "\n")
+        cat("X: ", sprintf("%.3f", x$x.stab.u), " (",
+            sprintf("%.3f", x$x.stab.se), "), ",
+            "Standardized: ", sprintf("%.3f", x$x.stab),
+            "\n", sep = "")
         if (x$info$gen$yVar == TRUE) {
-            cat("Y: ", sprintf("%.3f", x$y.stab), "\n")
+            cat("Y: ", sprintf("%.3f", x$y.stab.u), " (",
+                sprintf("%.3f", x$y.stab.se), "), ",
+                "Standardized: ", sprintf("%.3f", x$y.stab),
+                "\n", sep = "")
         }
         cat("\n")
     }
-    cat("Cross-Lag Paths: \n")
-    cat("Y predicted from X: ", sprintf("%.3f", x$yOnX) ,"\n", sep="")
-    cat("X predicted from Y: ", sprintf("%.3f", x$xOnY),"\n", sep="")
+    if (!is.na(x$yOnX) & !is.na(x$xOnY)) {
+        cat("Cross-Lag Paths: \n")
+        cat("Y predicted from X: ",
+            sprintf("%.3f", round(x$yOnX.u, 3)),
+            " (", sprintf("%.3f", round(x$yOnX.se, 3)), "), Standardized: ",
+            sprintf("%.3f", round(x$yOnX, 3)),
+            "\n",
+            sep = ""
+        )
+        cat("X predicted from Y: ",
+            sprintf("%.3f", round(x$xOnY.u, 3)), " (",
+            sprintf("%.3f", round(x$xOnY.se, 3)), "), Standardized: ",
+            sprintf("%.3f", round(x$xOnY, 3)),
+            "\n",
+            sep = ""
+        )
+    }
     cat("\n")
     cat("Correlations: \n")
-    cat("\n")
-    cat("Stable Trait: ", sprintf("%.3f", x$trait.cor), "\n")
-    cat("Autoregressive Trait: ", sprintf("%.3f", x$ar.cor), "\n")
-    cat("State: ", sprintf("%.3f", x$state.cor), "\n")
+    cat(
+        "Stable Trait: ",
+        sprintf("%.3f", round(x$trait.cor.u, 3)), " (",
+        sprintf("%.3f", round(x$trait.cor.se, 3)), "), Standardized: ",
+        sprintf("%.3f", round(x$trait.cor, 3)),
+        "\n",
+        sep = ""
+    )
+    cat("Autoregressive Trait: ",
+        sprintf("%.3f", round(x$ar.cor.u, 3)), " (",
+        sprintf("%.3f", round(x$ar.cor.se, 3)), "), Standardized: ",
+        sprintf("%.3f", round(x$ar.cor, 3)),
+        "\n",
+        sep = ""
+    )
+    cat(
+        "State: ",
+        sprintf("%.3f", round(x$state.cor.u, 3)), " (",
+        sprintf("%.3f", round(x$state.cor.se, 3)), "), Standardized: ",
+        sprintf("%.3f", round(x$state.cor, 3)),
+        "\n",
+        sep = ""
+    )
+    if (x$slope != "none") {
+        cat(
+            "Slope: ",
+            sprintf("%.3f", round(x$slope.cor.u, 3)), " (",
+            sprintf("%.3f", round(x$slope.cor.se, 3)), "), Standardized: ",
+            sprintf("%.3f", round(x$slope.cor, 3)),
+            "\n",
+            sep = ""
+        )
     }
+    
+}
+
 
 
 

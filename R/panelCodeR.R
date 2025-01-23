@@ -563,6 +563,6 @@ panelcoder <- function(data,
     }
     pcOutput <- list(pcSum, info, model, fit, corSummary, modelCode)
     class(pcOutput) <- "pcOutput"
-    summary(pcSum)
+    print(pcSum)
     return(pcOutput)
 }
