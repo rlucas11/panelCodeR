@@ -372,6 +372,53 @@ getInfo <- function(df) {
         xOnY.u <- NA
         xOnY.se <- NA
     }
+
+    ## Moving Averages
+    if (length(est[which(est$label == "ma_a2"), "est"]) > 0) {
+        x_ma <- est.std[which(est.std$label == "ma_a2"), "est.std"]
+        x_ma.u <- est[which(est$label == "ma_a2"), "est"]
+        x_ma.se <- est[which(est$label == "ma_a2"), "se"]
+    } else {
+        x_ma <- NA
+        x_ma.u <- NA
+        x_ma.se <- NA
+    }
+    if (info$gen$yVar == TRUE) {
+        if (length(est[which(est$label == "ma_b2"), "est"]) > 0) {
+            y_ma <- est.std[which(est.std$label == "ma_b2"), "est.std"]
+            y_ma.u <- est[which(est$label == "ma_b2"), "est"]
+            y_ma.se <- est[which(est$label == "ma_b2"), "se"]
+        } else {
+            y_ma <- NA
+            y_ma.u <- NA
+            y_ma.se <- NA
+        }
+    } else {
+        y_ma <- NA
+        y_ma.u <- NA
+        y_ma.se <- NA
+    }
+
+    ## Cross-lag Moving Averages
+    if (length(est[which(est$label == "ma_c2"), "est"]) > 0) {
+        yOnX_ma <- est.std[which(est.std$label == "ma_c2"), "est.std"]
+        yOnX_ma.u <- est[which(est$label == "ma_c2"), "est"]
+        yOnX_ma.se <- est[which(est$label == "ma_c2"), "se"]
+    } else {
+        yOnX_ma <- NA
+        yOnX_ma.u <- NA
+        yOnX_ma.se <- NA
+    }
+    if (length(est[which(est$label == "ma_d2"), "est"]) > 0) {
+        xOnY_ma <- est.std[which(est.std$label == "ma_d2"), "est.std"]
+        xOnY_ma.u <- est[which(est$label == "ma_d2"), "est"]
+        xOnY_ma.se <- est[which(est$label == "ma_d2"), "se"]
+    } else {
+        xOnY_ma <- NA
+        xOnY_ma.u <- NA
+        xOnY_ma.se <- NA
+    }
+    
     ## Fit
     chi2 <- fit[["chisq"]]
     chi2df <- fit[["df"]]
@@ -439,6 +486,18 @@ getInfo <- function(df) {
         xOnY.u = xOnY.u,
         yOnX.se = yOnX.se,
         xOnY.se = xOnY.se,
+        x_ma = x_ma,
+        x_ma.u = x_ma.u,
+        x_ma.se = x_ma.se,
+        y_ma = y_ma,
+        y_ma.u = y_ma.u,
+        y_ma.se = y_ma.se,
+        yOnX_ma = yOnX_ma,
+        yOnX_ma.u = yOnX_ma.u,
+        yOnX_ma.se = yOnX_ma.se,
+        xOnY_ma = xOnY_ma,
+        xOnY_ma.u = xOnY_ma.u,
+        xOnY_ma.se = xOnY_ma.se,
         chi2 = chi2,
         chi2df = chi2df,
         chi2p = chi2p,
@@ -825,6 +884,76 @@ getInfo <- function(df) {
         yOnX.se <- NA
         xOnY.se <- NA
     }
+
+    ## Moving Averages
+    if (length(est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
+                             est.std$param == i.x), "est"]) > 0) {
+        x_ma <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
+                              est.std$param == i.x), "est"]
+        x_ma.u <- est[which(est$paramHeader == paste0(a.x2, ".ON") &
+                            est$param == i.x), "est"]
+        x_ma.se <- est[which(est$paramHeader == paste0(a.x2, ".ON") &
+                             est$param == i.x), "se"]
+    } else {
+        x_ma <- NA
+        x_ma.u <- NA
+        x_ma.se <- NA
+    }
+
+    if (info$gen$yVar == TRUE) {
+        if (length(est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
+                             est.std$param == i.y), "est"]) > 0) {
+        y_ma <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
+                                 est.std$param == i.y), "est"]
+        y_ma.u <- est[which(est$paramHeader == paste0(a.y2, ".ON") &
+                               est$param == i.y), "est"]
+        y_ma.se <- est[which(est$paramHeader == paste0(a.y2, ".ON") &
+                                est$param == i.y), "se"]
+        } else {
+            y_ma <- NA
+            y_ma.u <- NA
+            y_ma.se <- NA
+        }
+    }
+    
+    
+
+
+    
+    ## Cross-Lagged Moving Averages
+    if (info$gen$yVar == TRUE) {
+        if (length(est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
+                                 est.std$param == i.x), "est"]) > 0 &
+            length(est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
+                                 est.std$param == i.y), "est"]) > 0) {
+            yOnX_ma <- est.std[which(est.std$paramHeader == paste0(a.y2, ".ON") &
+                                  est.std$param == i.x), "est"]
+            xOnY_ma <- est.std[which(est.std$paramHeader == paste0(a.x2, ".ON") &
+                                  est.std$param == i.y), "est"]
+            yOnX_ma.u <- est[which(est$paramHeader == paste0(a.y2, ".ON") &
+                                  est$param == i.x), "est"]
+            xOnY_ma.u <- est[which(est$paramHeader == paste0(a.x2, ".ON") &
+                                  est$param == i.y), "est"]
+            yOnX_ma.se <- est[which(est$paramHeader == paste0(a.y2, ".ON") &
+                                  est$param == i.x), "se"]
+            xOnY_ma.se <- est[which(est$paramHeader == paste0(a.x2, ".ON") &
+                                  est$param == i.y), "se"]
+        } else {
+            yOnX_ma <- NA
+            xOnY_ma <- NA
+            yOnX_ma.u <- NA
+            xOnY_ma.u <- NA
+            yOnX_ma.se <- NA
+            xOnY_ma.se <- NA
+        }
+    } else {
+        yOnX_ma <- NA
+        xOnY_ma <- NA
+        yOnX_ma.u <- NA
+        xOnY_ma.u <- NA
+        yOnX_ma.se <- NA
+        xOnY_ma.se <- NA
+    }
     
     ## Fit
     chi2 <- fit[["ChiSqM_Value"]]
@@ -891,6 +1020,18 @@ getInfo <- function(df) {
         xOnY.u = xOnY.u,
         yOnX.se = yOnX.se,
         xOnY.se = xOnY.se,
+        x_ma = x_ma,
+        x_ma.u = x_ma.u,
+        x_ma.se = x_ma.se,
+        y_ma = y_ma,
+        y_ma.u = y_ma.u,
+        y_ma.se = y_ma.se,
+        yOnX_ma = yOnX_ma,
+        yOnX_ma.u = yOnX_ma.u,
+        yOnX_ma.se = yOnX_ma.se,
+        xOnY_ma = xOnY_ma,
+        xOnY_ma.u = xOnY_ma.u,
+        xOnY_ma.se = xOnY_ma.se,
         chi2 = chi2,
         chi2df = chi2df,
         chi2p = chi2p,
@@ -1027,9 +1168,51 @@ print.pcSum <- function(x, ...) {
             sprintf("%.3f", round(x$xOnY, 3)),
             "\n",
             sep = ""
-        )
+            )
+        cat("\n")
     }
-    cat("\n")
+
+    if (!is.na(x$x_ma)) {
+        cat("Moving Averages: \n")
+        cat("X: ",
+            sprintf("%.3f", round(x$x_ma.u, 3)), " (",
+            sprintf("%.3f", round(x$x_ma.se, 3)), "), Standardized: ",
+            sprintf("%.3f", round(x$x_ma, 3)),
+            "\n",
+            sep = ""
+            )
+        if (x$info$gen$yVar == TRUE) {
+            cat("Y: ",
+            sprintf("%.3f", round(x$y_ma.u, 3)), " (",
+            sprintf("%.3f", round(x$y_ma.se, 3)), "), Standardized: ",
+            sprintf("%.3f", round(x$y_ma, 3)),
+            "\n",
+            sep = ""
+            )
+        }
+        cat("\n")
+    }
+
+    if (!is.na(x$xOnY_ma)) {
+        cat("Cross-Lagged Moving Averages: \n")
+        cat("X Predicted from Y: ",
+            sprintf("%.3f", round(x$xOnY_ma.u, 3)), " (",
+            sprintf("%.3f", round(x$xOnY_ma.se, 3)), "), Standardized: ",
+            sprintf("%.3f", round(x$xOnY_ma, 3)),
+            "\n",
+            sep = ""
+            )
+        cat("Y Predicted from X: ",
+            sprintf("%.3f", round(x$yOnX_ma.u, 3)), " (",
+            sprintf("%.3f", round(x$yOnX_ma.se, 3)), "), Standardized: ",
+            sprintf("%.3f", round(x$yOnX_ma, 3)),
+            "\n",
+            sep = ""
+            )
+        cat("\n")
+    }
+
+    
     cat("Correlations: \n")
     cat(
         "Stable Trait: ",
