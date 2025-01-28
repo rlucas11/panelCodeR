@@ -190,6 +190,11 @@ Because of these and other features, it is important to be careful about default
 
 If you understand these features of the model code, then it should be possible to edit code created by `panelcoder()` to go beyond what the package can do. Remember, it is possible to have the package create code without running it by setting `run == FALSE` when running the `panelcoder()` command. 
 
+Note that when running models like the DPM (sometimes called "observation-level models"), the paths from the individual factors (i.e. random intercepts, or stable-trait factors) go directly to the autoregressive process (the *a* variables) rather than the *l* variables, as in "residualized" models like the STARTS and its derivatives. 
+
+![Diagram of Model Components in Observation-Level Models](images/panelcoder_dpm.png)
+
+
 
 ## Utilities
 
