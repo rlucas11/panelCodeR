@@ -28,7 +28,7 @@ modelCode(test)
 
 testG <- panelcoder(data2, panelModel="lgcm", program = "lavaan", slope = "linear")
 testG2 <- panelcoder(data2, panelModel="lgcm", program = "mplus", slope = "linear")
-testD <- panelcoder(data2, panelModel="dpm_p", program = "mplus", title = "dpm")
+testD <- panelcoder(data2, panelModel="dpm_c", program = "mplus", title = "dpm_c")
 testR <- panelcoder(data2, panelModel="riclpm", program = "mplus", title = "riclpm")
 testL <- panelcoder(data2, panelModel="lgcm", program = "mplus", title = "lgcm", slope = "linear")
 testMa <- panelcoder(data2, panelModel="gclm", program = "mplus", title="gclm", ma=TRUE, clma=TRUE)

@@ -428,33 +428,60 @@
 
 .buildLimits <- function(parTable,
                          info,
+                         panelModel = NULL,
                          ar = TRUE,
                          trait = TRUE,
                          stability = TRUE,
                          crossLag = TRUE,
                          state = TRUE,
+                         constrainState = constrainState,
+                         stationarity = stationarity,
                          traitCors = TRUE,
                          arCors = TRUE,
                          stateCors = TRUE,
                          residCors = TRUE) {
     waves <- info$gen$maxWaves
     if (ar == TRUE) {
-        parTable <- .buildConstraint(
-            parTable,
-            "xvar1",
-            ">",
-            0
-        )
-        if (info$gen$yVar == TRUE) {
+        if (stationarity != "full") {
+            for (i in 1:waves) {
+                parTable <- .buildConstraint(
+                    parTable,
+                    paste0("xvar", i),
+                    ">",
+                    0
+                )
+            }
+        } else {
             parTable <- .buildConstraint(
                 parTable,
-                "yvar1",
+                "xvar1",
                 ">",
                 0
             )
         }
+        if (info$gen$yVar == TRUE) {
+            if (stationarity != "full") {
+                for (i in 1:waves) {
+                    parTable <- .buildConstraint(
+                        parTable,
+                        paste0("yvar", i),
+                        ">",
+                        0
+                    )
+                }
+            } else {
+                parTable <- .buildConstraint(
+                    parTable,
+                    "yvar1",
+                    ">",
+                    0
+                )
+            }
+        }
     }
-    if (trait == TRUE) {
+    if (trait == TRUE |
+        panelModel == "dpm_c" | panelModel == "dpm_p" |
+        panelModel == "gclm") {
         parTable <- .buildConstraint(
             parTable,
             "x_tVar",
@@ -489,19 +516,42 @@
         }
     }
     if (state == TRUE) {
-        parTable <- .buildConstraint(
-            parTable,
-            "sx1",
-            ">",
-            0
-        )
-        if (info$gen$yVar == TRUE) {
+        if (constrainState == FALSE) {
+            for (i in 1:waves) {
+                parTable <- .buildConstraint(
+                    parTable,
+                    paste0("sx", i),
+                    ">",
+                    0
+                )
+            }
+        } else {
             parTable <- .buildConstraint(
                 parTable,
-                "sy1",
+                "sx1",
                 ">",
                 0
             )
+        }
+
+        if (info$gen$yVar == TRUE) {
+            if (constrainState == FALSE) {
+                for (i in 1:waves) {
+                    parTable <- .buildConstraint(
+                        parTable,
+                        paste0("sy", i),
+                        ">",
+                        0
+                    )
+                }
+            } else {
+                parTable <- .buildConstraint(
+                    parTable,
+                    "sy1",
+                    ">",
+                    0
+                )
+            }
         }
         if (info$x$indicators > 1) {
             parTable <- .buildConstraint(

@@ -914,6 +914,10 @@ getInfo <- function(df) {
             y_ma.u <- NA
             y_ma.se <- NA
         }
+    } else {
+        y_ma <- NA
+        y_ma.u <- NA
+        y_ma.se <- NA
     }
     
     

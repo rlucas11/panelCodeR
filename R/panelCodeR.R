@@ -293,19 +293,23 @@
     ## Impose limits on variances and covariances
     ## Eventually change to allow for no correlations
     if (limits == TRUE) {
-        model <- .buildLimits(model,
-            info,
-            ar = ar,
-            trait = trait,
-            stability = stability,
-            crossLag = crossLag,
-            state = state,
-            traitCors = TRUE,
-            arCors = TRUE,
-            stateCors = stateCors,
-            residCors = residCors
-        )
+        model <- .buildLimits(parTable = model,
+                              info,
+                              panelModel = panelModel,
+                              ar = ar,
+                              trait = trait,
+                              stability = stability,
+                              crossLag = crossLag,
+                              state = state,
+                              constrainState = constrainState,
+                              stationarity = stationarity,
+                              traitCors = TRUE,
+                              arCors = TRUE,
+                              stateCors = stateCors,
+                              residCors = residCors
+                              )
     }
+    
 
     return(model)
 }
