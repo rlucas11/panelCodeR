@@ -15,10 +15,10 @@ This R package generates and runs lavaan and mplus code for models for analyzing
   - Constrained DPM 
   - Predetermined DPM
 * Latent Growth Curve Model (LGCM)
+* Autoregressive Latent Trajectory Model (ALT)
+* Latent Growth Model with Structured Residuals (LGM-SC)
 
-Technically, by combining features of these models (e.g., adding a slope to the RI-CLPM or STARTS), additional models can be tested. Options to automatically generate these models will be added in the future.
-
-Models can include multiple indicators per wave. In addition, for some constrained models, missing waves can be included by modeling phantom variables (which the package handles automatically). 
+Models can include multiple indicators per wave. In addition, if stationarity is imposed, missing waves can be included by modeling phantom variables (which the package handles automatically). "State" variance (as in the state component from the STARTS model) can  also be added to models that do not have it by default (e.g., the DPM or GLCM). 
 
 ## Installation
 
@@ -45,6 +45,7 @@ The main function to build and run the code is `panelcoder()`.
 panelcoder(data,
            title = "panelcoder",
            panelModel = "starts",
+           predetermined = FALSE,
            program = "lavaan",
            crossLag = TRUE,
            ma = FALSE,
@@ -75,7 +76,7 @@ So, for example, to get output for a STARTS model from lavaan with all default s
 modelOutput <- panelcoder(data)
 ```
 
-To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", "sts", "dpm_c", "dpm_p", "gclm", or "lgcm" model (more options coming soon). 
+To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", "sts", "dpm_c", "dpm_p", "gclm", "lgcm", "alt", or "lgmsr" model. 
 
 ```R
 modelOutput <- panelcoder(data, panelModel = "riclpm")
@@ -89,6 +90,7 @@ modelOutput <- panelcoder(data, program = "mplus")
 ```
 The other options are described below (and in the R help functions).
 
+- `predetermined` specifies whether to include correlations between the random intercept (i.e., stable trait component) in residualized models. As described by Andersen (2022), this addresses some problems with these models when certain assumptions are violated. 
 - `crossLag` specifies whether the reciprocal lagged associations between the two variables in a bivariate model are included.
 - `ma` specifies whether to include moving averages (introduced in the context of the GCLM, but technically possible to include in other models; see Zyphur et al, 2020).
 - `clma` specifies whether to include cross-lagged moving averages (again introduced in the context of the GCLM).
@@ -97,12 +99,12 @@ The other options are described below (and in the R help functions).
 - `stateCors` specifies whether to include correlations between state components in the same wave (in bivariate models).
 - `residCors` specifies whether to include correlations between the residuals from a specific indicator at a specific wave with the residuals for the same indicator at other waves. 
 - `residVar` specifies whether to constraint the residuals for specific indicators to be the same across waves
-- `slope` specifies how to set loadings for models that include a latent slope. Can be "none" (the default), "linear", "centered", or "basis".
+- `slope` specifies how to set loadings for models that include a latent slope. Can be "none" (the default), "linear", "centered", or "basis". The "linear" option is required when using the ALT or LGM-SC models. 
   - Linear sets the first loading to 0 and increments by 1.
   - Centered finds the midpoint of the waves and centers loadings around this.
   - Basis sets the first wave to 0 and the last wave to 1 and then freely estimates the loading for all other waves.
-- `limits` specifies whether to restrict variances to be greater than zero and correlations to be between -1 and 1. This is sometimes needed to prevent inadmissible solutions when a variance component is very small or zero. This is not currently implemented perfectly unless stationarity is imposed, but will be fixed in a future version.
-- `stationarity` specifies whether to impose stationarity. This can be set to "paths" (the default), "full", or "none". In the STARTS and derivatives, full stationarity can be achieved by setting autoregressive paths, cross-lagged paths, and variance of the autoregressive processes to be equal across waves. The "full" setting does this. As discussed by Andersen (2022), however, stationarity can also be achieved without constraining the variances of the autoregressive processes. If set to "paths" only the autoregressive paths and cross-lagged paths are set to be equal across waves. 
+- `limits` specifies whether to restrict variances to be greater than zero and correlations to be between -1 and 1. This is sometimes needed to prevent inadmissible solutions when a variance component is very small or zero. This is not currently implemented perfectly, but will be fixed in a future version. There may also be a bug that emerges only when using Mplus and constraining state variance to be equal (I am investigating). 
+- `stationarity` specifies whether to impose stationarity. This can be set to "paths" (the default), "full", or "none". In the STARTS and derivatives, full stationarity can be achieved by setting autoregressive paths, cross-lagged paths, and variance of the autoregressive processes to be equal across waves. The "full" setting does this. If set to "paths" only the autoregressive paths and cross-lagged paths are set to be equal across waves. 
 - `constrainState` specifies whether to constrain state variances to be equal across waves. This is required for stationarity, and may also be required in the STARTS model when full stationarity is not imposed. 
 - `mplusAnalysis` specifies the ANALYSIS command to use for mplus if different from the default.
 - `mplusOutput` specifies the OUTPUT command to use for mplus if different from the default.
@@ -153,9 +155,13 @@ The `panelcoder()` command can also create and run lavaan or mplus code for the 
 
 This package can also create and run code for latent growth curve models. To specify this model, use option "lgcm" for `panelModel`. There is also an option for how to specify the slope, which can be "linear" (loadings for the slope start at 0 and increase by 1 for each wave), "centered" (where the 0 point of loadings is the midpoint of all waves and they decrease or increase by 1 as waves move away from this midpoint) or "basis" (where the first wave is set to 0 and the last wave is set to 1, but all intermediate waves are freely estimated). 
 
-### Additional Models
+### Autoregressive Latent Trajectory Model
 
-I am working on implementing additional models that include latent slopes with other models like the STARTS or DPM. It is currently possible to add slopes to the DPM or STARTS (and variants), which results in models like the Latent Growth Curve Model with Structured Residuals or the Autoregressive Latent Trajectory Model, but these are not yet named options, and I have not checked to see whether the resulting code matches these models perfectly.
+The ALT model is equivalent to the predetermined DPM with a linear slope. 
+
+### Latent Growth Model with Structured Residuals
+
+The LGM-SC model is equivalent to the RI-CLPM with a linear slope. 
 
 ## Options and Features
 
