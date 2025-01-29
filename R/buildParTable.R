@@ -1538,6 +1538,138 @@
     }
 }
 
+.buildPredetermined <- function(info, slope) {
+    yVar <- info$gen$yVar
+    xName <- info$x$name
+
+    if (yVar == TRUE) {
+        yName <- info$y$name
+    }
+
+    corParTable <- data.frame(
+        lhs = paste("t", xName, sep = "_"),
+        op = "~~",
+        rhs = paste("i", xName, 1, sep = "_"),
+        user = 1,
+        block = 1,
+        group = 1,
+        free = 1,
+        ustart = NA,
+        exo = 0,
+        label = "c_tx_ix"
+    )
+
+    if (slope != "none") {
+        sCorParTable <- data.frame(
+            lhs = paste("sl", xName, sep = "_"),
+            op = "~~",
+            rhs = paste("i", xName, 1, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "c_slx_ix"
+        )
+        corParTable <- do.call(
+            rbind,
+            list(
+                corParTable,
+                sCorParTable
+            )
+        )
+    }
+
+    if (yVar == TRUE) {
+        yCorParTable <- data.frame(
+            lhs = paste("t", yName, sep = "_"),
+            op = "~~",
+            rhs = paste("i", yName, 1, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "c_ty_iy"
+        )
+        y2CorParTable <- data.frame(
+            lhs = paste("t", xName, sep = "_"),
+            op = "~~",
+            rhs = paste("i", yName, 1, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "c_tx_iy"
+        )
+        y3CorParTable <- data.frame(
+            lhs = paste("t", yName, sep = "_"),
+            op = "~~",
+            rhs = paste("i", xName, 1, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "c_ty_ix"
+        )
+
+        corParTable <- do.call(
+            rbind,
+            list(
+                corParTable,
+                yCorParTable,
+                y2CorParTable,
+                y3CorParTable
+            )
+        )
+
+        if (slope != "none") {
+            syCorParTable <- data.frame(
+                lhs = paste("sl", yName, sep = "_"),
+                op = "~~",
+                rhs = paste("i", yName, 1, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = "c_sly_ix"
+            )
+            sy2CorParTable <- data.frame(
+                lhs = paste("sl", xName, sep = "_"),
+                op = "~~",
+                rhs = paste("i", yName, 1, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = "c_slx_iy"
+            )
+            corParTable <- do.call(
+                rbind,
+                list(
+                    corParTable,
+                    syCorParTable,
+                    sy2CorParTable
+                )
+            )
+        }
+    }
+    corParTable$from <- "cors"
+    return(corParTable)
+}
+
+
+
 .buildDpmTraitCors <- function(info) {
 
     yVar <- info$gen$yVar
@@ -1925,6 +2057,7 @@
                         arCors = TRUE,
                         stateCors = TRUE,
                         residCors = TRUE,
+                        predetermined = FALSE,
                         dpm_c = FALSE,
                         dpm_p = FALSE,
                         gclm = FALSE,
@@ -1951,6 +2084,10 @@
     if (state == FALSE) {
         stateCors <- FALSE
     }
+
+    if (dpm_c == TRUE | dpm_p == TRUE | gclm == TRUE) {
+        predetermined == FALSE
+    }
     
     components <- list(
         ph = .buildPhantom(info),
@@ -1971,6 +2108,7 @@
                           trait = traitCors,
                           state = stateCors,
                           slope = slope),
+        preDetCors  = .buildPredetermined(info, slope),
         dpmTraitCors = .buildDpmTraitCors(info),
         dpmCors = .buildDpmCors(info, slope = slope),
         dpmLoadings = .buildDpmLoadings(info),
@@ -2010,6 +2148,9 @@
     }
     if (residCors == FALSE) {
         components$residCors <- NULL
+    }
+    if (predetermined == FALSE) {
+        components$preDetCors <- NULL
     }
     if (dpm_p == FALSE) {
         components$dpmCors <- NULL

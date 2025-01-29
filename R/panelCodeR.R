@@ -1,5 +1,6 @@
 .buildModel <- function(data,
                         panelModel = "starts",
+                        predetermined = FALSE,
                         crossLag = TRUE,
                         traitCors = TRUE,
                         arCors = TRUE,
@@ -40,6 +41,11 @@
     if (panelModel == "lgcm" & slope == "none") {
         stop("Need to specify 'linear', 'centered', or 'basis' for slope option when using LGCM")
     }
+
+    if (panelModel == "dpm_c" & slope != "none") {
+        stop("Bivariate Constrained DPM model is not yet correctly specified when slopes are included. Either use the Predetermined DPM or manually modify code to get desired results.")
+    }
+               
     
     if (panelModel == "starts") {
         ar <- TRUE
@@ -215,8 +221,9 @@
         arCors = arCors,
         stateCors = stateCors,
         residCors = residCors,
-        dpm_c <- dpm_c,
-        dpm_p <- dpm_p,
+        predetermined = predetermined,
+        dpm_c = dpm_c,
+        dpm_p = dpm_p,
         gclm = gclm,
         ma = ma,
         clma = clma,
@@ -336,7 +343,10 @@
 #'   should be very short. A warning is provided if these exceed 8 characters.
 #' @param title Title of analysis for mplus
 #' @param panelModel Specific model to run. Can be "starts"(the default),
-#'   "riclpm", "clpm", "arts", "sts", "dpm", or "gclm". 
+#'   "riclpm", "clpm", "arts", "sts", "dpm", or "gclm".
+#' @param predetermined Logical value indicating whether to use a
+#'   "predetermined" version of a STARTS variant (see Andersen, 2022). This
+#'   option is not used for the DPM or GCLM. 
 #' @param program Program to use to run code. Can be "lavaan" (the default) or
 #'   "mplus"
 #' @param crossLag Logical value indicating whether to include cross-lagged
@@ -397,6 +407,7 @@
 panelcoder <- function(data,
                        title = "panelcoder",
                        panelModel = "starts",
+                       predetermined = FALSE,
                        program = "lavaan",
                        crossLag = TRUE,
                        ma = FALSE,
@@ -472,6 +483,7 @@ panelcoder <- function(data,
     
     model <- .buildModel(data = data,
                          panelModel = panelModel,
+                         predetermined = predetermined,
                          crossLag = crossLag,
                          ma = ma,
                          clma = clma,

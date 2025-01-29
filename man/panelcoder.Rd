@@ -8,6 +8,7 @@ panelcoder(
   data,
   title = "panelcoder",
   panelModel = "starts",
+  predetermined = FALSE,
   program = "lavaan",
   crossLag = TRUE,
   ma = FALSE,
@@ -18,6 +19,7 @@ panelcoder(
   residCors = FALSE,
   residVar = FALSE,
   slope = "none",
+  state = FALSE,
   limits = TRUE,
   stationarity = "paths",
   constrainState = TRUE,
@@ -44,6 +46,10 @@ should be very short. A warning is provided if these exceed 8 characters.}
 
 \item{panelModel}{Specific model to run. Can be "starts"(the default),
 "riclpm", "clpm", "arts", "sts", "dpm", or "gclm".}
+
+\item{predetermined}{Logical value indicating whether to use a
+"predetermined" version of a STARTS variant (see Andersen, 2022). This
+option is not used for the DPM or GCLM.}
 
 \item{program}{Program to use to run code. Can be "lavaan" (the default) or
 "mplus"}
@@ -74,6 +80,11 @@ variance to be equal across waves when there are multiple indicators.}
 
 \item{slope}{String variable indicating what type of slope to specify in
 models that include a slope. Can be "linear" or "basis".}
+
+\item{state}{Logical value indicating whether to include a state component.
+This is automatically included in some models (e.g., STARTS), but this
+option allows for the inclusion of a state component in additional models
+including the DPM and GCLM.}
 
 \item{limits}{Logical value indicating whether to constrain variances and
 correlations to possible values. Defaults to TRUE.}

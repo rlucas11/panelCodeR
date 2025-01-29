@@ -33,6 +33,11 @@ testR <- panelcoder(data2, panelModel="riclpm", program = "mplus", title = "ricl
 testL <- panelcoder(data2, panelModel="lgcm", program = "mplus", title = "lgcm", slope = "linear")
 testMa <- panelcoder(data2, panelModel="gclm", program = "mplus", title="gclm", ma=TRUE, clma=TRUE)
 testMa <- panelcoder(data2, panelModel="gclm", program = "lavaan", title="gclm", ma=TRUE, clma=TRUE)
+
+## Stationarity Test
+
+testS <- panelcoder(data2, panelModel = "riclpm", program = "mplus", predetermined = TRUE, stationarity = "full")
+testSD <- panelcoder(data2, panelModel = "dpm_p", program = "mplus", stationarity = "full")
 ################################################################################
 ## Create test data
 ################################################################################
