@@ -1565,7 +1565,7 @@
 }
   
 
-.buildDpmCors <- function(info) {
+.buildDpmCors <- function(info, slope) {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
     xName <- info$x$name
@@ -1580,12 +1580,48 @@
         free = 1,
         ustart = NA,
         exo = 0,
-        label = "cov_TArX"
+        label = "c_tx_ix"
     )
+
+    if (slope != "none") {
+        slCorParTable <- data.frame(
+            lhs = paste("t", xName, sep = "_"),
+            op = "~~",
+            rhs = paste("sl", xName, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "c_tx_slx"
+        )
+        slArCorParTable <- data.frame(
+            lhs = paste("sl", xName, sep = "_"),
+            op = "~~",
+            rhs = paste("i", xName, 1, sep = "_"),
+            user = 1,
+            block = 1,
+            group = 1,
+            free = 1,
+            ustart = NA,
+            exo = 0,
+            label = "c_slx_ix"
+        )
+        corParTable <- do.call(
+            rbind,
+            list(
+                corParTable,
+                slCorParTable,
+                slArCorParTable
+            )
+        )
+    }
+    
     
     if (yVar == TRUE) {
         yName <- info$y$name
-        ytCorParTable <- data.frame(
+        y1CorParTable <- data.frame(
             lhs = paste("t", yName, sep = "_"),
             op = "~~",
             rhs = paste("i", yName, 1, sep = "_"),
@@ -1595,9 +1631,9 @@
             free = 1,
             ustart = NA,
             exo = 0,
-            label = "cov_TArY"
+            label = "c_ty_iy"
         )
-        xyCorParTable <- data.frame(
+        y2CorParTable <- data.frame(
             lhs = paste("t", xName, sep = "_"),
             op = "~~",
             rhs = paste("i", yName, 1, sep = "_"),
@@ -1607,9 +1643,9 @@
             free = 1,
             ustart = NA,
             exo = 0,
-            label = "cov_TxAy"
+            label = "c_tx_iy"
         )
-        yxCorParTable <- data.frame(
+        y3CorParTable <- data.frame(
             lhs = paste("t", yName, sep = "_"),
             op = "~~",
             rhs = paste("i", xName, 1, sep = "_"),
@@ -1619,17 +1655,90 @@
             free = 1,
             ustart = NA,
             exo = 0,
-            label = "cov_TyAx"
+            label = "c_ty_ix"
         )
         corParTable <- do.call(
             rbind,
             list(
                 corParTable,
-                ytCorParTable,
-                xyCorParTable,
-                yxCorParTable
+                y1CorParTable,
+                y2CorParTable,
+                y3CorParTable
             )
         )
+        if (slope != "none") {
+            ysCorParTable <- data.frame(
+                lhs = paste("sl", yName, sep = "_"),
+                op = "~~",
+                rhs = paste("t", xName, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = "c_sly_ty"
+            )
+            ys2CorParTable <- data.frame(
+                lhs = paste("sl", yName, sep = "_"),
+                op = "~~",
+                rhs = paste("i", yName, 1, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = "c_sly_iy"
+            )
+            ys3CorParTable <- data.frame(
+                lhs = paste("sl", yName, sep = "_"),
+                op = "~~",
+                rhs = paste("sl", xName, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = "c_sly_slx"
+            )
+            ys4CorParTable <- data.frame(
+                lhs = paste("sl", yName, sep = "_"),
+                op = "~~",
+                rhs = paste("i", xName, 1, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = "c_sly_ix"
+            )
+            ys5CorParTable <- data.frame(
+                lhs = paste("t", yName, sep = "_"),
+                op = "~~",
+                rhs = paste("sl", xName, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = "c_ty_slx"
+            )
+            corParTable <- do.call(
+                rbind,
+                list(
+                    corParTable,
+                    ysCorParTable,
+                    ys2CorParTable,
+                    ys3CorParTable,
+                    ys4CorParTable,
+                    ys5CorParTable
+                )
+            )
+        }
     }
     
     corParTable$from <- "dpmCors"
@@ -1863,7 +1972,7 @@
                           state = stateCors,
                           slope = slope),
         dpmTraitCors = .buildDpmTraitCors(info),
-        dpmCors = .buildDpmCors(info),
+        dpmCors = .buildDpmCors(info, slope = slope),
         dpmLoadings = .buildDpmLoadings(info),
         residCors = .buildResidCors(info),
         slopes = .buildSlope(info, slope = slope)
