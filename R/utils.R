@@ -160,7 +160,12 @@ getInfo <- function(df) {
         mName <- "Predetermined Dynamic Panel Model"
     } else if (panelModel == "lgcm") {
         mName <- "Latent Growth Curve Model"
+    } else if (panelModel == "alt") {
+        mName <- "Autoregressive Latent Trajectory Model"
+    } else if (panelModel == "lgmsc") {
+        mName <- "Latent Growth Model with Structured Residuals"
     }
+    
 
     ## Set names
     x.name <- info$x$name
@@ -554,7 +559,13 @@ getInfo <- function(df) {
         mName <- "Predetermined Dynamic Panel Model"
     } else if (panelModel == "lgcm") {
         mName <- "Latent Growth Curve lModel"
+    } else if (panelModel == "alt") {
+        mName <- "Autoregressive Latent Trajectory Model"
+    } else if (panelModel == "lgmsr") {
+        mName <- "Latent Growth Model with Structured Residuals Model"
     }
+    
+    
 
 
 
@@ -1251,7 +1262,8 @@ print.pcSum <- function(x, ...) {
             sep = ""
         )
     }
-    
+    cat("\n")
+    cat("\n")
 }
 
 

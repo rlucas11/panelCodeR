@@ -26,7 +26,8 @@
                           "sts",
                           "dpm_c", "dpm_p",
                           "gclm",
-                          "lgcm")) == FALSE) {
+                          "lgcm",
+                          "alt", "lgmsr")) == FALSE) {
         stop("No model with that name")
     }
 
@@ -41,6 +42,7 @@
     if (panelModel == "lgcm" & slope == "none") {
         stop("Need to specify 'linear', 'centered', or 'basis' for slope option when using LGCM")
     }
+    
 
     if (panelModel == "dpm_c" & slope != "none") {
         stop("Bivariate Constrained DPM model is not yet correctly specified when slopes are included. Either use the Predetermined DPM or manually modify code to get desired results.")
@@ -81,6 +83,24 @@
         ma <- ma
         clma <- clma
         slope <- slope
+    }
+
+    if (panelModel == "lgmsr") {
+        ar <- TRUE
+        trait <- TRUE
+        stability <- TRUE
+        crossLag <- crossLag
+        state <- state
+        traitCors <- traitCors
+        arCors <- arCors
+        stateCors <- stateCors
+        residCors <- residCors
+        dpm_c <- FALSE
+        dpm_p <- FALSE
+        gclm <- FALSE
+        ma <- ma
+        clma <- clma
+        slope <- "linear"
     }
 
     if (panelModel == "arts") {
@@ -172,6 +192,24 @@
         ma <- ma
         clma <- clma
         slope <- slope
+    }
+
+    if (panelModel == "alt") {
+        ar <- TRUE
+        trait <- FALSE
+        stability <- TRUE
+        crossLag <- TRUE
+        state <- state
+        traitCors <- FALSE
+        arCors <- arCors
+        stateCors <- FALSE
+        residCors <- residCors
+        dpm_c <- FALSE
+        dpm_p <- TRUE
+        gclm <- FALSE
+        ma <- ma
+        clma <- clma
+        slope <- "linear"
     }
         
     if (panelModel == "gclm") {
@@ -343,7 +381,7 @@
 #'   should be very short. A warning is provided if these exceed 8 characters.
 #' @param title Title of analysis for mplus
 #' @param panelModel Specific model to run. Can be "starts"(the default),
-#'   "riclpm", "clpm", "arts", "sts", "dpm", or "gclm".
+#'   "riclpm", "clpm", "arts", "sts", "dpm", "gclm", "alt", or "lgmsr".
 #' @param predetermined Logical value indicating whether to use a
 #'   "predetermined" version of a STARTS variant (see Andersen, 2022). This
 #'   option is not used for the DPM or GCLM. 
@@ -479,7 +517,11 @@ panelcoder <- function(data,
             }
         }
     }
-    
+
+    if ((panelModel == "alt" | panelModel == "lgmsr") & slope != "linear") {
+        slope = "linear"
+        warning("Slope set to linear")
+    }
     
     model <- .buildModel(data = data,
                          panelModel = panelModel,

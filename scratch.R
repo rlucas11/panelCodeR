@@ -38,6 +38,9 @@ testMa <- panelcoder(data2, panelModel="gclm", program = "lavaan", title="gclm",
 
 testS <- panelcoder(data2, panelModel = "riclpm", program = "mplus", predetermined = TRUE, stationarity = "full")
 testSD <- panelcoder(data2, panelModel = "dpm_p", program = "mplus", stationarity = "full")
+
+testAlt <- panelcoder(data2, panelModel = "alt", program = "mplus")
+testLgmsr <- panelcoder(data2, panelModel = "lgmsr", program = "mplus", slope = "linear")
 ################################################################################
 ## Create test data
 ################################################################################
