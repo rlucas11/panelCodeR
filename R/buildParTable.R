@@ -1509,8 +1509,10 @@
                 stateCorParTable
             )
         )
-        corParTable <- corParTable[order(corParTable$lhs), ]
-        corParTable$from <- "cors"
+        if (!is.null(corParTable)) {
+            corParTable <- corParTable[order(corParTable$lhs), ]
+            corParTable$from <- "cors"
+        }
         return(corParTable)
     } else {
         if (slope != "none") {
@@ -2164,7 +2166,7 @@
         clma = .buildClMa(info),
         state = .buildState(info),
         cors = .buildCors(info,
-                          ar = ar,
+                          ar = arCors,
                           trait = traitCors,
                           state = stateCors,
                           slope = slope),
