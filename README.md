@@ -17,6 +17,7 @@ This R package generates and runs lavaan and mplus code for models for analyzing
 * Latent Growth Curve Model (LGCM)
 * Autoregressive Latent Trajectory Model (ALT)
 * Latent Growth Model with Structured Residuals (LGM-SC)
+* Simple measurement model (for data with multiple indicators per wave)
 
 Models can include multiple indicators per wave. In addition, if stationarity is imposed, missing waves can be included by modeling phantom variables (which the package handles automatically). "State" variance (as in the state component from the STARTS model) can  also be added to models that do not have it by default (e.g., the DPM or GLCM). 
 
@@ -76,7 +77,7 @@ So, for example, to get output for a STARTS model from lavaan with all default s
 modelOutput <- panelcoder(data)
 ```
 
-To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", "sts", "dpm_c", "dpm_p", "gclm", "lgcm", "alt", or "lgmsr" model. 
+To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", "sts", "dpm_c", "dpm_p", "gclm", "lgcm", "alt", "lgmsr" or "measurement" model. 
 
 ```R
 modelOutput <- panelcoder(data, panelModel = "riclpm")

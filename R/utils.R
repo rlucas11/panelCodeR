@@ -164,6 +164,8 @@ getInfo <- function(df) {
         mName <- "Autoregressive Latent Trajectory Model"
     } else if (panelModel == "lgmsc") {
         mName <- "Latent Growth Model with Structured Residuals"
+    } else if (panelModel == "measurement") {
+        mName <- "Measurement Model"
     }
     
 
@@ -563,6 +565,8 @@ getInfo <- function(df) {
         mName <- "Autoregressive Latent Trajectory Model"
     } else if (panelModel == "lgmsr") {
         mName <- "Latent Growth Model with Structured Residuals Model"
+    } else if (panelModel == "measurement") {
+        mName <- "Measurement Model"
     }
     
     

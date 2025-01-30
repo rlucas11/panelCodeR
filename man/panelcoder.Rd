@@ -45,7 +45,8 @@ should be very short. A warning is provided if these exceed 8 characters.}
 \item{title}{Title of analysis for mplus}
 
 \item{panelModel}{Specific model to run. Can be "starts"(the default),
-"riclpm", "clpm", "arts", "sts", "dpm", "gclm", "alt", or "lgmsr".}
+"riclpm", "clpm", "arts", "sts", "dpm", "gclm", "alt", "lgmsr", or
+"measurement".}
 
 \item{predetermined}{Logical value indicating whether to use a
 "predetermined" version of a STARTS variant (see Andersen, 2022). This

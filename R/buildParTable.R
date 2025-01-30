@@ -894,8 +894,6 @@
         yName <- info$y$name
     }
 
-
-    
     ## Create initial table
     initialParTable <- data.frame(
         lhs = character(),
@@ -1378,7 +1376,7 @@
                        ar = TRUE,
                        trait = TRUE,
                        state = TRUE,
-                       slope = FALSE) {
+                       slope = "none") {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
     xName <- info$x$name
@@ -1669,6 +1667,67 @@
 }
 
 
+.buildMeasurement <- function(info) {
+    ## Check if bivariate or univariate
+    yVar <- info$gen$yVar
+    xName <- info$x$name
+    waves <- info$gen$maxWaves
+    xiNames <- paste(
+        rep("i", waves),
+        rep(xName, waves),
+        1:waves,
+        sep="_"
+        )
+    
+    if (yVar == TRUE) {
+        yName <- info$y$name
+        yiNames <- paste(
+            rep("i", waves),
+            rep(yName, waves),
+            1:waves,
+            sep="_"
+        )
+        iNames <- c(xiNames, yiNames)
+    } else {
+        iNames <- xiNames
+    }
+    
+    ## Create initial table
+    corParTable <- data.frame(
+        lhs = character(),
+        op = character(),
+        rhs = character(),
+        user = integer(),
+        block = integer(),
+        group = integer(),
+        free = integer(),
+        ustart = numeric(),
+        exo = integer(),
+        label = character()
+    )
+    for (i in 1:(length(iNames)-1)) {
+        for (j in (i+1):length(iNames)) {
+            newCorParTable <- data.frame(
+                lhs = iNames[i],
+                op = "~~",
+                rhs = iNames[j],
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = ""
+            )
+            corParTable <- rbind(
+                corParTable,
+                newCorParTable
+            )
+        }
+    }
+    corParTable$from <- "cors"
+    return(corParTable)
+} 
 
 .buildDpmTraitCors <- function(info) {
 
@@ -2063,7 +2122,8 @@
                         gclm = FALSE,
                         ma = FALSE,
                         clma = FALSE,
-                        slope = "none") {
+                        slope = "none",
+                        measurement = FALSE) {
 
     if (dpm_c == TRUE | dpm_p == TRUE) {
         trait <- FALSE
@@ -2113,7 +2173,8 @@
         dpmCors = .buildDpmCors(info, slope = slope),
         dpmLoadings = .buildDpmLoadings(info),
         residCors = .buildResidCors(info),
-        slopes = .buildSlope(info, slope = slope)
+        slopes = .buildSlope(info, slope = slope),
+        measurement = .buildMeasurement(info)
     )
     
     if (ar == FALSE) {
@@ -2134,7 +2195,7 @@
     if (stability == FALSE) {
         components$stability <- NULL
     }
-    if (ar == FALSE) {
+    if (ar == FALSE | measurement == TRUE) {
         components$cl <- NULL
     }
     if (ma == FALSE) {
@@ -2161,6 +2222,10 @@
     if (slope == "none") {
         components$slopes <- NULL
     }
+    if (measurement == FALSE) {
+        components$measurement <- NULL
+    }
+    
            
     
     model <- do.call(

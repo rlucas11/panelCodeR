@@ -13,11 +13,16 @@
                         residVar = FALSE,
                         ma = FALSE,
                         clma = FALSE,
-                        slope = slope,
-                        state = state
+                        slope = "none",
+                        state = FALSE,
+                        measurement = FALSE
                         ) {
     ## Collect basic info
     info <- getInfo(data)
+
+    if (info$x$indicators == 1 & panelModel == "measurement") {
+        stop("Measurement model not run when there is only 1 indicator")
+    }
 
     if ((panelModel %in% c("starts",
                           "riclpm", "start",
@@ -27,7 +32,8 @@
                           "dpm_c", "dpm_p",
                           "gclm",
                           "lgcm",
-                          "alt", "lgmsr")) == FALSE) {
+                          "alt", "lgmsr",
+                          "measurement")) == FALSE) {
         stop("No model with that name")
     }
 
@@ -249,6 +255,27 @@
         slope <- slope
     }
 
+    if (panelModel == "measurement") {
+        ar <- TRUE
+        trait <- FALSE
+        stability <- FALSE
+        crossLag <- FALSE
+        state <- FALSE
+        traitCors <- FALSE
+        arCors <- FALSE
+        stateCors <- FALSE
+        residCors <- residCors
+        dpm_c <- FALSE
+        dpm_p <- FALSE
+        gclm <- FALSE
+        ma <- FALSE
+        clma <- FALSE
+        slope <- "none"
+        measurement <- TRUE
+        stationarity <- "none"
+    }
+
+
     modelInfo <- .buildTable(info,
         ar = ar,
         trait = trait,
@@ -265,7 +292,8 @@
         gclm = gclm,
         ma = ma,
         clma = clma,
-        slope = slope
+        slope = slope,
+        measurement = measurement
     )
 
     ## Build table and collect parameters
@@ -288,7 +316,8 @@
 
     ## Constrain cross-lagged paths if necessary
     if (info$gen$yVar == TRUE &
-        ar == TRUE) {
+        ar == TRUE &
+        measurement == FALSE) {
         if (stationarity == "paths" | stationarity == "full") {
             if (crossLag == FALSE) {
                 zero <- TRUE
@@ -381,7 +410,8 @@
 #'   should be very short. A warning is provided if these exceed 8 characters.
 #' @param title Title of analysis for mplus
 #' @param panelModel Specific model to run. Can be "starts"(the default),
-#'   "riclpm", "clpm", "arts", "sts", "dpm", "gclm", "alt", or "lgmsr".
+#'   "riclpm", "clpm", "arts", "sts", "dpm", "gclm", "alt", "lgmsr", or
+#'   "measurement".
 #' @param predetermined Logical value indicating whether to use a
 #'   "predetermined" version of a STARTS variant (see Andersen, 2022). This
 #'   option is not used for the DPM or GCLM. 
