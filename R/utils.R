@@ -1378,7 +1378,7 @@ summarizeR <- function(corMat, nvars=1) {
 }
 
 
-combineCors <- function(df, info, program, fitObject) {
+combineCors <- function(df, info, program, fitObject, latent) {
     if (info$gen$yVar == TRUE) {
         varNames <- c(info$x$name, info$y$name)
         vars <- c("x", "y")
@@ -1398,27 +1398,31 @@ combineCors <- function(df, info, program, fitObject) {
                                             info$gen$maxWaves)
     }
 
+    impliedCors <- as.data.frame(impliedCors)
+    names(impliedCors) = paste("i", vars, sep="_")
+
+    allCors <- impliedCors
+
     ## Get observed correlations
 
-    if (length(vars) == 1) {
-        observedCors <- summarizeR(getObservedCors(df, info, "x"))
-    } else {
-        observedCors <- cbind(summarizeR(getObservedCors(df, info, "x")),
-                              summarizeR(getObservedCors(df, info, "y")))
+    if (latent==FALSE) {
+        if (length(vars) == 1) {
+            observedCors <- summarizeR(getObservedCors(df, info, "x"))
+        } else {
+            observedCors <- cbind(summarizeR(getObservedCors(df, info, "x")),
+                                  summarizeR(getObservedCors(df, info, "y")))
+        }
+        observedCors <- as.data.frame(observedCors)
+        names(observedCors) = paste("o", vars, sep="_")
+        allCors <- cbind(impliedCors, observedCors)
     }
-
-    allCors <- cbind(impliedCors, observedCors)
     return(allCors)
 }
 
     
 
-plotCors <- function(cors, vars) {
-    cors <- as.data.frame(cors)
+plotCors <- function(cors) {
     lags <- nrow(cors)
-    names(cors) <- paste(
-        rep(c("Implied", "Observed"), each = length(vars)),
-        rep(vars, 2))
     cors <- cors %>%
         dplyr::mutate(lag=row_number()) %>%
         tidyr::pivot_longer(!lag) %>%
@@ -1436,17 +1440,33 @@ plotCors <- function(cors, vars) {
 #' `panelPlot()` plots implied and actual stability coefficients for
 #' increasingly long lags for the variables analyzed by the panelcoder
 #' function. The function takes a panelcoder output object as an argument and
-#' then plots these stabilities. Currently, the model only works for observed-
-#' variable models. Eventually it will be able to handle latent-variable models,
-#' too. 
+#' then plots these stabilities. If multiple indicators are used in the model,
+#' then it will necessary to pass the results of a measurement model to compare
+#' observed stabilities with implied stabilities.
 #'
 #' @importFrom methods is
 #' @param pcOutput An object created from running the `panelcoder()` command.
+#' @param measurement An object created from running the `panelcoder()` command
+#'   specifying a measurement model.
 #' @export
-panelPlot <- function(pcOutput) {
+panelPlot <- function(pcOutput, measurement=NULL) {
     if (!is(pcOutput, "pcOutput")) {
-        stop("This is not output from the panelcoder function", call.=FALSE)
+        stop("Main model is not output from the panelcoder function", call.=FALSE)
     }
+
+    if (!is.null(measurement)) {
+        if (!is(measurement, "pcOutput")) {
+            stop("Measurement model is not output from the panelcoder function", call.=FALSE)
+        }
+    }
+    
+    if (!is.null(measurement)) {
+        if (!identical(pcOutput[[2]], measurement[[2]])) {
+            stop("Measurement model and comparison model do not use the same data", call.=FALSE)
+        }
+    }
+
+    
     if (pcOutput[[2]]$gen$yVar == TRUE) {
         maxInd <- max(pcOutput[[2]]$y$indicators,
                       pcOutput[[2]]$x$indicators)
@@ -1454,16 +1474,45 @@ panelPlot <- function(pcOutput) {
         maxInd <- pcOutput[[2]]$x$indicators
     }
 
-    if (maxInd > 1) {
-        stop("panelPlot not implemented yet for data with multiple indicators", call.=FALSE)
-    }
-    
     if (pcOutput[[2]]$gen$yVar == TRUE) {
         varNames <- c(pcOutput[[2]]$x$name, pcOutput[[2]]$y$name)
     } else {
         varNames <- pcOutput[[2]]$x$name
     }
-    plotCors(pcOutput[[5]], varNames)
+    
+    if (maxInd > 1 & is.null(measurement)) {
+        warning("Only implied stability coefficients are shown for models with multiple indicators, unless a measurement model is supplied.")
+        if (pcOutput[[2]]$gen$yVar == TRUE) {
+            corMat <- pcOutput[[5]][1:2]
+        } else {
+            corMat <- pcOutput[[5]][1]
+        }
+        names(corMat) <- paste("Implied", varNames, sep = " ")
+    } else if (maxInd > 1) {
+        if (pcOutput[[2]]$gen$yVar == TRUE) {
+            corMat <- pcOutput[[5]][1:2]
+            mCorMat <- measurement[[5]][1:2]
+        } else {
+            corMat <- pcOutput[[5]][1]
+            mCorMat <- measurement[[5]][1:2]
+        }
+        corMat <- cbind(corMat,mCorMat)
+        names(corMat) <- c(paste("Implied",
+                               varNames,
+                               sep = " "),
+                           paste("Observed",
+                               varNames,
+                               sep = " "))
+    } else {
+        corMat <- pcOutput[[5]]
+        names(corMat) <- c(paste("Implied",
+                               varNames,
+                               sep = " "),
+                           paste("Observed",
+                               varNames,
+                               sep = " "))
+    }
+    plotCors(corMat)
 }
 
 #' Prints all estimates 

@@ -641,30 +641,28 @@ panelcoder <- function(data,
     ## Get average correlations for each lag
     ## Temporarily only run if using manifest-variable model
     if (info$x$indicators > 1) {
-        latent <- 1
+        latent <- TRUE
     } else {
-        latent <- 0
+        latent <- FALSE
     }
 
     if (info$gen$yVar == TRUE) {
         if (info$y$indicators > 1) {
-            latent <- 1
+            latent <- TRUE
         }
     }
     
-    if (latent == 0) {
-        if (info$gen$yVar == TRUE) {
-            varNames <- c(info$x$name, info$y$name)
-        } else {
-            varNames <- info$x$name
-        }
-        corSummary <- combineCors(data,
-                                  info,
-                                  program,
-                                  fit)
+    if (info$gen$yVar == TRUE) {
+        varNames <- c(info$x$name, info$y$name)
     } else {
-        corSummary <- NULL
+        varNames <- info$x$name
     }
+    corSummary <- combineCors(data,
+                              info,
+                              program,
+                              fit,
+                              latent)
+    
     pcOutput <- list(pcSum, info, model, fit, corSummary, modelCode)
     class(pcOutput) <- "pcOutput"
     print(pcSum)

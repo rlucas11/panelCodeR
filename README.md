@@ -115,7 +115,15 @@ The other options are described below (and in the R help functions).
 
 When you call the function, it will present a summary of some of the most important results from the model, but it is best to save the output of the command to an object (e.g., `pcOutput <- panelcoder(data)`. This object includes some information used when constructing the model, along with the lavaan or mplus code, the lavaan or mplus output, and information to plot correlations. The following functions help examine this information (these are not yet implemented, but will be soon).
 
-The function `panelPlot()` will plot the implied and actual stabilities for increasingly long lags (up to the number of waves in the data). This can show whether the selected model accurately reproduces the actual stability coefficients from the data. Models like the CLPM often underestimate the long-term stability of the variables. Currently, this only works when there is a single indicator per wave. Future versions will be able to do this when there are multiple indicators. 
+The function `panelPlot()` will plot the implied and actual stabilities for increasingly long lags (up to the number of waves in the data). This can show whether the selected model accurately reproduces the actual stability coefficients from the data. Models like the CLPM often underestimate the long-term stability of the variables. If the models include only one indicator per wave, then `panelPlot()` can be used on the output from a single `panelcoder()` command. If there are multiple indicators, then it is necessary to also estimate a measurement model and then pass both the results for the focal model and the measurement model to the `panelPlot()` command.
+
+```R
+clpm <- panelcoder(data, panelModel = "clpm")
+measurement <- panelcoder(data, panelModel = "measurement")
+panelPlot(clpm, measurement)
+```
+
+![Output from panelPlot() Command](images/panelPlot.png)
 
 The function `modelCode()` will produce a formatted version of the mplus or lavaan code representing the model. This could be used to check that the model was specified correctly, and it can also be copied, pasted, and modified to run models that can't be specified with panelCodeR. 
 
@@ -163,6 +171,10 @@ The ALT model is equivalent to the predetermined DPM with a linear slope.
 ### Latent Growth Model with Structured Residuals
 
 The LGM-SC model is equivalent to the RI-CLPM with a linear slope. 
+
+### Measurement Model
+
+If there are multiple indicators for one or both variables, it is possible to test a measurement model where each indicator loads on to its corresponding wave-specific latent trait and all wave-specific latent traits are allowed to correlate with one another. 
 
 ## Options and Features
 

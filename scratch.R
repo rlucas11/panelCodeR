@@ -14,7 +14,7 @@ dataI <- read_csv("testDataI.csv")
 data2 <- read_csv("testData2.csv")
 
 test <- panelcoder(dataI, panelModel="starts", program = "mplus", stationarity="full")
-test <- panelcoder(data2, panelModel="starts", program = "mplus")
+test <- panelcoder(data2, panelModel="starts", program = "mplus", stationarity = "full")
 testLavaan <- panelcoder(data2[c(1:6,11:16)], panelModel="starts", program = "lavaan", stationarity = "full")
 
 ## Measurement

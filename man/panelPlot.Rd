@@ -4,16 +4,19 @@
 \alias{panelPlot}
 \title{Plots implied and actual correlations}
 \usage{
-panelPlot(pcOutput)
+panelPlot(pcOutput, measurement = NULL)
 }
 \arguments{
 \item{pcOutput}{An object created from running the \code{panelcoder()} command.}
+
+\item{measurement}{An object created from running the \code{panelcoder()} command
+specifying a measurement model.}
 }
 \description{
 \code{panelPlot()} plots implied and actual stability coefficients for
 increasingly long lags for the variables analyzed by the panelcoder
 function. The function takes a panelcoder output object as an argument and
-then plots these stabilities. Currently, the model only works for observed-
-variable models. Eventually it will be able to handle latent-variable models,
-too.
+then plots these stabilities. If multiple indicators are used in the model,
+then it will necessary to pass the results of a measurement model to compare
+observed stabilities with implied stabilities.
 }
