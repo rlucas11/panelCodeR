@@ -2,21 +2,27 @@
 % Please edit documentation in R/compareModels.R
 \name{compareUnivariate}
 \alias{compareUnivariate}
-\title{Compares Univariate Variations of STARTS Model}
+\title{Compares Univariate Variations of Models Estimated Using panelCodeR}
 \usage{
-compareUnivariate(data, program = "mplus", title = NULL)
+compareUnivariate(
+  data,
+  program = "mplus",
+  models = list("starts", "riclpm", "arts", "sts", "clpm"),
+  title = NULL
+)
 }
 \arguments{
-\item{data}{Dataframe with multiwave data. Variables should be names 'x1' to
-'xw', where 'w' is the number of waves.}
+\item{data}{Dataframe with multiwave data.}
 
 \item{program}{Name of the program. Defaults to mplus as it is much quicker.}
+
+\item{models}{List of models to compare. Defaults to list("starts", "riclpm",
+"arts", "sts", "clpm"). Can also include "dpm_c", "dpm_p", "gclm", "alt",
+"lgm_sm", or "lgcm" (see panelCodeR documentation).}
 
 \item{title}{Optional character string to be attended to title of model.}
 }
 \description{
-\code{compareUnivariate()} produces code, runs, and compares variations of the
-Stable Trait, Autoregressive Trait, State Model. Specifically, it
-sequentially drops each component (stable trait, autoregressive trait, and
-state) and then uses BIC to identify the best model.
+\code{compareUnivariate()} produces code for, runs, and compares various models for
+analyzing panel data. It then uses BIC to identify the best model.
 }
