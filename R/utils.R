@@ -290,7 +290,13 @@ getInfo <- function(df) {
             slope.mean.se.y <- est[which(est$lhs == paste0("sl_", y.name) &
                 est$op == "~1"), "se"]
         }
+    } else {
+        slope.var.y <- 0
+        slope.var.se.y <- NA
+        slope.mean.y <- NA
+        slope.mean.se.y <- NA
     }
+    
 
 
     ## Correlations
