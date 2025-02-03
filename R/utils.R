@@ -1627,6 +1627,17 @@ parcel <- function(data,items,waves,parcels) {
     }
 
     temp <- create_matrix(max(pattern), length(pattern))
+
+    for (row in 1:nrow(temp)) {
+        for (col in 1:ncol(temp)) {
+            temp[row,col] <- itemList[temp[[row,col]],2]
+        }
+    }
+
+    itemMatrix <- as.data.frame(temp)
+    names(itemMatrix) <- paste("parcel", 1:parcels, sep="_")
+    print(itemMatrix)
+
     
     ##Create Parcels
     for (i in 1:waves){
