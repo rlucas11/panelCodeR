@@ -1611,7 +1611,7 @@ parcel <- function(data,items,waves,parcels) {
 
     ## Rank Items by Loading
     itemList <- data.frame(cbind(loadingAvg,matrix(1:items,items,1)))
-    itemList <- itemList[order(itemList$X1),]
+    itemList <- itemList[order(itemList$X1, decreasing = TRUE),]
 
     create_matrix <- function(rows, cols) {
         ## Initialize an empty matrix
