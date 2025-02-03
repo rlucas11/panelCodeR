@@ -192,9 +192,6 @@ There are three functions that are useful after you have run a model. `panelPlot
 
 ### Comparing Models
 
-> [!NOTE]
-> This only works for Mplus output.
-
 There is also one more function that can be used to compare a set of models. The function `compareModels` takes four arguments: `data` (the data file) `program` (currently defaults to mplus because it is faster than lavaan), a list of models that the `panelcoder()` command can run (default = list("starts", "riclpm", "arts", "sts", and "clpm"), and an optional title. It is also possible to include additional options to pass to the panelcoder command. The function then runs the models and creates a table with fit statistics and basic info about the variance decomposition and stability (most relevant for residualized models like the STARTS and RI-CLPM). 
 
 ## Modifying Model Code
