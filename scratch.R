@@ -8,7 +8,7 @@ library(tidyverse)
 
 load_all()
 
-## library(panelCodeR)
+library(panelCodeR)
 
 dataI <- read_csv("testDataI.csv")
 data2 <- read_csv("testData2.csv")
