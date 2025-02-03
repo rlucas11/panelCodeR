@@ -1,7 +1,7 @@
-#' Compares Univariate Variations of Models Estimated Using panelCodeR
+#' Run and Compare Models Estimated Using panelCodeR
 #'
-#' `compareUnivariate()` produces code for, runs, and compares various models for
-#' analyzing panel data. It then uses BIC to identify the best model. 
+#' `compareModels()` produces code for, runs, and compares various models for
+#' analyzing panel data. It produces a table of basic results. 
 #'
 #' @param data Dataframe with multiwave data. 
 #' @param program Name of the program. Defaults to mplus as it is much quicker.
@@ -9,15 +9,17 @@
 #'   "arts", "sts", "clpm"). Can also include "dpm_c", "dpm_p", "gclm", "alt",
 #'   "lgm_sm", or "lgcm" (see panelCodeR documentation). 
 #' @param title Optional character string to be attended to title of model.
+#' @param ... Options to pass to panelcoder function.
 #' @export
-compareUnivariate <- function(data,
-                              program = "mplus",
-                              models = list("starts",
-                                            "riclpm",
-                                            "arts",
-                                            "sts",
-                                            "clpm"),
-                              title=NULL) {
+compareModels <- function(data,
+                          program = "mplus",
+                          models = list("starts",
+                                        "riclpm",
+                                        "arts",
+                                        "sts",
+                                        "clpm"),
+                          title=NULL,
+                          ...) {
 
     compareOut <- list()
     for (i in 1:length(models)) {
@@ -26,7 +28,8 @@ compareUnivariate <- function(data,
                 data = data,
                 title = paste(title, models[[i]], sep = "_"),
                 panelModel = models[[i]],
-                program = program
+                program = program,
+                ...
             ),
             error = function(e) {
                 return(NA)
@@ -38,9 +41,25 @@ compareUnivariate <- function(data,
         if (!is.na(pcOut[1])) {
             compareOut[i] <- list(.collectResults(pcOut)[1, 1:12])
         } else {
-            compareOut[i] <- NA
+            compareOut[i] <- list(data.frame(
+                trait = NA,
+                ar = NA,
+                st = NA,
+                stab = NA,
+                aic = NA,
+                bic = NA,
+                chisq = NA,
+                df = NA,
+                cfi = NA,
+                tli = NA,
+                srmr = NA,
+                rmsea = NA
+            ))
         }
+        compareOut[[i]]$model <- models[[i]]
     }
+    compareOut <- do.call(rbind, compareOut)
+    print(compareOut)
     return(compareOut)
 }
 

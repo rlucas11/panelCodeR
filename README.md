@@ -114,6 +114,9 @@ The other options are described below (and in the R help functions).
 - `run` specifies whether to run the model or just to create and print the model code. 
 - `...` Additional options passed to lavaan. Default options are meanstructure=TRUE, missing = 'fiml', int.ov.free=TRUE, and int.lv.free=FALSE.
 
+> [!NOTE]
+> There is currently a bug where the code used to constrain variances to be positive does not always work correctly in mplus. If you are not getting results using the default settings (especially with the STARTS model), you could try setting `limits = FALSE` or using lavaan instead of mplus. 
+
 When you call the function, it will present a summary of some of the most important results from the model, but it is best to save the output of the command to an object (e.g., `pcOutput <- panelcoder(data)`. This object includes some information used when constructing the model, along with the lavaan or mplus code, the lavaan or mplus output, and information to plot correlations. The following functions help examine this information.
 
 The function `panelPlot()` will plot the implied and actual stabilities for increasingly long lags (up to the number of waves in the data). This can show whether the selected model accurately reproduces the actual stability coefficients from the data. Models like the CLPM often underestimate the long-term stability of the variables. If the models include only one indicator per wave, then `panelPlot()` can be used on the output from a single `panelcoder()` command. If there are multiple indicators, then it is necessary to also estimate a measurement model and then pass both the results for the focal model and the measurement model to the `panelPlot()` command.
@@ -192,7 +195,7 @@ There are three functions that are useful after you have run a model. `panelPlot
 > [!NOTE]
 > This only works for Mplus output.
 
-There is also one more function that can be used to compare a set of nested models for one variable (this is only available for Mplus right now; the function assumes that all variables are labelled "xw", where w is the wave number). The function `compareUnivariate` takes three arguments: `data` (the data file) `waves` (the number of waves), and `xWaves` (which waves actually exist). It then runs the univariate STARTS, ARTS, START, STS, and ART models. The univariate ART model corresponds to the bivariate CLPM; the univariate START model corresponds to the bivariate RI-CLPM model; the univariate ARTS model corresponds to the bivariate ARTS or factor CLPM model, and the univariate STARTS model corresponds to the bivariate STARTS model. The STS model is rarely used in a bivariate context, but it could be. 
+There is also one more function that can be used to compare a set of models. The function `compareModels` takes four arguments: `data` (the data file) `program` (currently defaults to mplus because it is faster than lavaan), a list of models that the `panelcoder()` command can run (default = list("starts", "riclpm", "arts", "sts", and "clpm"), and an optional title. It is also possible to include additional options to pass to the panelcoder command. The function then runs the models and creates a table with fit statistics and basic info about the variance decomposition and stability (most relevant for residualized models like the STARTS and RI-CLPM). 
 
 ## Modifying Model Code
 
