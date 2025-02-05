@@ -32,7 +32,7 @@
                           "dpm_c", "dpm_p",
                           "gclm",
                           "lgcm",
-                          "alt", "lgmsr",
+                          "alt", "lcmsr",
                           "measurement")) == FALSE) {
         stop("No model with that name")
     }
@@ -91,7 +91,7 @@
         slope <- slope
     }
 
-    if (panelModel == "lgmsr") {
+    if (panelModel == "lcmsr") {
         ar <- TRUE
         trait <- TRUE
         stability <- TRUE
@@ -410,7 +410,7 @@
 #'   should be very short. A warning is provided if these exceed 8 characters.
 #' @param title Title of analysis for mplus
 #' @param panelModel Specific model to run. Can be "starts"(the default),
-#'   "riclpm", "clpm", "arts", "sts", "dpm", "gclm", "alt", "lgmsr", or
+#'   "riclpm", "clpm", "arts", "sts", "dpm", "gclm", "alt", "lcmsr", or
 #'   "measurement".
 #' @param predetermined Logical value indicating whether to use a
 #'   "predetermined" version of a STARTS variant (see Andersen, 2022). This
@@ -548,7 +548,7 @@ panelcoder <- function(data,
         }
     }
 
-    if ((panelModel == "alt" | panelModel == "lgmsr") & slope != "linear") {
+    if ((panelModel == "alt" | panelModel == "lcmsr") & slope != "linear") {
         slope = "linear"
         warning("Slope set to linear")
     }

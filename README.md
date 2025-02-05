@@ -16,7 +16,7 @@ This R package generates and runs lavaan and mplus code for models for analyzing
   - Predetermined DPM
 * Latent Growth Curve Model (LGCM)
 * Autoregressive Latent Trajectory Model (ALT)
-* Latent Growth Model with Structured Residuals (LGM-SC)
+* Latent Curve Model with Structured Residuals (LCM-SC)
 * Simple measurement model (for data with multiple indicators per wave)
 
 Models can include multiple indicators per wave. In addition, if stationarity is imposed, missing waves can be included by modeling phantom variables (which the package handles automatically). "State" variance (as in the state component from the STARTS model) can  also be added to models that do not have it by default (e.g., the DPM or GLCM). 
@@ -77,7 +77,7 @@ So, for example, to get output for a STARTS model from lavaan with all default s
 modelOutput <- panelcoder(data)
 ```
 
-To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", "sts", "dpm_c", "dpm_p", "gclm", "lgcm", "alt", "lgmsr" or "measurement" model. 
+To change which model is run, use the `panelModel` option to specify whether to run the "starts", "riclpm", "clpm", "arts", "sts", "dpm_c", "dpm_p", "gclm", "lgcm", "alt", "lcmsr" or "measurement" model. 
 
 ```R
 modelOutput <- panelcoder(data, panelModel = "riclpm")
@@ -172,9 +172,9 @@ This package can also create and run code for latent growth curve models. To spe
 
 The ALT model is equivalent to the predetermined DPM with a linear slope. 
 
-### Latent Growth Model with Structured Residuals
+### Latent Curve Model with Structured Residuals
 
-The LGM-SC model is equivalent to the RI-CLPM with a linear slope. 
+The LCM-SC model is equivalent to the RI-CLPM with a linear slope. 
 
 ### Measurement Model
 
