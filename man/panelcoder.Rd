@@ -80,7 +80,8 @@ between item-specific residual. Defaults to FALSE.}
 variance to be equal across waves when there are multiple indicators.}
 
 \item{slope}{String variable indicating what type of slope to specify in
-models that include a slope. Can be "linear" or "basis".}
+models that include a slope. Can be "none," (the default)"linear, ""basis,"
+or "centered."}
 
 \item{state}{Logical value indicating whether to include a state component.
 This is automatically included in some models (e.g., STARTS), but this
@@ -103,12 +104,12 @@ variances to be equal across waves. Defaults to TRUE.}
 the same item to be equal across waves.}
 
 \item{mplusAnalysis}{Quoted text. Specify ANLYSIS command for mplus. Defaults
-to "MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;". If you change this, including
+to "MODEL=NOCOVARIANCES;\nCOVERAGE=.001;". If you change this, including
 "MODEL=NOCOVARIANCES" is highly recommended given the way the model is
 specified.}
 
 \item{mplusOutput}{Quoted text. Specify OUTPUT command for mplus. Defaults to
-"stdyx; \\n cinterval; \\n",}
+"stdyx; \n cinterval; \n",}
 
 \item{mplusDirectory}{Quoted text. Specify directory for mplus input and
 output files. This directory must already exist before running the command.
