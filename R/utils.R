@@ -1756,25 +1756,26 @@ gen_starts <- function(n=500,      # N to generate
 
     ## Initialize Matrices
     lambda <- matrix(0, nrow = 2 * nwaves, ncol = 2 + 2 * nwaves,
-                     dimnames = list(c(paste0("x",1:nwaves),
-                                       paste0("y",1:nwaves)),
-                                     c("ri_x", "ri_y", paste0("x",1:nwaves),
-                                       paste0("y",1:nwaves))))
+                     dimnames = list(c(paste("x",1:nwaves, sep = "_"),
+                                       paste("y",1:nwaves, sep = "_")),
+                                     c("ri_x", "ri_y",
+                                       paste("x",1:nwaves, sep = "_"),
+                                       paste("y",1:nwaves, sep = "_"))))
     theta <- matrix(0, nrow = 2 * nwaves, ncol = 2 * nwaves,
-                    dimnames= list(c(paste0("x", 1:nwaves),
-                                    paste0("y", 1:nwaves)),
-                                    c(paste0("x", 1:nwaves),
-                                    paste0("y", 1:nwaves))))
+                    dimnames= list(c(paste("x", 1:nwaves, sep = "_"),
+                                    paste("y", 1:nwaves, sep = "_")),
+                                    c(paste("x", 1:nwaves, sep = "_"),
+                                    paste("y", 1:nwaves, sep = "_"))))
     psi <- matrix(0, nrow = 2 + 2 * nwaves, ncol = 2 + 2 * nwaves,
-                  dimnames = list(c("ri_x", "ri_y", paste0("x",1:nwaves),
-                                    paste0("y", 1:nwaves)),
-                                  c("ri_x", "ri_y", paste0("x",1:nwaves),
-                                    paste0("y", 1:nwaves))))
+                  dimnames = list(c("ri_x", "ri_y", paste("x",1:nwaves, sep = "_"),
+                                    paste("y", 1:nwaves, sep = "_")),
+                                  c("ri_x", "ri_y", paste("x",1:nwaves, sep = "_"),
+                                    paste("y", 1:nwaves, sep = "_"))))
     beta <- matrix(0, nrow = 2 + 2 * nwaves, ncol = 2 + 2 * nwaves,
-                   dimnames = list(c("ri_x", "ri_y", paste0("x",1:nwaves),
-                                     paste0("y",1:nwaves)),
-                                   c("ri_x", "ri_y", paste0("x",1:nwaves),
-                                     paste0("y",1:nwaves))))
+                   dimnames = list(c("ri_x", "ri_y", paste("x",1:nwaves, sep = "_"),
+                                     paste("y",1:nwaves, sep = "_")),
+                                   c("ri_x", "ri_y", paste("x",1:nwaves, sep = "_"),
+                                     paste("y",1:nwaves, sep = "_"))))
     ##
     ## Fill in Matrices
     ## lambda
