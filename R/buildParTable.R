@@ -2127,6 +2127,9 @@
                         slope = "none",
                         measurement = FALSE) {
 
+    ## Check if bivariate or univariate
+    yVar <- info$gen$yVar
+
     if (dpm_c == TRUE | dpm_p == TRUE) {
         trait <- FALSE
     }
@@ -2245,19 +2248,42 @@
     )
 
     ## Get component, variable, and wave info for LHS and RHS
-    latentVarInfo <- varNamesInfo[which(varNamesInfo$varName1 == "l" |
-        varNamesInfo$varName1 == "a" |
-        varNamesInfo$varName1 == "t" |
-        varNamesInfo$varName1 == "s" |
-        varNamesInfo$varName1 == "i" |
-        varNamesInfo$varName1 == "sl"), ]
+    varNamesInfo$latent <- ifelse(
+        varNamesInfo$varName2 == info$x$name &
+            (varNamesInfo$varName1 == "l" |
+                varNamesInfo$varName1 == "a" |
+                varNamesInfo$varName1 == "t" |
+                varNamesInfo$varName1 == "s" |
+                varNamesInfo$varName1 == "i" |
+                varNamesInfo$varName1 == "sl"), 1, NA
+    )
+
+    if (yVar == TRUE) {
+        varNamesInfo$latent <- ifelse(
+            varNamesInfo$varName2 == info$y$name &
+                (varNamesInfo$varName1 == "l" |
+                    varNamesInfo$varName1 == "a" |
+                    varNamesInfo$varName1 == "t" |
+                    varNamesInfo$varName1 == "s" |
+                    varNamesInfo$varName1 == "i" |
+                    varNamesInfo$varName1 == "sl"), 1, NA
+        )
+    }
+        
+    ## latentVarInfo <- varNamesInfo[which(varNamesInfo$varName1 == "l" |
+    ##     varNamesInfo$varName1 == "a" |
+    ##     varNamesInfo$varName1 == "t" |
+    ##     varNamesInfo$varName1 == "s" |
+    ##     varNamesInfo$varName1 == "i" |
+    ##     varNamesInfo$varName1 == "sl"), ]
+    latentVarInfo <- varNamesInfo[which(varNamesInfo$latent == 1), 1:4]
     names(latentVarInfo) <- c("varName", "component", "variable", "wave")
     latentVarInfo$indicator <- NA
-    if(info$gen$yVar==TRUE) {
+    if (info$gen$yVar == TRUE) {
         observedVarInfo <- varNamesInfo[which(varNamesInfo$varName1 == info$x$name |
-                                              varNamesInfo$varName1 == info$y$name), ]
+            varNamesInfo$varName1 == info$y$name), 1:4]
     } else {
-        observedVarInfo <- varNamesInfo[which(varNamesInfo$varName1 == info$x$name),]
+        observedVarInfo <- varNamesInfo[which(varNamesInfo$varName1 == info$x$name), 1:4]
     }
     names(observedVarInfo) <- c("varName", "variable", "wave", "indicator")
     observedVarInfo$component <- NA

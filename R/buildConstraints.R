@@ -363,24 +363,26 @@
 
 
 .constrainStateCors <- function(parTable, info, zero = FALSE) {
-    waves <- info$gen$maxWaves
-    for (w in 2:waves) {
-        cVals <- list(
-            parTable,
-            paste0("cov_s", w),
-            "==",
-            "cov_s1"
-        )
-        parTable <- do.call(.buildConstraint, cVals)
-    }
-    if (zero==TRUE) {
-        cVals <- list(
-            parTable,
-            "cov_s1",
-            "==",
-            0
-        )
-        parTable <- do.call(.buildConstraint, cVals)
+    if (info$gen$yVar == TRUE) {
+        waves <- info$gen$maxWaves
+        for (w in 2:waves) {
+            cVals <- list(
+                parTable,
+                paste0("cov_s", w),
+                "==",
+                "cov_s1"
+            )
+            parTable <- do.call(.buildConstraint, cVals)
+        }
+        if (zero==TRUE) {
+            cVals <- list(
+                parTable,
+                "cov_s1",
+                "==",
+                0
+            )
+            parTable <- do.call(.buildConstraint, cVals)
+        }
     }
     return(parTable)
 }

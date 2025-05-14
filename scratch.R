@@ -13,7 +13,22 @@ library(panelCodeR)
 dataI <- read_csv("testDataI.csv")
 data2 <- read_csv("testData2.csv")
 
-test <- panelcoder(dataI, panelModel="starts", program = "mplus", stationarity="full")
+test <- panelcoder(dataI,
+                   panelModel="starts",
+                   program = "mplus",
+                   stationarity="full",
+                   stateCors = TRUE,
+                   residCors = TRUE)
+
+test <- panelcoder(dataI[1:21],
+                   panelModel="starts",
+                   program = "mplus",
+                   stationarity="full",
+                   stateCors = TRUE,
+                   residCors = TRUE)
+
+
+
 test <- panelcoder(data2, panelModel="starts", program = "mplus", stationarity = "full")
 testLavaan <- panelcoder(data2[c(1:6,11:16)], panelModel="starts", program = "lavaan", stationarity = "full")
 
