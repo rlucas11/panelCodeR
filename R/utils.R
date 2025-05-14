@@ -1500,7 +1500,7 @@ panelPlot <- function(pcOutput, measurement=NULL) {
             mCorMat <- measurement[[5]][1:2]
         } else {
             corMat <- pcOutput[[5]][1]
-            mCorMat <- measurement[[5]][1:2]
+            mCorMat <- measurement[[5]][1]
         }
         corMat <- cbind(corMat,mCorMat)
         names(corMat) <- c(paste("Implied",
