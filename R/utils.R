@@ -1743,16 +1743,16 @@ gen_starts <- function(n=500,      # N to generate
     ## Stationarity Constraints
     ifelse(x==0, wxr <- 0, wxr <- (1-stab_x^2)*x - 2*stab_x*xy*cor_xy - xy^2*y)
     ifelse(y==0, wyr <- 0, wyr <- (1-stab_y^2)*y - 2*stab_y*yx*cor_xy - yx^2*x)
-    ## ifelse(x==0 | y==0,
-    ##        cor_xyr <- 0,
-    ##        cor_xyr <- (1-stab_x*stab_y-xy*yx)*cor_xy - stab_x*yx*x - stab_y*xy*y)
-    ifelse(x == 0 | y == 0,
-        cor_xyr <- 0,
-        cor_xyr <- cor_xy - cor_xy * (stab_x * stab_y) -
-            cor_xy * (xy * yx) -
-            (stab_x * yx * wxr) -
-            (stab_y * xy * wyr)
-    )
+    ifelse(x==0 | y==0,
+           cor_xyr <- 0,
+           cor_xyr <- (1-stab_x*stab_y-xy*yx)*cor_xy - stab_x*yx*x - stab_y*xy*y)
+    ## ifelse(x == 0 | y == 0,
+    ##     cor_xyr <- 0,
+    ##     cor_xyr <- cor_xy - cor_xy * (stab_x * stab_y) -
+    ##         cor_xy * (xy * yx) -
+    ##         (stab_x * yx * wxr) -
+    ##         (stab_y * xy * wyr)
+    ## )
 
     ## Initialize Matrices
     lambda <- matrix(0, nrow = 2 * nwaves, ncol = 2 + 2 * nwaves,
