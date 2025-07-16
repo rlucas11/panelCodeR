@@ -2,6 +2,7 @@
                         panelModel = "starts",
                         predetermined = FALSE,
                         crossLag = TRUE,
+                        lags = 1,
                         traitCors = TRUE,
                         arCors = TRUE,
                         stateCors = FALSE,
@@ -20,6 +21,7 @@
     ## Collect basic info
     info <- getInfo(data)
 
+    ## Stop if problematic specification
     if (info$x$indicators == 1 & panelModel == "measurement") {
         stop("Measurement model not run when there is only 1 indicator")
     }
@@ -53,8 +55,7 @@
     if (panelModel == "dpm_c" & slope != "none") {
         stop("Bivariate Constrained DPM model is not yet correctly specified when slopes are included. Either use the Predetermined DPM or manually modify code to get desired results.")
     }
-               
-    
+
     if (panelModel == "starts") {
         ar <- TRUE
         trait <- TRUE
@@ -281,6 +282,7 @@
         trait = trait,
         state = state,
         stability = stability,
+        lags = lags,
         crossLag = crossLag,
         traitCors = traitCors,
         arCors = arCors,
@@ -419,6 +421,10 @@
 #'   "mplus"
 #' @param crossLag Logical value indicating whether to include cross-lagged
 #'   paths. Defaults to `TRUE`.
+#' @param lags Numeric value indicating the number of lags to include for
+#'   stability coefficients and cross-lagged paths. Defaults to 1. Note that
+#'   lags greater than 1 cannot yet be included with random intercepts. Also,
+#'   full stationarity is not yet implemented with lags greater than 1.
 #' @param ma Logical value indicating whether to include moving average
 #'   components in the GCLM. Defaults to `FALSE`.
 #' @param clma Logical value indicating whether to include cross-lagged moving
@@ -479,6 +485,7 @@ panelcoder <- function(data,
                        predetermined = FALSE,
                        program = "lavaan",
                        crossLag = TRUE,
+                       lags = 1,
                        ma = FALSE,
                        clma = FALSE,
                        traitCors = TRUE,
@@ -553,11 +560,23 @@ panelcoder <- function(data,
         slope = "linear"
         warning("Slope set to linear")
     }
+
+    if (lags > 1 &
+        panelModel %in% c("starts", "riclpm", "sts", "gclm", "lgcm", "alt", "lcmsr",
+                          "dpm_c", "dpm_p")) {
+        stop("Lags greater than 1 not implemented when there is a random intercept. Choose a different model.")
+    }
+
+    if (lags > 1 & stationarity == "full") {
+        stop("Stationarity not implemented with lags greater than 1.")
+    }
+
     
     model <- .buildModel(data = data,
                          panelModel = panelModel,
                          predetermined = predetermined,
                          crossLag = crossLag,
+                         lags = lags,
                          ma = ma,
                          clma = clma,
                          stateCors = stateCors,

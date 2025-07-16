@@ -838,3 +838,19 @@ testStarts <- panelcoder(data2, panelModel="starts", program="mplus")
 
 test2 <- panelcoder(data2, panelModel="gclm", program="mplus", ma=TRUE)
 test2 <- panelcoder(data2, panelModel="gclm", program="mplus", ma=TRUE, clma=TRUE)
+
+test <- panelcoder(data2, panelModel = "clpm", program = "mplus", stationarity = "full")
+test2 <- panelcoder(data2, panelModel = "clpm", lags = 2, program = "mplus")
+test3 <- panelcoder(data2, panelModel = "clpm", lags = 3, program = "mplus")
+test4 <- panelcoder(data2, panelModel = "clpm", lags = 4, program = "mplus")
+test5 <- panelcoder(data2, panelModel = "clpm", lags = 5, program = "mplus")
+
+
+testb <- panelcoder(data2, panelModel = "clpm", stationarity = "none", program = "mplus")
+test2b <- panelcoder(data2, panelModel = "clpm", stationarity = "none", lags = 2, program = "mplus")
+test3b <- panelcoder(data2, panelModel = "clpm", lags = 3, program = "mplus")
+test4b <- panelcoder(data2, panelModel = "clpm", lags = 4, program = "mplus")
+test5b <- panelcoder(data2, panelModel = "clpm", stationarity = "none", lags = 5, program = "mplus")
+
+starts <- panelcoder(data2, program = "mplus", stationarity = "full")
+riclpm <- panelcoder(data2, panelModel = "riclpm", program = "mplus", stationarity = "full")

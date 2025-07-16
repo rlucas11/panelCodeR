@@ -1082,6 +1082,77 @@
     return(finalParTable)  
 }
 
+
+.buildLags <- function(info, lags) {
+    ## Check if bivariate or univariate
+    yVar <- info$gen$yVar
+
+    xName <- info$x$name
+    if (yVar == TRUE) {
+        yName <- info$y$name
+    }
+
+    ## Create initial table
+    initialParTable <- data.frame(
+        lhs = character(),
+        op = character(),
+        rhs = character(),
+        user = integer(),
+        block = integer(),
+        group = integer(),
+        free = integer(),
+        ustart = numeric(),
+        exo = integer(),
+        label = character()
+    )
+
+    if (lags > 1) {
+        for (l in 2:lags) {
+            for (w in info$x$waves[-c(1:l)]) {
+                lagParTable <- data.frame(
+                    lhs = paste("a", xName, w, sep = "_"),
+                    op = "~",
+                    rhs = paste("a", xName, (w - l), sep = "_"),
+                    user = 1,
+                    block = 1,
+                    group = 1,
+                    free = 1,
+                    ustart = NA,
+                    exo = 0,
+                    label = paste0(strrep("a", l), w)
+                )
+                initialParTable <- rbind(
+                    initialParTable,
+                    lagParTable
+                )
+            }
+
+            for (w in info$y$waves[-c(1:l)]) {
+                stabParTable <- data.frame(
+                    lhs = paste("a", yName, w, sep = "_"),
+                    op = "~",
+                    rhs = paste("a", yName, (w - l), sep = "_"),
+                    user = 1,
+                    block = 1,
+                    group = 1,
+                    free = 1,
+                    ustart = NA,
+                    exo = 0,
+                    label = paste0(strrep("b", l), w)
+                )
+                initialParTable <- rbind(
+                    initialParTable,
+                    stabParTable
+                )
+            }
+            finalParTable <- initialParTable[order(initialParTable$op), ]
+            finalParTable$from <- "lags"
+        }
+        return(finalParTable)  
+    }
+}
+
+
 .buildCrossLag <- function(info) {
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
@@ -1142,6 +1213,72 @@
         return(finalParTable)
     }
 }
+
+.buildCrossLagN <- function(info, lags) {
+    ## Check if bivariate or univariate
+    yVar <- info$gen$yVar
+    
+    xName <- info$x$name
+    if (yVar == TRUE) {
+        yName <- info$y$name
+    }
+
+    if (lags > 1) {
+        if (yVar == TRUE) {
+            ## Create initial table
+            initialParTable <- data.frame(
+                lhs = character(),
+                op = character(),
+                rhs = character(),
+                user = integer(),
+                block = integer(),
+                group = integer(),
+                free = integer(),
+                ustart = numeric(),
+                exo = integer(),
+                label = character()
+            )
+            
+            for (l in 2:lags) {
+                for (w in info$x$waves[-c(1:l)]) {
+                    clN1ParTable <- data.frame(
+                        lhs = paste("a", xName, w, sep = "_"),
+                        op = "~",
+                        rhs = paste("a", yName, (w - l), sep = "_"),
+                        user = 1,
+                        block = 1,
+                        group = 1,
+                        free = 1,
+                        ustart = NA,
+                        exo = 0,
+                        label = paste0(strrep("d", l), w)
+                    )
+                    clN2ParTable <- data.frame(
+                        lhs = paste("a", yName, w, sep = "_"),
+                        op = "~",
+                        rhs = paste("a", xName, (w - l), sep = "_"),
+                        user = 1,
+                        block = 1,
+                        group = 1,
+                        free = 1,
+                        ustart = NA,
+                        exo = 0,
+                        label = paste0(strrep("c", l), w)
+                    )
+                    initialParTable <- rbind(
+                        initialParTable,
+                        clN1ParTable,
+                        clN2ParTable
+                    )
+                }
+            }
+            finalParTable <- initialParTable[order(initialParTable$op), ]
+            finalParTable$from <- "clN"
+        }
+        return(finalParTable)
+    }
+}
+
 
 
 .buildMa <- function(info) {
@@ -2110,6 +2247,7 @@
 
 .buildTable <- function(info,
                         ar = TRUE,
+                        lags = 1,
                         trait = TRUE,
                         state = TRUE,
                         stability = TRUE,
@@ -2164,7 +2302,9 @@
         dpmTrait = .buildDpmTrait(info),
         gclmTrait = .buildGclmTrait(info),
         stability = .buildStability(info),
+        lags = .buildLags(info, lags),
         cl = .buildCrossLag(info),
+        clN = .buildCrossLagN(info, lags),
         ma = .buildMa(info),
         clma = .buildClMa(info),
         state = .buildState(info),
@@ -2200,8 +2340,14 @@
     if (stability == FALSE) {
         components$stability <- NULL
     }
+    if (lags <= 1) {
+        components$lags <- NULL
+    }
     if (ar == FALSE | measurement == TRUE) {
         components$cl <- NULL
+    }
+    if (lags <= 1) {
+        components$clN <- NULL
     }
     if (ma == FALSE) {
         components$ma <- NULL
@@ -2260,22 +2406,17 @@
 
     if (yVar == TRUE) {
         varNamesInfo$latent <- ifelse(
-            varNamesInfo$varName2 == info$y$name &
-                (varNamesInfo$varName1 == "l" |
-                    varNamesInfo$varName1 == "a" |
-                    varNamesInfo$varName1 == "t" |
-                    varNamesInfo$varName1 == "s" |
-                    varNamesInfo$varName1 == "i" |
-                    varNamesInfo$varName1 == "sl"), 1, NA
+        (varNamesInfo$varName2 == info$y$name |
+         varNamesInfo$varName2 == info$x$name) &
+        (varNamesInfo$varName1 == "l" |
+         varNamesInfo$varName1 == "a" |
+         varNamesInfo$varName1 == "t" |
+         varNamesInfo$varName1 == "s" |
+         varNamesInfo$varName1 == "i" |
+         varNamesInfo$varName1 == "sl"), 1, NA
         )
     }
         
-    ## latentVarInfo <- varNamesInfo[which(varNamesInfo$varName1 == "l" |
-    ##     varNamesInfo$varName1 == "a" |
-    ##     varNamesInfo$varName1 == "t" |
-    ##     varNamesInfo$varName1 == "s" |
-    ##     varNamesInfo$varName1 == "i" |
-    ##     varNamesInfo$varName1 == "sl"), ]
     latentVarInfo <- varNamesInfo[which(varNamesInfo$latent == 1), 1:4]
     names(latentVarInfo) <- c("varName", "component", "variable", "wave")
     latentVarInfo$indicator <- NA
