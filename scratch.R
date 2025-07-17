@@ -30,6 +30,7 @@ test <- panelcoder(dataI[1:21],
 
 
 test <- panelcoder(data2, panelModel="starts", program = "mplus", stationarity = "full")
+
 testLavaan <- panelcoder(data2[c(1:6,11:16)], panelModel="starts", program = "lavaan", stationarity = "full")
 
 ## Measurement
@@ -71,16 +72,16 @@ data <- gen_starts(
     nwaves = waves, # Number of waves
     ri_x = 1, # Random intercept variance for X
     ri_y = 1, # Random intercept variance for Y
-    cor_i = .5, # Correlation between intercepts (as correlation)
+    cor_i = .7, # Correlation between intercepts (as correlation)
     x = 1, # AR variance for X
     y = 1, # AR variance for Y
     stab_x = .5, # Stability of X
     stab_y = .5, # Stability of Y
-    yx = .2, # Cross lag (Y regressed on X)
-    xy = .1, # Cross lag (X regressed on Y)
-    cor_xy = .5, # Correlation between X and Y (as correlation)
-    xr = 1, # Measurement error for X
-    yr = 1 # Measurement error for Y
+    yx = 0, # Cross lag (Y regressed on X)
+    xy = 0, # Cross lag (X regressed on Y)
+    cor_xy = .7, # Correlation between X and Y (as correlation)
+    xr = 0, # Measurement error for X
+    yr = 0 # Measurement error for Y
 )
 
 ## Create data frame with correctly labeled variables
