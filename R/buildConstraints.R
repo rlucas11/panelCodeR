@@ -41,6 +41,41 @@
     return(parTable)
 }
 
+## Constrain stability for AR part of model
+.constrainLags <- function(parTable, info, lags) {
+    waves <- info$gen$maxWaves
+    if (waves > 3) {
+        if (lags > 2) {
+            for (l in 2:lags) {
+                for (w in (lags + 1):(waves)) {
+                    labelStemX <- strrep("a", l)
+                    cVals <- list(
+                        parTable,
+                        paste0(labelStemX, w),
+                        "==",
+                        paste0(labelStemX, lags)
+                    )
+                    parTable <- do.call(.buildConstraint, cVals)
+                }
+                if (info$gen$yVar == TRUE) {
+                    labelStemY <- strrep("b", l)
+                    for (w in (lags + 1) :(waves)) {
+                        cVals <- list(
+                            parTable,
+                            paste0(labelStemY, w),
+                            "==",
+                            paste0(labelStemY, lags)
+                        )
+                        parTable <- do.call(.buildConstraint, cVals)
+                    }
+                }
+            }
+        }
+    }
+    return(parTable)
+}
+
+
 
 ## Constrain stability for Moving Average part of model
 .constrainMa <- function(parTable, info) {
@@ -141,6 +176,39 @@
     }
     return(parTable)
 }
+
+## Constrain cross-lagged paths
+.constrainClLags <- function(parTable, info, lags) {
+    waves <- info$gen$maxWaves
+    if (waves > 2) {
+        if (lags > 2) {
+            for (l in 2:lags) {
+                for (w in (lags + 1):waves) {
+                    labelStemX <- strrep("c", l)
+                    cVals <- list(
+                        parTable,
+                        paste0(labelStemX, w),
+                        "==",
+                        paste0(labelStemX, lags)
+                    )
+                    parTable <- do.call(.buildConstraint, cVals)
+                }
+                for (w in (lags + 1):waves) {
+                    labelStemY <- strrep("d", l)
+                    cVals <- list(
+                        parTable,
+                        paste0(labelStemY, w),
+                        "==",
+                        paste0(labelStemY, lags)
+                    )
+                    parTable <- do.call(.buildConstraint, cVals)
+                }
+            }
+        }
+    }
+    return(parTable)
+}
+
 
 ## Impose stationarity on AR part of model.
 .arStationarity <- function(parTable, info, constrainCor=TRUE, zero=FALSE) {

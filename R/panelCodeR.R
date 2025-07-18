@@ -306,6 +306,12 @@
         model <- .constrainStability(model, info)
     }
 
+    if (ar == TRUE & (stationarity ==  "paths" | stationarity == "full") &
+        lags > 1) {
+        model <- .constrainLags(model, info, lags)
+    }
+
+    
     if (ma == TRUE) {
         model <- .constrainMa(model, info)
     }
@@ -332,6 +338,17 @@
             model <- .constrainCl(model, info, zero)
         }
     }
+
+    ## Constrain lags greater than 1 for cross-lags
+    if (info$gen$yVar == TRUE &
+        ar == TRUE &
+        measurement == FALSE &
+        lags > 1 &
+        (stationarity == "paths" | stationarity == "full")) {
+        model <- .constrainClLags(model, info, lags)
+    }
+    
+        
 
     ## Impose stationarity if requested
     if (stationarity == "full" &
