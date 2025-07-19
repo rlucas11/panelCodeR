@@ -303,15 +303,9 @@
 
     ## Build final model based on options
     if (ar == TRUE & (stationarity ==  "paths" | stationarity == "full")) {
-        model <- .constrainStability(model, info)
+        model <- .constrainStability(model, info, lags)
     }
 
-    if (ar == TRUE & (stationarity ==  "paths" | stationarity == "full") &
-        lags > 1) {
-        model <- .constrainLags(model, info, lags)
-    }
-
-    
     if (ma == TRUE) {
         model <- .constrainMa(model, info)
     }
@@ -332,23 +326,12 @@
             } else {
                 zero <- FALSE
             }
-            model <- .constrainCl(model, info, zero)
+            model <- .constrainCl(model, info, zero, lags)
         } else if (stationarity == "none" & crossLag == FALSE) {
             zero <- TRUE
-            model <- .constrainCl(model, info, zero)
+            model <- .constrainCl(model, info, zero, lags)
         }
     }
-
-    ## Constrain lags greater than 1 for cross-lags
-    if (info$gen$yVar == TRUE &
-        ar == TRUE &
-        measurement == FALSE &
-        lags > 1 &
-        (stationarity == "paths" | stationarity == "full")) {
-        model <- .constrainClLags(model, info, lags)
-    }
-    
-        
 
     ## Impose stationarity if requested
     if (stationarity == "full" &
