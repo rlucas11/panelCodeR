@@ -11,6 +11,7 @@ panelcoder(
   predetermined = FALSE,
   program = "lavaan",
   crossLag = TRUE,
+  lags = 1,
   ma = FALSE,
   clma = FALSE,
   traitCors = TRUE,
@@ -57,6 +58,11 @@ option is not used for the DPM or GCLM.}
 
 \item{crossLag}{Logical value indicating whether to include cross-lagged
 paths. Defaults to \code{TRUE}.}
+
+\item{lags}{Numeric value indicating the number of lags to include for
+stability coefficients and cross-lagged paths. Defaults to 1. Note that
+lags greater than 1 cannot yet be included with random intercepts. Also,
+full stationarity is not yet implemented with lags greater than 1.}
 
 \item{ma}{Logical value indicating whether to include moving average
 components in the GCLM. Defaults to \code{FALSE}.}

@@ -44,7 +44,7 @@
 ## Constrain stability for AR part of model
 .constrainStability <- function(parTable, info, lags) {
     waves <- info$gen$maxWaves
-    if (waves > 2) {
+    if (waves > 2 & lags < (waves - 1)) {
         for (l in 1:lags) {
             for (w in (lags + 2):(waves)) {
                 labelStemX <- paste("a", l, sep = "_")
@@ -132,7 +132,7 @@
 ## Constrain cross-lagged paths
 .constrainCl <- function(parTable, info, zero, lags) {
     waves <- info$gen$maxWaves
-    if (waves > 2) {
+    if (waves > 2 & lags < (waves - 1)) {
         if (zero == FALSE) {
             for (l in 1:lags) {
                 for (w in (lags + 2):waves) {
