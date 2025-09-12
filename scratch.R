@@ -838,3 +838,37 @@ testStarts <- panelcoder(data2, panelModel="starts", program="mplus")
 
 test2 <- panelcoder(data2, panelModel="gclm", program="mplus", ma=TRUE)
 test2 <- panelcoder(data2, panelModel="gclm", program="mplus", ma=TRUE, clma=TRUE)
+
+
+################################################################################
+## Test data frame
+################################################################################
+
+library(panelCodeR)
+library(tidyverse)
+
+waves <- 7
+indicators <- 3
+
+data <- gen_starts(
+    n = 1000, # N to generate
+    nwaves = waves, # Number of waves
+    ri_x = 1, # Random intercept variance for X
+    ri_y = 1, # Random intercept variance for Y
+    cor_i = .5, # Correlation between intercepts (as correlation)
+    x = 1, # AR variance for X
+    y = 1, # AR variance for Y
+    stab_x = .5, # Stability of X
+    stab_y = .5, # Stability of Y
+    yx = .2, # Cross lag (Y regressed on X)
+    xy = .1, # Cross lag (X regressed on Y)
+    cor_xy = .5, # Correlation between X and Y (as correlation)
+    xr = 1, # Measurement error for X
+    yr = 1 # Measurement error for Y
+)
+
+
+names(data) <- c(paste("X", 1:7, sep = "_"),
+                 paste("Y", 1:7, sep = "_"))
+
+write_csv(data, "test_data1.csv")
