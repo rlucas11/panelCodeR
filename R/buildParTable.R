@@ -2260,13 +2260,14 @@
 
     if (yVar == TRUE) {
         varNamesInfo$latent <- ifelse(
-            varNamesInfo$varName2 == info$y$name &
-                (varNamesInfo$varName1 == "l" |
-                    varNamesInfo$varName1 == "a" |
-                    varNamesInfo$varName1 == "t" |
-                    varNamesInfo$varName1 == "s" |
-                    varNamesInfo$varName1 == "i" |
-                    varNamesInfo$varName1 == "sl"), 1, NA
+        (varNamesInfo$varName2 == info$y$name |
+         varNamesInfo$varName2 == info$x$name) &
+        (varNamesInfo$varName1 == "l" |
+         varNamesInfo$varName1 == "a" |
+         varNamesInfo$varName1 == "t" |
+         varNamesInfo$varName1 == "s" |
+         varNamesInfo$varName1 == "i" |
+         varNamesInfo$varName1 == "sl"), 1, NA
         )
     }
         

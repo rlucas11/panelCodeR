@@ -30,7 +30,9 @@ test <- panelcoder(dataI[1:21],
 
 
 test <- panelcoder(data2, panelModel="starts", program = "mplus", stationarity = "full")
-testLavaan <- panelcoder(data2[c(1:6,11:16)], panelModel="starts", program = "lavaan", stationarity = "full")
+
+testLavaan <- panelcoder(data2, panelModel="starts", program = "lavaan", stationarity = "full")
+
 
 ## Measurement
 testM <- panelcoder(dataI, panelModel = "measurement", program = "lavaan")
