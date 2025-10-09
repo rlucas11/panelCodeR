@@ -1,3 +1,14 @@
+library(tidyverse)
+
+load_all()
+
+## library(panelCodeR)
+
+dataI <- read_csv("tests/testDataI.csv")
+data2 <- read_csv("tests/testData2.csv")
+data <- read_csv("tests/test_data.csv")
+
+
 ################################################################################
 ## Create test data
 ################################################################################
@@ -100,3 +111,16 @@ m_arts <- panelcoder(data = data,
                      panelModel = "arts",
                      program = "mplus",
                      stationarity = "full")
+
+
+################################################################################
+## Baseline Models
+################################################################################
+
+starts <- panelcoder(data, panelModel = "starts", program = "mplus")
+starts2 <- panelcoder(data, panelModel = "starts", program = "mplus", stationarity = "full")
+
+clpm <- panelcoder(data, panelModel = "clpm", program = "mplus")
+
+clpm_l2 <- panelcoder(data, panelModel = "clpm", program = "mplus", lags = 2)
+clpm_l2 <- panelcoder(data, panelModel = "clpm", program = "mplus", lags = 8)

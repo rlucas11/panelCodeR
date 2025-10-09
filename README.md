@@ -49,6 +49,7 @@ panelcoder(data,
            predetermined = FALSE,
            program = "lavaan",
            crossLag = TRUE,
+           lags = 1,
            ma = FALSE,
            clma = FALSE,
            traitCors = TRUE,
@@ -58,6 +59,7 @@ panelcoder(data,
            residVar = FALSE,
            slope = "none",
            limits = TRUE,
+           rstarts = 5,
            stationarity = "paths",
            constrainState = TRUE,
            invariance = TRUE,
@@ -93,6 +95,7 @@ The other options are described below (and in the R help functions).
 
 - `predetermined` specifies whether to include correlations between the random intercept (i.e., stable trait component) and the first-wave autoregressive-process variables in residualized models. As described by Andersen (2022), this addresses some problems with these models when certain assumptions are violated. 
 - `crossLag` specifies whether the reciprocal lagged associations between the two variables in a bivariate model are included.
+- `lags` specifies how many lags to include for stability and cross-lagged paths. The default is 1 and can be as high as 1 minus the number of waves. This feature is not implemented for models with a random intercept.
 - `ma` specifies whether to include moving averages (introduced in the context of the GCLM, but technically possible to include in other models; see Zyphur et al, 2020).
 - `clma` specifies whether to include cross-lagged moving averages (again introduced in the context of the GCLM).
 - `traitCors` specifies whether to include the correlation between the stable trait components.
@@ -105,6 +108,7 @@ The other options are described below (and in the R help functions).
   - Centered finds the midpoint of the waves and centers loadings around this.
   - Basis sets the first wave to 0 and the last wave to 1 and then freely estimates the loading for all other waves.
 - `limits` specifies whether to restrict variances to be greater than zero and correlations to be between -1 and 1. This is sometimes needed to prevent inadmissible solutions when a variance component is very small or zero. This is not currently implemented perfectly, but will be fixed in a future version. There may also be a bug that emerges only when using Mplus and constraining state variance to be equal (I am investigating). 
+- `rstarts` specifies the number of random starts to use in Mplus. This is sometimes necessary when setting limits on variances to avoid a local maximum. It is set to 5 by default for models that include limits and it is not included in the Mplus analysis command otherwise. This default can be overridden by including a different value. Setting this to NULL will remove the default statement from the analysis command.
 - `stationarity` specifies whether to impose stationarity. This can be set to "paths" (the default), "full", or "none". In the STARTS and derivatives, full stationarity can be achieved by setting autoregressive paths, cross-lagged paths, and variance of the autoregressive processes to be equal across waves. The "full" setting does this. If set to "paths" only the autoregressive paths and cross-lagged paths are set to be equal across waves. 
 - `constrainState` specifies whether to constrain state variances to be equal across waves. This is required for stationarity, and may also be required in the STARTS model when full stationarity is not imposed. 
 - `mplusAnalysis` specifies the ANALYSIS command to use for mplus if different from the default.
@@ -113,9 +117,6 @@ The other options are described below (and in the R help functions).
 - `constrainCors` specifies whether to constrain correlations between residuals with equal lags to be equal (e.g., the correlation between X_1_1 and X_2_1 would be constrained to be equal to the correlation between X_2_1 and X_3_1. 
 - `run` specifies whether to run the model or just to create and print the model code. 
 - `...` Additional options passed to lavaan. Default options are meanstructure=TRUE, missing = 'fiml', int.ov.free=TRUE, and int.lv.free=FALSE.
-
-> [!NOTE]
-> There is currently a bug where the code used to constrain variances to be positive does not always work correctly in mplus. If you are not getting results using the default settings (especially with the STARTS model), you could try setting `limits = FALSE` or using lavaan instead of mplus. 
 
 When you call the function, it will present a summary of some of the most important results from the model, but it is best to save the output of the command to an object (e.g., `pcOutput <- panelcoder(data)`. This object includes some information used when constructing the model, along with the lavaan or mplus code, the lavaan or mplus output, and information to plot correlations. The following functions help examine this information.
 
