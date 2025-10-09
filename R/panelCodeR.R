@@ -568,7 +568,8 @@ panelcoder <- function(data,
     }
 
     if (lags > 1 & stationarity == "full") {
-        stop("Stationarity not implemented with lags greater than 1.")
+        warning("Stationarity not implemented with lags greater than 1. Stationarity set to paths.")
+        stationarity = "paths"
     }
 
     

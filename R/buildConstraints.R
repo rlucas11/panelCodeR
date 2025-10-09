@@ -190,9 +190,9 @@
     ## Constraint for X Variance
     ## Wave 2
     if (info$gen$yVar==TRUE) {
-        xvar_c <- "xvar1 - a2*a2*xvar1 - d2*d2*yvar1 - 2*a2*cov_ar1*d2"
+        xvar_c <- "xvar1 - a_1_2*a_1_2*xvar1 - d_1_2*d_1_2*yvar1 - 2*a_1_2*cov_ar1*d_1_2"
     } else {
-        xvar_c <- "xvar1 - a2*a2*xvar1"
+        xvar_c <- "xvar1 - a_1_2*a_1_2*xvar1"
     }
     parTable <- do.call(
         .buildConstraint,
@@ -225,7 +225,7 @@
                 parTable,
                 "yvar2",
                 "==",
-                "yvar1 - b2*b2*yvar1 - c2*c2*xvar1 - 2*b2*cov_ar1*c2"
+                "yvar1 - b_1_2*b_1_2*yvar1 - c_1_2*c_1_2*xvar1 - 2*b_1_2*cov_ar1*c_1_2"
             )
         )
         if (info$gen$maxWave > 2) {
@@ -250,7 +250,7 @@
                         parTable,
                         "cov_ar2",
                         "==",
-                        "(1-a2*b2-c2*d2)*cov_ar1-a2*c2*xvar1-b2*d2*yvar1"
+                        "(1-a_1_2*b_1_2-c_1_2*d_1_2)*cov_ar1-a_1_2*c_1_2*xvar1-b_1_2*d_1_2*yvar1"
                     )
                 )
             } else {
@@ -437,28 +437,28 @@
             parTable,
             "d_a",
             "==",
-            "(1-b2)/((1-a2)*(1-b2)-(c2*d2))"
+            "(1-b_1_2)/((1-a_1_2)*(1-b_1_2)-(c_1_2*d_1_2))"
         )
         parTable <- do.call(.buildConstraint, aVals)
         bVals <- list(
             parTable,
             "d_b",
             "==",
-            "c2/((1-a2)*(1-b2)-(c2*d2))"
+            "c_1_2/((1-a_1_2)*(1-b_1_2)-(c_1_2*d_1_2))"
         )
         parTable <- do.call(.buildConstraint, bVals)
         cVals <- list(
             parTable,
             "d_c",
             "==",
-            "(1-a2)/((1-a2)*(1-b2)-(c2*d2))"
+            "(1-a_1_2)/((1-a_1_2)*(1-b_1_2)-(c_1_2*d_1_2))"
         )
         parTable <- do.call(.buildConstraint, cVals)
         dVals <- list(
             parTable,
             "d_d",
             "==",
-            "d2/((1-a2)*(1-b2)-(c2*d2))"
+            "d_1_2/((1-a_1_2)*(1-b_1_2)-(c_1_2*d_1_2))"
         )
         parTable <- do.call(.buildConstraint, dVals)
     } else {
@@ -466,7 +466,7 @@
             parTable,
             "d_a",
             "==",
-            "1/(1-a2)"
+            "1/(1-a_1_2)"
         )
         parTable <- do.call(.buildConstraint, aVals)
     }
