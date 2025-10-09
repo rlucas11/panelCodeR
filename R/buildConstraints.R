@@ -13,33 +13,66 @@
 }
 
 
+## ## Constrain stability for AR part of model
+## .constrainStability <- function(parTable, info) {
+##     waves <- info$gen$maxWaves
+##     if (waves > 2) {
+##         for (w in 3:(waves)) {
+##             cVals <- list(
+##                 parTable,
+##                 paste0("a", w),
+##                 "==",
+##                 paste0("a", 2)
+##             )
+##             parTable <- do.call(.buildConstraint, cVals)
+##         }
+##         if (info$gen$yVar == TRUE) {
+##             for (w in 3:(waves)) {
+##                 cVals <- list(
+##                     parTable,
+##                     paste0("b", w),
+##                     "==",
+##                     paste0("b", 2)
+##                 )
+##                 parTable <- do.call(.buildConstraint, cVals)
+##             }
+##         }
+##     }
+##     return(parTable)
+## }
+
 ## Constrain stability for AR part of model
-.constrainStability <- function(parTable, info) {
+.constrainStability <- function(parTable, info, lags) {
     waves <- info$gen$maxWaves
-    if (waves > 2) {
-        for (w in 3:(waves)) {
-            cVals <- list(
-                parTable,
-                paste0("a", w),
-                "==",
-                paste0("a", 2)
-            )
-            parTable <- do.call(.buildConstraint, cVals)
-        }
-        if (info$gen$yVar == TRUE) {
-            for (w in 3:(waves)) {
+    if (waves > 2 & lags < (waves - 1)) {
+        for (l in 1:lags) {
+            for (w in (lags + 2):(waves)) {
+                labelStemX <- paste("a", l, sep = "_")
                 cVals <- list(
                     parTable,
-                    paste0("b", w),
+                    paste(labelStemX, w, sep = "_"),
                     "==",
-                    paste0("b", 2)
+                    paste(labelStemX, (lags + 1), sep = "_")
                 )
                 parTable <- do.call(.buildConstraint, cVals)
+            }
+            if (info$gen$yVar == TRUE) {
+                labelStemY <- paste("b", l, sep = "_")
+                for (w in (lags + 2) :(waves)) {
+                    cVals <- list(
+                        parTable,
+                        paste(labelStemY, w, sep = "_"),
+                        "==",
+                        paste(labelStemY, (lags + 1), sep = "_")
+                    )
+                    parTable <- do.call(.buildConstraint, cVals)
+                }
             }
         }
     }
     return(parTable)
 }
+
 
 
 ## Constrain stability for Moving Average part of model
@@ -95,61 +128,71 @@
 }
 
 
+
 ## Constrain cross-lagged paths
-.constrainCl <- function(parTable, info, zero=FALSE) {
+.constrainCl <- function(parTable, info, zero, lags) {
     waves <- info$gen$maxWaves
-    if (waves > 2) {
+    if (waves > 2 & lags < (waves - 1)) {
         if (zero == FALSE) {
-            for (w in 3:waves) {
-                cVals <- list(
-                    parTable,
-                    paste0("c", w),
-                    "==",
-                    paste0("c", 2)
-                )
-                parTable <- do.call(.buildConstraint, cVals)
+            for (l in 1:lags) {
+                for (w in (lags + 2):waves) {
+                    labelStemX <- paste("c", l, sep = "_")
+                    cVals <- list(
+                        parTable,
+                        paste(labelStemX, w, sep = "_"),
+                        "==",
+                        paste(labelStemX, (lags + 1), sep = "_")
+                    )
+                    parTable <- do.call(.buildConstraint, cVals)
+                }
+                for (w in (lags + 2):waves) {
+                    labelStemY <- paste("d", l, sep = "_")
+                    cVals <- list(
+                        parTable,
+                        paste(labelStemY, w, sep = "_"),
+                        "==",
+                        paste(labelStemY, (lags + 1), sep = "_")
+                    )
+                    parTable <- do.call(.buildConstraint, cVals)
+                }
             }
-            for (w in 3:waves) {
-                cVals <- list(
-                    parTable,
-                    paste0("d", w),
-                    "==",
-                    paste0("d", 2)
-                )
-                parTable <- do.call(.buildConstraint, cVals)
-            }
-        } else {
-            for (w in 2:waves) {
-                cVals <- list(
-                    parTable,
-                    paste0("c", w),
-                    "==",
-                    0
-                )
-                parTable <- do.call(.buildConstraint, cVals)
-            }
-            for (w in 2:waves) {
-                cVals <- list(
-                    parTable,
-                    paste0("d", w),
-                    "==",
-                    0
-                )
-                parTable <- do.call(.buildConstraint, cVals)
+        }
+        else {
+            for (l in 1:lags) {
+                for (w in 2:waves) {
+                    cVals <- list(
+                        parTable,
+                        paste("c", l, w, sep = "_"),
+                        "==",
+                        0
+                    )
+                    parTable <- do.call(.buildConstraint, cVals)
+                }
+                for (w in 2:waves) {
+                    cVals <- list(
+                        parTable,
+                        paste("d", l, w, sep = "_"),
+                        "==",
+                        0
+                    )
+                    parTable <- do.call(.buildConstraint, cVals)
+                }
+
             }
         }
     }
     return(parTable)
 }
 
+
 ## Impose stationarity on AR part of model.
 .arStationarity <- function(parTable, info, constrainCor=TRUE, zero=FALSE) {
     ## Constraint for X Variance
     ## Wave 2
     if (info$gen$yVar==TRUE) {
-        xvar_c <- "xvar1 - a2*a2*xvar1 - d2*d2*yvar1 - 2*a2*cov_ar1*d2"
+        xvar_c <- "xvar1 - a_1_2*a_1_2*xvar1 - d_1_2*d_1_2*yvar1 - 2*a_1_2*cov_ar1*d_1_2"
     } else {
-        xvar_c <- "xvar1 - a2*a2*xvar1"
+        xvar_c <- "xvar1 - a_1_2*a_1_2*xvar1"
     }
     parTable <- do.call(
         .buildConstraint,
@@ -182,7 +225,7 @@
                 parTable,
                 "yvar2",
                 "==",
-                "yvar1 - b2*b2*yvar1 - c2*c2*xvar1 - 2*b2*cov_ar1*c2"
+                "yvar1 - b_1_2*b_1_2*yvar1 - c_1_2*c_1_2*xvar1 - 2*b_1_2*cov_ar1*c_1_2"
             )
         )
         if (info$gen$maxWave > 2) {
@@ -207,7 +250,7 @@
                         parTable,
                         "cov_ar2",
                         "==",
-                        "(1-a2*b2-c2*d2)*cov_ar1-a2*c2*xvar1-b2*d2*yvar1"
+                        "(1-a_1_2*b_1_2-c_1_2*d_1_2)*cov_ar1-a_1_2*c_1_2*xvar1-b_1_2*d_1_2*yvar1"
                     )
                 )
             } else {
@@ -394,28 +437,28 @@
             parTable,
             "d_a",
             "==",
-            "(1-b2)/((1-a2)*(1-b2)-(c2*d2))"
+            "(1-b_1_2)/((1-a_1_2)*(1-b_1_2)-(c_1_2*d_1_2))"
         )
         parTable <- do.call(.buildConstraint, aVals)
         bVals <- list(
             parTable,
             "d_b",
             "==",
-            "c2/((1-a2)*(1-b2)-(c2*d2))"
+            "c_1_2/((1-a_1_2)*(1-b_1_2)-(c_1_2*d_1_2))"
         )
         parTable <- do.call(.buildConstraint, bVals)
         cVals <- list(
             parTable,
             "d_c",
             "==",
-            "(1-a2)/((1-a2)*(1-b2)-(c2*d2))"
+            "(1-a_1_2)/((1-a_1_2)*(1-b_1_2)-(c_1_2*d_1_2))"
         )
         parTable <- do.call(.buildConstraint, cVals)
         dVals <- list(
             parTable,
             "d_d",
             "==",
-            "d2/((1-a2)*(1-b2)-(c2*d2))"
+            "d_1_2/((1-a_1_2)*(1-b_1_2)-(c_1_2*d_1_2))"
         )
         parTable <- do.call(.buildConstraint, dVals)
     } else {
@@ -423,7 +466,7 @@
             parTable,
             "d_a",
             "==",
-            "1/(1-a2)"
+            "1/(1-a_1_2)"
         )
         parTable <- do.call(.buildConstraint, aVals)
     }
