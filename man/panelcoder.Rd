@@ -21,6 +21,7 @@ panelcoder(
   slope = "none",
   state = FALSE,
   limits = TRUE,
+  rstarts = 5,
   stationarity = "paths",
   constrainState = TRUE,
   invariance = TRUE,
@@ -91,6 +92,11 @@ including the DPM and GCLM.}
 \item{limits}{Logical value indicating whether to constrain variances and
 correlations to possible values. Defaults to TRUE.}
 
+\item{rstarts}{Numeric value indicating the number of random starts in
+mplus. This is often necessary to avoid local maximum when limiting variance
+to be positive, thus the default is to set it to 5 when limits are also set.
+If you wish to remove this option, set \code{rstarts} to NULL.}
+
 \item{stationarity}{Logical value indicating whether and how to impose
 stationarity in the autoregressive process. Defaults to "paths" which
 constrains the stability and cross-lagged paths to be equal. Can also be
@@ -104,12 +110,12 @@ variances to be equal across waves. Defaults to TRUE.}
 the same item to be equal across waves.}
 
 \item{mplusAnalysis}{Quoted text. Specify ANLYSIS command for mplus. Defaults
-to "MODEL=NOCOVARIANCES;\nCOVERAGE=.001;". If you change this, including
+to "MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;". If you change this, including
 "MODEL=NOCOVARIANCES" is highly recommended given the way the model is
 specified.}
 
 \item{mplusOutput}{Quoted text. Specify OUTPUT command for mplus. Defaults to
-"stdyx; \n cinterval; \n",}
+"stdyx; \\n cinterval; \\n",}
 
 \item{mplusDirectory}{Quoted text. Specify directory for mplus input and
 output files. This directory must already exist before running the command.
