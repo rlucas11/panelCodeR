@@ -1790,18 +1790,19 @@
     )
 
     if (slope != "none") {
-        slCorParTable <- data.frame(
-            lhs = paste("t", xName, sep = "_"),
-            op = "~~",
-            rhs = paste("sl", xName, sep = "_"),
-            user = 1,
-            block = 1,
-            group = 1,
-            free = 1,
-            ustart = NA,
-            exo = 0,
-            label = "c_tx_slx"
-        )
+        ## slCorParTable <- data.frame(
+        ##     lhs = paste("t", xName, sep = "_"),
+        ##     op = "~~",
+        ##     rhs = paste("sl", xName, sep = "_"),
+        ##     user = 1,
+        ##     block = 1,
+        ##     group = 1,
+        ##     free = 1,
+        ##     ustart = NA,
+        ##     exo = 0,
+        ##     label = "c_tx_slx"
+        ## )
+        ## Removed because redundant
         slArCorParTable <- data.frame(
             lhs = paste("sl", xName, sep = "_"),
             op = "~~",
@@ -1818,7 +1819,7 @@
             rbind,
             list(
                 corParTable,
-                slCorParTable,
+##                slCorParTable,
                 slArCorParTable
             )
         )
@@ -1873,18 +1874,19 @@
             )
         )
         if (slope != "none") {
-            ysCorParTable <- data.frame(
-                lhs = paste("sl", yName, sep = "_"),
-                op = "~~",
-                rhs = paste("t", xName, sep = "_"),
-                user = 1,
-                block = 1,
-                group = 1,
-                free = 1,
-                ustart = NA,
-                exo = 0,
-                label = "c_sly_ty"
-            )
+            ## ysCorParTable <- data.frame(
+            ##     lhs = paste("sl", yName, sep = "_"),
+            ##     op = "~~",
+            ##     rhs = paste("t", xName, sep = "_"),
+            ##     user = 1,
+            ##     block = 1,
+            ##     group = 1,
+            ##     free = 1,
+            ##     ustart = NA,
+            ##     exo = 0,
+            ##     label = "c_sly_ty"
+            ## )
+            ## Removed because redundant
             ys2CorParTable <- data.frame(
                 lhs = paste("sl", yName, sep = "_"),
                 op = "~~",
@@ -1897,18 +1899,18 @@
                 exo = 0,
                 label = "c_sly_iy"
             )
-            ys3CorParTable <- data.frame(
-                lhs = paste("sl", yName, sep = "_"),
-                op = "~~",
-                rhs = paste("sl", xName, sep = "_"),
-                user = 1,
-                block = 1,
-                group = 1,
-                free = 1,
-                ustart = NA,
-                exo = 0,
-                label = "c_sly_slx"
-            )
+            ## ys3CorParTable <- data.frame(
+            ##     lhs = paste("sl", yName, sep = "_"),
+            ##     op = "~~",
+            ##     rhs = paste("sl", xName, sep = "_"),
+            ##     user = 1,
+            ##     block = 1,
+            ##     group = 1,
+            ##     free = 1,
+            ##     ustart = NA,
+            ##     exo = 0,
+            ##     label = "c_sly_slx"
+            ## )
             ys4CorParTable <- data.frame(
                 lhs = paste("sl", yName, sep = "_"),
                 op = "~~",
@@ -1933,15 +1935,28 @@
                 exo = 0,
                 label = "c_ty_slx"
             )
+            ys6CorParTable <- data.frame(
+                lhs = paste("t", xName, sep = "_"),
+                op = "~~",
+                rhs = paste("sl", yName, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = "c_tx_sly"
+            )
             corParTable <- do.call(
                 rbind,
                 list(
                     corParTable,
-                    ysCorParTable,
+                ##    ysCorParTable,
                     ys2CorParTable,
-                    ys3CorParTable,
+                ##    ys3CorParTable,
                     ys4CorParTable,
-                    ys5CorParTable
+                    ys5CorParTable,
+                    ys6CorParTable
                 )
             )
         }
@@ -1960,7 +1975,7 @@
         lhs = paste("t", xName, sep = "_"),
         op = "=~",
         rhs = paste("a", xName, 1, sep = "_"),
-        user = 1,
+       user = 1,
         block = 1,
         group = 1,
         free = 1,

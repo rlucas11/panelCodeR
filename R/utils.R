@@ -341,20 +341,20 @@ getInfo <- function(df) {
     }
     
     ## Stability
-    if (length(est[which(est$label == "a2"), "est"]) > 0) {
-        x.stab <- est.std[which(est.std$label == "a2"), "est.std"]
-        x.stab.u <- est[which(est$label == "a2"), "est"]
-        x.stab.se <- est[which(est$label == "a2"), "se"]
+    if (length(est[which(est$label == "a_1_2"), "est"]) > 0) {
+        x.stab <- est.std[which(est.std$label == "a_1_2"), "est.std"]
+        x.stab.u <- est[which(est$label == "a_1_2"), "est"]
+        x.stab.se <- est[which(est$label == "a_1_2"), "se"]
     } else {
         x.stab <- NA
         x.stab.u <- NA
         x.stab.se <- NA
     }
     if (info$gen$yVar == TRUE) {
-        if (length(est[which(est$label == "b2"), "est"]) > 0) {
-            y.stab <- est.std[which(est.std$label == "b2"), "est.std"]
-            y.stab.u <- est[which(est$label == "b2"), "est"]
-            y.stab.se <- est[which(est$label == "b2"), "se"]
+        if (length(est[which(est$label == "b_1_2"), "est"]) > 0) {
+            y.stab <- est.std[which(est.std$label == "b_1_2"), "est.std"]
+            y.stab.u <- est[which(est$label == "b_1_2"), "est"]
+            y.stab.se <- est[which(est$label == "b_1_2"), "se"]
         } else {
             y.stab <- NA
             y.stab.u <- NA
@@ -367,19 +367,19 @@ getInfo <- function(df) {
     }
     
     ## Cross-lags
-    if (length(est[which(est$label == "c2"), "est"]) > 0) {
-        yOnX <- est.std[which(est.std$label == "c2"), "est.std"]
-        yOnX.u <- est[which(est$label == "c2"), "est"]
-        yOnX.se <- est[which(est$label == "c2"), "se"]
+    if (length(est[which(est$label == "c_1_2"), "est"]) > 0) {
+        yOnX <- est.std[which(est.std$label == "c_1_2"), "est.std"]
+        yOnX.u <- est[which(est$label == "c_1_2"), "est"]
+        yOnX.se <- est[which(est$label == "c_1_2"), "se"]
     } else {
         yOnX <- NA
         yOnX.u <- NA
         yOnX.se <- NA
     }
-    if (length(est[which(est$label == "d2"), "est"]) > 0) {
-        xOnY <- est.std[which(est.std$label == "d2"), "est.std"]
-        xOnY.u <- est[which(est$label == "d2"), "est"]
-        xOnY.se <- est[which(est$label == "d2"), "se"]
+    if (length(est[which(est$label == "d_1_2"), "est"]) > 0) {
+        xOnY <- est.std[which(est.std$label == "d_1_2"), "est.std"]
+        xOnY.u <- est[which(est$label == "d_1_2"), "est"]
+        xOnY.se <- est[which(est$label == "d_1_2"), "se"]
     } else {
         xOnY <- NA
         xOnY.u <- NA
