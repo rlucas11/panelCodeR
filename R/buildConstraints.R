@@ -530,7 +530,7 @@
     }
     if (trait == TRUE |
         panelModel == "dpm_c" | panelModel == "dpm_p" |
-        panelModel == "gclm") {
+        panelModel == "gclm" | panelModel == "alt" | panelModel == "lcmsr") {
         parTable <- .buildConstraint(
             parTable,
             "x_tVar",
