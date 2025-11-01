@@ -535,6 +535,13 @@ panelcoder <- function(data,
     if (limits == FALSE) {
         rstarts == NULL
     }
+
+    ## Check if univariate gclm with clma
+    if (panelModel == "gclm" & info$gen$yVar == FALSE & clma == TRUE) {
+        clma <- FALSE
+        warning("Cross-lagged moving averages not possible for univariate models. CLMA set to FALSE")
+    }
+    
     
     ## Check for phantom variables
     if (length(info$x$waves) != length(info$x$actualWaves) &
