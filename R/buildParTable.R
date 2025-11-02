@@ -1947,6 +1947,18 @@
                 exo = 0,
                 label = "c_tx_sly"
             )
+            ys7CorParTable <- data.frame(
+                lhs = paste("sl", xName, sep = "_"),
+                op = "~~",
+                rhs = paste("i", yName, 1, sep = "_"),
+                user = 1,
+                block = 1,
+                group = 1,
+                free = 1,
+                ustart = NA,
+                exo = 0,
+                label = "c_slx_iy"
+            )
             corParTable <- do.call(
                 rbind,
                 list(
@@ -1956,7 +1968,8 @@
                 ##    ys3CorParTable,
                     ys4CorParTable,
                     ys5CorParTable,
-                    ys6CorParTable
+                    ys6CorParTable,
+                    ys7CorParTable
                 )
             )
         }
