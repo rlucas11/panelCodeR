@@ -614,6 +614,8 @@ panelcoder <- function(data,
         modelCode <- lav2lavaan(model)
         if (run == TRUE) {
             fit <- NULL
+            warningM <- NULL
+            errorM <- NULL
             output <- tryCatch(
                 {
                     fit <- lavaan::lavaan(model,
@@ -627,8 +629,8 @@ panelcoder <- function(data,
                     list(
                         fit = fit,
                         success = TRUE,
-                        warningM = FALSE,
-                        errorM = FALSE
+                        warningM = NULL,
+                        errorM = NULL
                     )
                 },
                 warning = function(w) {
@@ -639,14 +641,14 @@ panelcoder <- function(data,
                         fit = fit,
                         success = success,
                         warningM = conditionMessage(w),
-                        errorM = NULL
+                        errorM = errorM
                     )
                 },
                 error = function(e) {
                     list(
-                        fit = NULL,
+                        fit = fit,
                         success = FALSE,
-                        warningM = NULL,
+                        warningM = warningM,
                         errorM = conditionMessage(e)
                     )
                 }
@@ -744,6 +746,11 @@ panelcoder <- function(data,
                     success <- FALSE
                     errorM <- "Standard errors could not be computed"
                 }
+                noConv <- check_convergence(file_out)
+                if (noConv) {
+                    success <- FALSE
+                    errorM <- "No convergence"
+                }
                 list(
                     fit = fit,
                     success = success,
@@ -835,7 +842,7 @@ panelcoder <- function(data,
                               output$fit,
                               latent)
     
-    pcOutput <- list(pcSum, info, model, fit, corSummary, modelCode)
+    pcOutput <- list(pcSum, info, model, fit, corSummary, modelCode, output$warningM, output$errorM)
     class(pcOutput) <- "pcOutput"
     print(pcSum)
     if (!is.null(output$warningM)) {
