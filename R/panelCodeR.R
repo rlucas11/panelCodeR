@@ -613,25 +613,80 @@ panelcoder <- function(data,
     if (program == "lavaan") {
         modelCode <- lav2lavaan(model)
         if (run == TRUE) {
-            fit <- lavaan::lavaan(model,
-                          data = data,
-                          meanstructure = TRUE,
-                          missing = 'fiml',
-                          int.ov.free=TRUE,
-                          int.lv.free=FALSE,
-                          ...)
-            pcSum <- .summarizeLavaan(panelModel,
-                                      info = info,
-                                      fitObject = fit,
-                                      crossLag = crossLag,
-                                      ma = ma,
-                                      clma = clma,
-                                      traitCors = traitCors,
-                                      arCors = arCors,
-                                      stateCors = stateCors,
-                                      residCors = residCors,
-                                      slope = slope,
-                                      stationarity = stationarity)
+            fit <- NULL
+            warningM <- NULL
+            errorM <- NULL
+            output <- tryCatch(
+                {
+                    fit <- lavaan::lavaan(model,
+                        data = data,
+                        meanstructure = TRUE,
+                        missing = "fiml",
+                        int.ov.free = TRUE,
+                        int.lv.free = FALSE,
+                        ...
+                        )
+                    list(
+                        fit = fit,
+                        success = TRUE,
+                        warningM = NULL,
+                        errorM = NULL
+                    )
+                },
+                warning = function(w) {
+                    if (is.null(fit)) {
+                        success <- FALSE
+                    }
+                    list(
+                        fit = fit,
+                        success = success,
+                        warningM = conditionMessage(w),
+                        errorM = errorM
+                    )
+                },
+                error = function(e) {
+                    list(
+                        fit = fit,
+                        success = FALSE,
+                        warningM = warningM,
+                        errorM = conditionMessage(e)
+                    )
+                }
+            )
+            if (output$success == TRUE) {
+                pcSum <- .summarizeLavaan(panelModel,
+                    info = info,
+                    fitObject = output$fit,
+                    crossLag = crossLag,
+                    ma = ma,
+                    clma = clma,
+                    traitCors = traitCors,
+                    arCors = arCors,
+                    stateCors = stateCors,
+                    residCors = residCors,
+                    slope = slope,
+                    stationarity = stationarity
+                )
+            } else {
+                pcOutput <- list(
+                    NULL,
+                    info,
+                    model,
+                    NULL,
+                    NULL,
+                    modelCode,
+                    output$warningM,
+                    output$errorM
+                )
+                if (!is.null(output$errorM)) {
+                    print(paste0("lavaan error: ", output$errorM))
+                }
+                if (!is.null(output$warningM)) {
+                    print(paste0("lavaan warning: ", output$warningM))
+                }
+                class(pcOutput) <- "pcOutput"
+                return(pcOutput)
+            }
         } else {
             cat(modelCode)
             return(modelCode)
@@ -659,24 +714,104 @@ panelcoder <- function(data,
                                       OUTPUT = mplusOutput,
                                       MODEL = modelCode)
         if (run == TRUE) {
-            fit <- MplusAutomation::mplusModeler(mplusStatement,
-                                modelout = paste0(mplusDirectory,
-                                                  "/",
-                                                  title,
-                                                  ".inp"),
-                                run = 1)
-            pcSum <- .summarizeMplus(panelModel,
-                                     info,
-                                     fit,
-                                     crossLag = crossLag,
-                                     ma = ma,
-                                     clma = clma,
-                                     traitCors = traitCors,
-                                     arCors = arCors,
-                                     stateCors = stateCors,
-                                     residCors = residCors,
-                                     slope = slope,
-                                     stationarity = stationarity)
+            fit <- NULL
+            warningM <- NULL
+            errorM <- NULL
+            success <- TRUE
+            output <- tryCatch(
+            {
+                file_stem <- paste0(
+                    mplusDirectory,
+                    "/",
+                    title
+                )
+                file_inp <- paste0(
+                    file_stem,
+                    ".inp"
+                )
+                file_out <- paste0(
+                    file_stem,
+                    ".out"
+                )
+                fit <- MplusAutomation::mplusModeler(mplusStatement,
+                    modelout = file_inp,
+                    run = 1
+                )
+                nonpos <- check_nonpos(file_out)
+                if (nonpos) {
+                    warningM <- "Non-positive definite matrix"
+                }
+                noSe <- check_se(file_out)
+                if (noSe) {
+                    success <- FALSE
+                    errorM <- "Standard errors could not be computed"
+                }
+                noConv <- check_convergence(file_out)
+                if (noConv) {
+                    success <- FALSE
+                    errorM <- "No convergence"
+                }
+                list(
+                    fit = fit,
+                    success = success,
+                    warningM = warningM,
+                    errorM = errorM
+                    )
+                },
+                warning = function(w) {
+                    warningM = conditionMessage(w)
+                    list(
+                        fit = fit,
+                        success = TRUE,
+                        warningM = warningM,
+                        errorM = errorM
+                    )
+                },
+            error = function(e) {
+                conditionMessage(e)
+                list(
+                    fit = fit,
+                    success = FALSE,
+                    warningM = warningM,
+                    errorM = errorM
+                )
+            }
+            )
+
+            if (output$success == TRUE) {
+                pcSum <- .summarizeMplus(panelModel,
+                    info,
+                    output$fit,
+                    crossLag = crossLag,
+                    ma = ma,
+                    clma = clma,
+                    traitCors = traitCors,
+                    arCors = arCors,
+                    stateCors = stateCors,
+                    residCors = residCors,
+                    slope = slope,
+                    stationarity = stationarity
+                )
+            } else {
+                pcOutput <- list(
+                    NULL,
+                    info,
+                    model,
+                    NULL,
+                    NULL,
+                    modelCode,
+                    output$warningM,
+                    output$errorM
+                )
+                if (!is.null(output$errorM)) {
+                    print(paste0("Mplus error: ", output$errorM))
+                }
+                if (!is.null(output$warningM)) {
+                    print(paste0("Mplus warning: ", output$warningM))
+                }
+                class(pcOutput) <- "pcOutput"
+                return(pcOutput)
+            }
         } else {
             cat(modelCode)
             return(modelCode)
@@ -704,12 +839,20 @@ panelcoder <- function(data,
     corSummary <- combineCors(data,
                               info,
                               program,
-                              fit,
+                              output$fit,
                               latent)
     
-    pcOutput <- list(pcSum, info, model, fit, corSummary, modelCode)
+    pcOutput <- list(pcSum, info, model, fit, corSummary, modelCode, output$warningM, output$errorM)
     class(pcOutput) <- "pcOutput"
     print(pcSum)
+    if (!is.null(output$warningM)) {
+        if (program == "lavaan") {
+            print(paste0("lavaan warning: ", output$warningM))
+        }
+        if (program == "mplus") {
+            print(paste0("Mplus warning: ", output$warningM))
+        }
+    }
     return(pcOutput)
 }
 
