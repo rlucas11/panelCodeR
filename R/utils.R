@@ -1897,3 +1897,49 @@ addIndicators <- function(df, var, indicators, labelType="numbers", sd = 1) {
     }
     return(df)
 }
+
+
+################################################################################
+## Functions to check for errors in mplus output
+################################################################################
+
+check_nonpos <- function(file_path) {
+  # Read the entire file as a single string
+  text <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
+  
+  # Define the target text (collapse newlines and spacing)
+  warning_text <- paste(
+    "THE STANDARD ERRORS OF THE MODEL PARAMETER ESTIMATES MAY NOT BE",
+    "TRUSTWORTHY FOR SOME PARAMETERS DUE TO A NON-POSITIVE DEFINITE",
+    "FIRST-ORDER DERIVATIVE PRODUCT MATRIX.  THIS MAY BE DUE TO THE STARTING",
+    "VALUES BUT MAY ALSO BE AN INDICATION OF MODEL NONIDENTIFICATION.",
+    sep = " "
+  )
+  
+  # Normalize whitespace in both strings before searching
+  normalize_ws <- function(x) gsub("\\s+", " ", x)
+  
+  found <- grepl(normalize_ws(warning_text), normalize_ws(text), fixed = TRUE)
+    
+  return(found)
+}
+
+
+check_se <- function(file_path) {
+  # Read the entire file as a single string
+  text <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
+  
+  # Define the target text (collapse newlines and spacing)
+  warning_text <- paste(
+    "THE STANDARD ERRORS OF THE MODEL PARAMETER ESTIMATES COULD NOT BE",
+    "COMPUTED.  THE MODEL MAY NOT BE IDENTIFIED.  CHECK YOUR MODEL.",
+    sep = " "
+  )
+  
+  # Normalize whitespace in both strings before searching
+  normalize_ws <- function(x) gsub("\\s+", " ", x)
+  
+  found <- grepl(normalize_ws(warning_text), normalize_ws(text), fixed = TRUE)
+    
+  return(found)
+}

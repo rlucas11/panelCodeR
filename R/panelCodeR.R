@@ -682,6 +682,7 @@ panelcoder <- function(data,
                 if (!is.null(output$warningM)) {
                     print(paste0("lavaan warning: ", output$warningM))
                 }
+                class(pcOutput) <- "pcOutput"
                 return(pcOutput)
             }
         } else {
@@ -712,22 +713,42 @@ panelcoder <- function(data,
                                       MODEL = modelCode)
         if (run == TRUE) {
             fit <- NULL
+            warningM <- NULL
+            errorM <- NULL
+            success <- TRUE
             output <- tryCatch(
-                {
-                    fit <- MplusAutomation::mplusModeler(mplusStatement,
-                        modelout = paste0(
-                            mplusDirectory,
-                            "/",
-                            title,
-                            ".inp"
-                        ),
-                        run = 1
-                    )
-                    list(
-                        fit = fit,
-                        success = TRUE,
-                        warningM = NULL,
-                        errorM = NULL
+            {
+                file_stem <- paste0(
+                    mplusDirectory,
+                    "/",
+                    title
+                )
+                file_inp <- paste0(
+                    file_stem,
+                    ".inp"
+                )
+                file_out <- paste0(
+                    file_stem,
+                    ".out"
+                )
+                fit <- MplusAutomation::mplusModeler(mplusStatement,
+                    modelout = file_inp,
+                    run = 1
+                )
+                nonpos <- check_nonpos(file_out)
+                if (nonpos) {
+                    warningM <- "Non-positive definite matrix"
+                }
+                noSe <- check_se(file_out)
+                if (noSe) {
+                    success <- FALSE
+                    errorM <- "Standard errors could not be computed"
+                }
+                list(
+                    fit = fit,
+                    success = success,
+                    warningM = warningM,
+                    errorM = errorM
                     )
                 },
                 warning = function(w) {
@@ -736,17 +757,18 @@ panelcoder <- function(data,
                         fit = fit,
                         success = TRUE,
                         warningM = warningM,
-                        errorM = NULL
+                        errorM = errorM
                     )
                 },
-                error = function(e) {
-                    list(
-                        fit = NULL,
-                        success = FALSE,
-                        warningM = warningM,
-                        errorM = conditionMessage(e)
-                    )
-                }
+            error = function(e) {
+                conditionMessage(e)
+                list(
+                    fit = fit,
+                    success = FALSE,
+                    warningM = warningM,
+                    errorM = errorM
+                )
+            }
             )
 
             if (output$success == TRUE) {
@@ -780,6 +802,7 @@ panelcoder <- function(data,
                 if (!is.null(output$warningM)) {
                     print(paste0("Mplus warning: ", output$warningM))
                 }
+                class(pcOutput) <- "pcOutput"
                 return(pcOutput)
             }
         } else {
