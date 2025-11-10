@@ -39,7 +39,7 @@ compareModels <- function(data,
             }
         )
         if (!is.na(pcOut[1])) {
-            compareOut[i] <- list(.collectResults(pcOut)[1, 1:12])
+            compareOut[i] <- list(.collectResults(pcOut)[1, 1:14])
         } else {
             compareOut[i] <- list(data.frame(
                 trait = NA,
@@ -53,7 +53,9 @@ compareModels <- function(data,
                 cfi = NA,
                 tli = NA,
                 srmr = NA,
-                rmsea = NA
+                rmsea = NA,
+                warning = NA,
+                error = NA
             ))
         }
         compareOut[[i]]$model <- models[[i]]
@@ -81,73 +83,83 @@ compareModels <- function(data,
         cfi = numeric(),
         tli = numeric(),
         srmr = numeric(),
-        rmsea = numeric()
+        rmsea = numeric(),
+        warning = character(0),
+        error = character(0)
     )
-    pcResults <- fit[[1]]
-    if (!is.null(pcResults$trait.x)) {
-        singleModelResults[1, 1] <- pcResults$trait.x
-    } else {
-        singleModelResults[1, 1] <- NA
+    if (!is.null(fit[[1]])) {
+        pcResults <- fit[[1]]
+        if (!is.null(pcResults$trait.x)) {
+            singleModelResults[1, 1] <- pcResults$trait.x
+        } else {
+            singleModelResults[1, 1] <- NA
+        }
+        if (!is.null(pcResults$ar.x)) {
+            singleModelResults[1, 2] <- pcResults$ar.x
+        } else {
+            singleModelResults[1, 2] <- NA
+        }
+        if (!is.null(pcResults$state.x)) {
+            singleModelResults[1, 3] <- pcResults$state.x
+        } else {
+            singleModelResults[1, 3] <- NA
+        }
+        if (!is.null(pcResults$x.stab)) {
+            singleModelResults[1, 4] <- pcResults$x.stab
+        } else {
+            singleModelResults[1, 4] <- NA
+        }
+        if (!is.null(pcResults$aic)) {
+            singleModelResults[1, 5] <- pcResults$aic
+        } else {
+            singleModelResults[1, 5] <- NA
+        }
+        if (!is.null(pcResults$bic)) {
+            singleModelResults[1, 6] <- pcResults$bic
+        } else {
+            singleModelResults[1, 6] <- NA
+        }
+        if (!is.null(pcResults$chi2)) {
+            singleModelResults[1, 7] <- pcResults$chi2
+        } else {
+            singleModelResults[1, 7] <- NA
+        }
+        if (!is.null(pcResults$chi2df)) {
+            singleModelResults[1, 8] <- pcResults$chi2df
+        } else {
+            singleModelResults[1, 8] <- NA
+        }
+        if (!is.null(pcResults$chi2p)) {
+            singleModelResults[1, 7] <- pcResults$chi2p
+        } else {
+            singleModelResults[1, 7] <- NA
+        }
+        if (!is.null(pcResults$cfi)) {
+            singleModelResults[1, 9] <- pcResults$cfi
+        } else {
+            singleModelResults[1, 9] <- NA
+        }
+        if (!is.null(pcResults$tli)) {
+            singleModelResults[1, 10] <- pcResults$tli
+        } else {
+            singleModelResults[1, 10] <- NA
+        }
+        if (!is.null(pcResults$srmr)) {
+            singleModelResults[1, 11] <- pcResults$srmr
+        } else {
+            singleModelResults[1, 11] <- NA
+        }
+        if (!is.null(pcResults$rmsea)) {
+            singleModelResults[1, 12] <- pcResults$rmsea
+        } else {
+            singleModelResults[1, 12] <- NA
+        }
     }
-    if (!is.null(pcResults$ar.x)) {
-        singleModelResults[1, 2] <- pcResults$ar.x
-    } else {
-        singleModelResults[1, 2] <- NA
+    if (!is.null(fit[[7]])) {
+        singleModelResults[1,13] <- fit[[7]]
     }
-    if (!is.null(pcResults$state.x)) {
-        singleModelResults[1, 3] <- pcResults$state.x
-    } else {
-        singleModelResults[1, 3] <- NA
-    }
-    if (!is.null(pcResults$x.stab)) {
-        singleModelResults[1, 4] <- pcResults$x.stab
-    } else {
-        singleModelResults[1, 4] <- NA
-    }
-    if (!is.null(pcResults$aic)) {
-        singleModelResults[1, 5] <- pcResults$aic
-    } else {
-        singleModelResults[1, 5] <- NA
-    }
-    if (!is.null(pcResults$bic)) {
-        singleModelResults[1, 6] <- pcResults$bic
-    } else {
-        singleModelResults[1, 6] <- NA
-    }
-    if (!is.null(pcResults$chi2)) {
-        singleModelResults[1, 7] <- pcResults$chi2
-    } else {
-        singleModelResults[1, 7] <- NA
-    }
-    if (!is.null(pcResults$chi2df)) {
-        singleModelResults[1, 8] <- pcResults$chi2df
-    } else {
-        singleModelResults[1, 8] <- NA
-    }
-    if (!is.null(pcResults$chi2p)) {
-        singleModelResults[1, 7] <- pcResults$chi2p
-    } else {
-        singleModelResults[1, 7] <- NA
-    }
-    if (!is.null(pcResults$cfi)) {
-        singleModelResults[1, 9] <- pcResults$cfi
-    } else {
-        singleModelResults[1, 9] <- NA
-    }
-    if (!is.null(pcResults$tli)) {
-        singleModelResults[1, 10] <- pcResults$tli
-    } else {
-        singleModelResults[1, 10] <- NA
-    }
-    if (!is.null(pcResults$srmr)) {
-        singleModelResults[1, 11] <- pcResults$srmr
-    } else {
-        singleModelResults[1, 11] <- NA
-    }
-    if (!is.null(pcResults$rmsea)) {
-        singleModelResults[1, 12] <- pcResults$rmsea
-    } else {
-        singleModelResults[1, 12] <- NA
+    if (!is.null(fit[[8]])) { 
+        singleModelResults[1,14] <- fit[[8]]
     }
     return(singleModelResults)
 }
