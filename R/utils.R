@@ -1961,3 +1961,24 @@ check_convergence <- function(file_path) {
     
   return(found)
 }
+
+check_sparse <- function(file_path) {
+  # Read the entire file as a single string
+  text <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
+  
+  # Define the target text (collapse newlines and spacing)
+    warning_text <- paste(
+        "THE MISSING DATA EM ALGORITHM FOR THE H1 MODEL",
+        "HAS NOT CONVERGED WITH RESPECT TO THE PARAMETER",
+        "ESTIMATES.  THIS MAY BE DUE TO SPARSE DATA",
+        "LEADING TO A SINGULAR COVARIANCE MATRIX ESTIMATE.",
+        sep = " "
+  )
+  
+  # Normalize whitespace in both strings before searching
+  normalize_ws <- function(x) gsub("\\s+", " ", x)
+  
+  found <- grepl(normalize_ws(warning_text), normalize_ws(text), fixed = TRUE)
+    
+  return(found)
+}
