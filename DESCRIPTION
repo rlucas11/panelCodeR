@@ -1,6 +1,6 @@
 Package: panelCodeR
 Title: An R Package to Create and Run Models for Analyzing Panel Data
-Version: 0.0.2.2
+Version: 0.0.3.1
 Date: 2025
 Authors@R: 
     person("Richard", "Lucas", , "richard.e.lucas@gmail.com", role = c("aut", "cre"),

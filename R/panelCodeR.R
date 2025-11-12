@@ -751,6 +751,11 @@ panelcoder <- function(data,
                     success <- FALSE
                     errorM <- "No convergence"
                 }
+                sparse <- check_sparse(file_out)
+                if (sparse) {
+                    success <- FALSE
+                    errorM <- "No convergence; Sparse Matrix"
+                }
                 list(
                     fit = fit,
                     success = success,
