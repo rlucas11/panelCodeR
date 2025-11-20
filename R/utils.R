@@ -1982,3 +1982,18 @@ check_sparse <- function(file_path) {
     
   return(found)
 }
+
+check_coverage <- function(file_path) {
+  # Read the entire file as a single string
+  text <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
+  
+  # Define the target text (collapse newlines and spacing)
+    warning_text <- "THE COVARIANCE COVERAGE FALLS BELOW THE SPECIFIED LIMIT."
+  
+  # Normalize whitespace in both strings before searching
+  normalize_ws <- function(x) gsub("\\s+", " ", x)
+  
+  found <- grepl(normalize_ws(warning_text), normalize_ws(text), fixed = TRUE)
+    
+  return(found)
+}

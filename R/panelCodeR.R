@@ -756,6 +756,10 @@ panelcoder <- function(data,
                     success <- FALSE
                     errorM <- "No convergence; Sparse Matrix"
                 }
+                coverage <- check_coverage(file_out)
+                if (coverage) {
+                    warningM <- "Coverage warning"
+                }
                 list(
                     fit = fit,
                     success = success,
