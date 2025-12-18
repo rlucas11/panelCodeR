@@ -1430,7 +1430,7 @@ combineCors <- function(df, info, program, fitObject, latent) {
 plotCors <- function(cors) {
     lags <- nrow(cors)
     cors <- cors %>%
-        dplyr::mutate(lag=row_number()) %>%
+        dplyr::mutate(lag=dplyr::row_number()) %>%
         tidyr::pivot_longer(!lag) %>%
         tidyr::separate_wider_delim(name, " ", names = c("Source", "Variable"))
     minCor <- min(cors$value)
