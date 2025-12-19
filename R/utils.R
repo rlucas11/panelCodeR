@@ -1435,10 +1435,14 @@ plotCors <- function(cors) {
         tidyr::separate_wider_delim(name, " ", names = c("Source", "Variable"))
     minCor <- min(cors$value)
 
-    ggplot2::ggplot(aes(x=lag, y=value, linetype=Source, color=Variable), data=cors) +
-        geom_line() +
-        geom_point() +
-        ylim(min(minCor,0), 1)
+    ggplot2::ggplot(ggplot2::aes(x=lag,
+                                 y=value,
+                                 linetype=Source,
+                                 color=Variable),
+                    data=cors) +
+        ggplot2::geom_line() +
+        ggplot2::geom_point() +
+        ggplot2::ylim(min(minCor,0), 1)
 }
 
 #' Plots implied and actual correlations
