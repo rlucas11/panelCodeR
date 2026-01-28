@@ -1,0 +1,83 @@
+---
+title: "panelPlot"
+author: "Richard E. Lucas"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{panelPlot}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This function takes a `panelcoder` object and prints a graph of the observed and implied stabilities of for the variables in the model. If the variables being analyzed have multiple indicators, it is necessary to first run a measurement model and then specify results from both the focal model and the measurement model. 
+
+
+```{r setup}
+library(panelCodeR)
+```
+
+To demonstrate, we can use functions from `panelCodeR` to generate data with the STARTS as a data-generating model:
+
+```{r data}
+## Generate data using panelCodeR functions
+waves <- 10
+indicators <- 3
+N <- 1000
+data <- gen_starts(
+    n = N, # N to generate
+    nwaves = waves, # Number of waves
+    ri_x = 1, # Random intercept variance for X
+    ri_y = 1, # Random intercept variance for Y
+    cor_i = .5, # Correlation between intercepts (as correlation)
+    x = 1, # AR variance for X
+    y = 1, # AR variance for Y
+    stab_x = .5, # Stability of X
+    stab_y = .5, # Stability of Y
+    yx = .1, # Cross lag (Y regressed on X)
+    xy = .05, # Cross lag (X regressed on Y)
+    cor_xy = .5, # Correlation between X and Y (as correlation)
+    xr = 1, # State variance for X
+    yr = 1 # State Variance for Y
+)
+
+head(data)
+```
+
+Next, run the model and then use `panelPlot` to plot the observed and implied stability coefficients.
+
+```{r panelPlot, fig.width=6, fig.height=6}
+
+m1 <- panelcoder(data, panelModel = "clpm", program = "lavaan")
+panelPlot(m1)
+```
+
+If there are multiple indicators for each variable, first run a measurement model, then the focal model, then compare using `panelPlot`. 
+
+```{r indicators}
+## Create new dataset with multiple indicators
+data_mi <- data
+for (i in names(data_mi)) {
+    data_mi <- addIndicators(data_mi, i, indicators)
+}
+data_mi <- data_mi[-c(1:(2*waves))]
+
+head(data_mi)
+```
+
+```{R multiple, fig.width=6, fig.height=6}
+## Run measurement model
+measurement <- panelcoder(data_mi, panelModel = "measurement", program = "lavaan")
+
+## Run focal model
+m1 <- panelcoder(data_mi, panelModel = "clpm", program = "lavaan")
+
+## use panelPlot() to compare
+panelPlot(m1, measurement)
+
+```
