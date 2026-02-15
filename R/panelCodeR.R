@@ -617,6 +617,7 @@ panelcoder <- function(data,
             warningM <- NULL
             errorM <- NULL
             output <- tryCatch(
+                withCallingHandlers(
                 {
                     fit <- lavaan::lavaan(model,
                         data = data,
@@ -629,20 +630,13 @@ panelcoder <- function(data,
                     list(
                         fit = fit,
                         success = TRUE,
-                        warningM = NULL,
+                        warningM = warningM,
                         errorM = NULL
                     )
                 },
                 warning = function(w) {
-                    if (is.null(fit)) {
-                        success <- FALSE
-                    }
-                    list(
-                        fit = fit,
-                        success = success,
-                        warningM = conditionMessage(w),
-                        errorM = errorM
-                    )
+                    warningM <<- conditionMessage(w)
+                    invokeRestart("muffleWarning")
                 },
                 error = function(e) {
                     list(
@@ -652,7 +646,9 @@ panelcoder <- function(data,
                         errorM = conditionMessage(e)
                     )
                 }
+                )
             )
+            
             if (output$success == TRUE) {
                 pcSum <- .summarizeLavaan(panelModel,
                     info = info,
@@ -864,5 +860,6 @@ panelcoder <- function(data,
     }
     return(pcOutput)
 }
+
 
 

@@ -10,8 +10,8 @@ load_all()
 
 library(panelCodeR)
 
-dataI <- read_csv("testDataI.csv")
-data2 <- read_csv("testData2.csv")
+dataI <- read_csv("tests/testDataI.csv")
+data2 <- read_csv("tests/testData2.csv")
 
 test <- panelcoder(dataI,
                    panelModel="starts",
@@ -872,3 +872,6 @@ names(data) <- c(paste("X", 1:7, sep = "_"),
                  paste("Y", 1:7, sep = "_"))
 
 write_csv(data, "test_data1.csv")
+
+
+temp <- panelcoder(data2, panelModel = "clpm", program = "mplus", lags = 9)
