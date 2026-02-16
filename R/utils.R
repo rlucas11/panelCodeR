@@ -2001,3 +2001,117 @@ check_coverage <- function(file_path) {
     
   return(found)
 }
+
+
+
+#' Get estimates for lags from lavaan output
+#' @param fitObject Lavaan object
+#' @noRd
+.summarizeLavaanLags <- function(info,
+                                 fitObject,
+                                 lags) {
+    ## Calculate values for summary
+    est <- lavaan::parameterEstimates(fitObject)
+    est.std <- lavaan::standardizedSolution(fitObject)
+
+    x_name <- info$x$name
+    y_name <- info$y$name
+    waves <- info$gen$maxWaves
+
+    lagParameters <- data.frame(
+        lhs = c(
+            rep(paste("a", x_name, waves, sep = "_"), lags),
+            rep(paste("a", y_name, waves, sep = "_"), lags),
+            rep(paste("a", y_name, waves, sep = "_"), lags),
+            rep(paste("a", x_name, waves, sep = "_"), lags)
+        ),
+        op = rep("~", 4 * lags),
+        rhs = c(
+            paste("a", x_name, (waves - lags):(waves - 1), sep = "_"),
+            paste("a", y_name, (waves - lags):(waves - 1), sep = "_"),
+            paste("a", x_name, (waves - lags):(waves - 1), sep = "_"),
+            paste("a", y_name, (waves - lags):(waves - 1), sep = "_")
+        )
+    )
+
+    ## Make keys to match parameters
+    keyU <- with(est, paste(lhs, op, rhs, sep = "."))
+    keyS <- with(est.std, paste(lhs, op, rhs, sep = "."))
+    keyM <- with(lagParameters, paste(lhs, op, rhs, sep = "."))
+    rows_to_keep <- match(keyM, keyU)
+    rows_to_keep_s <- match(keyM, keyS)
+
+    lagResults <- est[rows_to_keep, c("lhs", "op", "rhs", "est", "se", "pvalue")]
+    lagResults.std <- est.std[rows_to_keep, "est.std"]
+    lagResults <- cbind(lagResults, lagResults.std)
+
+    lagResults$Parameter <- c(
+        paste(rep(x_name, lags), "AR Lag", lags:1, sep = " "),
+        paste(rep(y_name, lags), "AR Lag", lags:1, sep = " "),
+        paste(rep(y_name, lags), "CL Lag", lags:1, sep = " "),
+        paste(rep(x_name, lags), "CL Lag", lags:1, sep = " ")
+    )
+
+    lagResults <- lagResults[c(8, 4, 5, 6, 7)]
+    names(lagResults) <- c("Parameter", "est", "se", "pvalue", "est.std")
+
+    return(lagResults)
+}
+
+
+#' Summarize info from mplus object
+#' @param info information object generated from `getInfo()`
+#' @param fitObject mplus object with output
+#' @noRd
+.summarizeMplusLags <- function(info,
+                                fitObject,
+                                lags) {
+    ## Extract estimates and fit info
+    est <- fitObject$results$parameters$unstandardized
+    est.std <- fitObject$results$parameters$stdyx.standardized
+
+    x_name <- info$x$name
+    x_name_up <- toupper(x_name) ## required for mplus
+    y_name <- info$y$name
+    y_name_up <- toupper(y_name) ## required for mplus
+    waves <- info$gen$maxWaves
+
+    lagParameters <- data.frame(
+        paramHeader = c(
+            rep(paste(paste("A", x_name_up, waves, sep = "_"), "ON", sep = "."), lags),
+            rep(paste(paste("A", y_name_up, waves, sep = "_"), "ON", sep = "."), lags),
+            rep(paste(paste("A", y_name_up, waves, sep = "_"), "ON", sep = "."), lags),
+            rep(paste(paste("A", x_name_up, waves, sep = "_"), "ON", sep = "."), lags)
+        ),
+        param = c(
+            paste("A", x_name_up, (waves - lags):(waves - 1), sep = "_"),
+            paste("A", y_name_up, (waves - lags):(waves - 1), sep = "_"),
+            paste("A", x_name_up, (waves - lags):(waves - 1), sep = "_"),
+            paste("A", y_name_up, (waves - lags):(waves - 1), sep = "_")
+        )
+    )
+
+    ## Make keys to match parameters
+    keyU <- with(est, paste(paramHeader, param, sep = "."))
+    keyS <- with(est.std, paste(paramHeader, param, sep = "."))
+    keyM <- with(lagParameters, paste(paramHeader, param, sep = "."))
+    rows_to_keep <- match(keyM, keyU)
+    rows_to_keep_s <- match(keyM, keyS)
+
+    lagResults <- est[rows_to_keep, c("paramHeader", "param", "est", "se", "pval")]
+    lagResults.std <- est.std[rows_to_keep, "est"]
+    lagResults <- cbind(lagResults, lagResults.std)
+
+    lagResults$Parameter <- c(
+        paste(rep(x_name, lags), "AR Lag", lags:1, sep = " "),
+        paste(rep(y_name, lags), "AR Lag", lags:1, sep = " "),
+        paste(rep(y_name, lags), "CL Lag", lags:1, sep = " "),
+        paste(rep(x_name, lags), "CL Lag", lags:1, sep = " ")
+    )
+
+    lagResults <- lagResults[c(7, 3, 4, 5, 6)]
+    names(lagResults) <- c("Parameter", "est", "se", "pvalue", "est.std")
+
+    return(lagResults)
+
+}
