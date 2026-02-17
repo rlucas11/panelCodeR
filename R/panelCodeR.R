@@ -661,7 +661,8 @@ panelcoder <- function(data,
                     stateCors = stateCors,
                     residCors = residCors,
                     slope = slope,
-                    stationarity = stationarity
+                    stationarity = stationarity,
+                    lags = lags
                 )
             } else {
                 pcOutput <- list(
@@ -795,7 +796,8 @@ panelcoder <- function(data,
                     stateCors = stateCors,
                     residCors = residCors,
                     slope = slope,
-                    stationarity = stationarity
+                    stationarity = stationarity,
+                    lags = lags
                 )
             } else {
                 pcOutput <- list(

@@ -133,7 +133,8 @@ getInfo <- function(df) {
                             stateCors = stateCors,
                             residCors = residCors,
                             slope = slope,
-                            stationarity = stationarity) {
+                            stationarity = stationarity,
+                            lags) {
     ## Calculate values for summary
     est <- lavaan::parameterEstimates(fitObject)
     est.std <- lavaan::standardizedSolution(fitObject)
@@ -450,6 +451,7 @@ getInfo <- function(df) {
         mName = mName,
         program = "Lavaan",
         crossLag = crossLag,
+        lags = lags,
         ma = ma,
         clma = clma,
         traitCors = traitCors,
@@ -539,7 +541,8 @@ getInfo <- function(df) {
                             stateCors = stateCors,
                             residCors = residCors,
                             slope = slope,
-                            stationarity = stationarity
+                            stationarity = stationarity,
+                            lags
                             ) {
     ## Extract estimates and fit info
     est <- fitObject$results$parameters$unstandardized
@@ -996,6 +999,7 @@ getInfo <- function(df) {
         mName = mName,
         program = "Mplus",
         crossLag = crossLag,
+        lags = lags,
         ma = ma,
         clma = clma,
         traitCors = traitCors,
@@ -2115,3 +2119,30 @@ check_coverage <- function(file_path) {
     return(lagResults)
 
 }
+
+
+#' Print lags
+#' @param program Which program used
+#' @param info Basic info about model 
+#' @param fitObject Lavaan object
+#' @noRd
+getLags <- function(pcOutput) {
+    program <- pcOutput[[1]]$program
+    if (program == "Mplus") {
+        lags <- .summarizeMplusLags(
+            info = pcOutput[[2]],
+            fitObject = pcOutput[[4]],
+            lags = pcOutput[[1]]$lags
+        )
+    } else if (program == "Lavaan") {
+        lags <- .summarizeLavaanLags(
+            info = pcOutput[[2]],
+            fitObject = pcOutput[[4]],
+            lags = pcOutput[[1]]$lags
+        )
+    }
+    return(lags)
+}
+
+
+    

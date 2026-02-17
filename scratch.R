@@ -874,4 +874,5 @@ names(data) <- c(paste("X", 1:7, sep = "_"),
 write_csv(data, "test_data1.csv")
 
 
-temp <- panelcoder(data2, panelModel = "clpm", program = "mplus", lags = 9)
+temp <- panelcoder(data2, panelModel = "clpm", program = "mplus", lags = 5)
+temp2 <- panelcoder(data2, panelModel = "clpm", program = "lavaan", lags = 5)
