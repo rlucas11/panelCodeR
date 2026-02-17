@@ -2056,8 +2056,12 @@ check_coverage <- function(file_path) {
         paste(rep(x_name, lags), "CL Lag", lags:1, sep = " ")
     )
 
-    lagResults <- lagResults[c(8, 4, 5, 6, 7)]
-    names(lagResults) <- c("Parameter", "est", "se", "pvalue", "est.std")
+    lagResults$lag <- rep(lags:1, 4)
+    lagResults$type <- rep(c("AR", "CL"), each = lags)
+
+    lagResults <- lagResults[c(8, 9, 10, 4, 5, 6, 7)]
+    names(lagResults) <- c("Parameter", "lag", "type", "est", "se", "pvalue", "est.std")
+    rownames(lagResults) <- NULL
 
     return(lagResults)
 }
@@ -2113,8 +2117,13 @@ check_coverage <- function(file_path) {
         paste(rep(x_name, lags), "CL Lag", lags:1, sep = " ")
     )
 
-    lagResults <- lagResults[c(7, 3, 4, 5, 6)]
-    names(lagResults) <- c("Parameter", "est", "se", "pvalue", "est.std")
+    lagResults$lag <- rep(lags:1, 4)
+    lagResults$type <- rep(c("AR", "CL"), each = lags)
+        
+
+    lagResults <- lagResults[c(7, 8, 9, 3, 4, 5, 6)]
+    names(lagResults) <- c("Parameter", "lag", "type", "est", "se", "pvalue", "est.std")
+    rownames(lagResults) <- NULL
 
     return(lagResults)
 
@@ -2126,8 +2135,18 @@ check_coverage <- function(file_path) {
 #' `getLags()` extracts the estimates of laged effects from panelcoder output
 #'
 #' @param pcOutput output from a panelcoder run.
+#' @param lag If desired, specify which lag to report.
+#' @param type If desired, specify which type (AR or CL) to report.
 #' @export
-getLags <- function(pcOutput) {
+getLags <- function(pcOutput, lag = NULL, type = c("AR", "CL")) {
+    if (!is.null(lag)) {
+        if (!is.numeric(lag) || length(lag) !=1 ||
+            lag %% 1 != 0 || lag > pcOutput[[1]]$lags) {
+            stop("`lag` must be a single integer between 1 and ",
+                 pcOutput[[1]]$lags, call. = FALSE)
+        }
+    }
+        
     program <- pcOutput[[1]]$program
     if (program == "Mplus") {
         lags <- .summarizeMplusLags(
@@ -2142,8 +2161,12 @@ getLags <- function(pcOutput) {
             lags = pcOutput[[1]]$lags
         )
     }
+
+    if (!is.null(lag)) {
+        lags <- lags[which(lags$lag==lag),]
+    }
+    if (length(type) == 1) {
+        lags <- lags[which(lags$type==type),]
+    }
     return(lags)
 }
-
-
-    
