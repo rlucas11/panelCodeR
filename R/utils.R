@@ -2121,11 +2121,12 @@ check_coverage <- function(file_path) {
 }
 
 
-#' Print lags
-#' @param program Which program used
-#' @param info Basic info about model 
-#' @param fitObject Lavaan object
-#' @noRd
+#' Print estimates of lagged effects
+#'
+#' `getLags()` extracts the estimates of laged effects from panelcoder output
+#'
+#' @param pcOutput output from a panelcoder run.
+#' @export
 getLags <- function(pcOutput) {
     program <- pcOutput[[1]]$program
     if (program == "Mplus") {
