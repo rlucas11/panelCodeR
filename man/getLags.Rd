@@ -4,10 +4,14 @@
 \alias{getLags}
 \title{Print estimates of lagged effects}
 \usage{
-getLags(pcOutput)
+getLags(pcOutput, lag = NULL, type = c("AR", "CL"))
 }
 \arguments{
 \item{pcOutput}{output from a panelcoder run.}
+
+\item{lag}{If desired, specify which lag to report.}
+
+\item{type}{If desired, specify which type (AR or CL) to report.}
 }
 \description{
 \code{getLags()} extracts the estimates of laged effects from panelcoder output

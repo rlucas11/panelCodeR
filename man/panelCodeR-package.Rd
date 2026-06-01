@@ -11,5 +11,10 @@ This package produces and then runs lavaan and Mplus code for various models for
 \author{
 \strong{Maintainer}: Richard Lucas \email{richard.e.lucas@gmail.com} (\href{https://orcid.org/0000-0002-7995-3319}{ORCID})
 
+Authors:
+\itemize{
+  \item Richard Lucas \email{richard.e.lucas@gmail.com} (\href{https://orcid.org/0000-0002-7995-3319}{ORCID})
+}
+
 }
 \keyword{internal}
