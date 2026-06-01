@@ -38,8 +38,6 @@ The central intermediate representation is a **parameter table** (a data frame w
 
 - **`R/panelCodeR.R`** — the `panelcoder()` user-facing entry point and `.buildModel()` internal dispatcher. `.buildModel()` maps each `panelModel` string to a set of boolean flags (trait, ar, state, crossLag, dpm_c, etc.) and passes them to `.buildTable()`.
 - **`R/buildParTable.R`** — `.buildTable()` constructs the initial parameter table from data info. Also contains `.buildObserved()` (measurement model rows) and related helpers.
-- **`R/buildModel.R`** — string-based lavaan code builders (legacy path; still used by `buildLavaan()`, `lavaanStarts2()`, etc.). These build lavaan model strings directly rather than via parameter tables.
-- **`R/buildDpm.R`** — string-based Mplus code builders for the DPM variants (`buildDpmLavaan.R` does the lavaan version of DPM).
 - **`R/buildConstraints.R`** — post-processing constraint functions applied to the parameter table: `.constrainStability()`, `.constrainCl()`, `.constrainStateVar()`, `.constrainLoadings()`, `.constrainResidVar()`, `.constrainDpmLoadings()`, `.arStationarity()`, `.buildLimits()`, etc.
 - **`R/fromLavaan.R`** — `lav2mplus()` and `lav2lavaan()` translate the parameter table to final model syntax strings.
 - **`R/utils.R`** — `getInfo()` parses the data frame column names to extract variable names, wave numbers, and indicator counts. This is the first thing called in `panelcoder()` and its output (`info`) is threaded through most internal functions.
@@ -67,6 +65,10 @@ The central intermediate representation is a **parameter table** (a data frame w
 8. `errorM` — captured error message (or NULL)
 
 Access the raw lavaan object via `pcOutput[[4]]`; use `modelCode(pcOutput)` to print model syntax.
+
+## Directories to ignore
+
+The `mplus/` directory contains `.inp` and `.out` files generated at runtime when `panelcoder()` is called with `program = "mplus"`. These are build artifacts — do not read or evaluate them.
 
 ### Model variants and the panelModel flag
 
