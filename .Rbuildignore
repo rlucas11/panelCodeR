@@ -8,9 +8,9 @@
 ^images$
 ^testTidySem\.R$
 ^oldCode$
+^dev$
 info.md
 ^testData2\.csv$
 ^testDataI\.csv$
-^tests$
 ^doc$
 ^Meta$

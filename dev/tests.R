@@ -4,9 +4,9 @@ load_all()
 
 ## library(panelCodeR)
 
-dataI <- read_csv("tests/testDataI.csv")
-data2 <- read_csv("tests/testData2.csv")
-data <- read_csv("tests/test_data.csv")
+dataI <- read_csv("dev/testDataI.csv")
+data2 <- read_csv("dev/testData2.csv")
+data <- read_csv("dev/test_data.csv")
 
 
 ################################################################################
@@ -48,11 +48,11 @@ endC <- (2*waves)+(2*waves*indicators)
 data_starts_cl_I <- data_starts_cl[,startC:endC]
 data_starts_cl <- data_starts_cl[,1:(2*waves)]
 
-write_csv(data_starts_cl_I, "tests/data_starts_cl_I.csv")
-write_csv(data_starts_cl, "tests/data_starts_cl.csv")
+write_csv(data_starts_cl_I, "dev/data_starts_cl_I.csv")
+write_csv(data_starts_cl, "dev/data_starts_cl.csv")
 
-dataI <- read_csv("tests/data_starts_cl_I.csv")
-data <- read_csv("tests/data_starts_cl.csv")
+dataI <- read_csv("dev/data_starts_cl_I.csv")
+data <- read_csv("dev/data_starts_cl.csv")
 
 m_starts <- panelcoder(data = data,
                        panelModel = "starts",
@@ -96,11 +96,11 @@ endC <- (2*waves)+(2*waves*indicators)
 data_starts_I <- data_starts[,startC:endC]
 data_starts <- data_starts[,1:(2*waves)]
 
-write_csv(data_starts_I, "tests/data_starts_I.csv")
-write_csv(data_starts, "tests/data_starts.csv")
+write_csv(data_starts_I, "dev/data_starts_I.csv")
+write_csv(data_starts, "dev/data_starts.csv")
 
-dataI <- read_csv("tests/data_starts_I.csv")
-data <- read_csv("tests/data_starts.csv")
+dataI <- read_csv("dev/data_starts_I.csv")
+data <- read_csv("dev/data_starts.csv")
 
 m_starts <- panelcoder(data = data,
                        panelModel = "starts",
