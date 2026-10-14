@@ -39,24 +39,9 @@ compareModels <- function(data,
             }
         )
         if (!is.na(pcOut[1])) {
-            compareOut[i] <- list(.collectResults(pcOut)[1, 1:14])
+            compareOut[i] <- list(.collectResults(pcOut))
         } else {
-            compareOut[i] <- list(data.frame(
-                trait = NA,
-                ar = NA,
-                st = NA,
-                stab = NA,
-                aic = NA,
-                bic = NA,
-                chisq = NA,
-                df = NA,
-                cfi = NA,
-                tli = NA,
-                srmr = NA,
-                rmsea = NA,
-                warning = NA,
-                error = NA
-            ))
+            compareOut[i] <- list(.collectResults(list(NULL)))
         }
         compareOut[[i]]$model <- models[[i]]
     }
@@ -71,96 +56,17 @@ compareModels <- function(data,
 
 
 .collectResults <- function(fit) {
-    singleModelResults <- data.frame(
-        trait = numeric(),
-        ar = numeric(),
-        st = numeric(),
-        stab = numeric(),
-        aic = numeric(),
-        bic = numeric(),
-        chisq = numeric(),
-        df = numeric(),
-        cfi = numeric(),
-        tli = numeric(),
-        srmr = numeric(),
-        rmsea = numeric(),
-        warning = character(0),
-        error = character(0)
-    )
-    if (!is.null(fit[[1]])) {
-        pcResults <- fit[[1]]
-        if (!is.null(pcResults$trait.x)) {
-            singleModelResults[1, 1] <- pcResults$trait.x
-        } else {
-            singleModelResults[1, 1] <- NA
-        }
-        if (!is.null(pcResults$ar.x)) {
-            singleModelResults[1, 2] <- pcResults$ar.x
-        } else {
-            singleModelResults[1, 2] <- NA
-        }
-        if (!is.null(pcResults$state.x)) {
-            singleModelResults[1, 3] <- pcResults$state.x
-        } else {
-            singleModelResults[1, 3] <- NA
-        }
-        if (!is.null(pcResults$x.stab)) {
-            singleModelResults[1, 4] <- pcResults$x.stab
-        } else {
-            singleModelResults[1, 4] <- NA
-        }
-        if (!is.null(pcResults$aic)) {
-            singleModelResults[1, 5] <- pcResults$aic
-        } else {
-            singleModelResults[1, 5] <- NA
-        }
-        if (!is.null(pcResults$bic)) {
-            singleModelResults[1, 6] <- pcResults$bic
-        } else {
-            singleModelResults[1, 6] <- NA
-        }
-        if (!is.null(pcResults$chi2)) {
-            singleModelResults[1, 7] <- pcResults$chi2
-        } else {
-            singleModelResults[1, 7] <- NA
-        }
-        if (!is.null(pcResults$chi2df)) {
-            singleModelResults[1, 8] <- pcResults$chi2df
-        } else {
-            singleModelResults[1, 8] <- NA
-        }
-        if (!is.null(pcResults$chi2p)) {
-            singleModelResults[1, 7] <- pcResults$chi2p
-        } else {
-            singleModelResults[1, 7] <- NA
-        }
-        if (!is.null(pcResults$cfi)) {
-            singleModelResults[1, 9] <- pcResults$cfi
-        } else {
-            singleModelResults[1, 9] <- NA
-        }
-        if (!is.null(pcResults$tli)) {
-            singleModelResults[1, 10] <- pcResults$tli
-        } else {
-            singleModelResults[1, 10] <- NA
-        }
-        if (!is.null(pcResults$srmr)) {
-            singleModelResults[1, 11] <- pcResults$srmr
-        } else {
-            singleModelResults[1, 11] <- NA
-        }
-        if (!is.null(pcResults$rmsea)) {
-            singleModelResults[1, 12] <- pcResults$rmsea
-        } else {
-            singleModelResults[1, 12] <- NA
-        }
-    }
-    if (!is.null(fit[[7]])) {
-        singleModelResults[1,13] <- fit[[7]]
-    }
-    if (!is.null(fit[[8]])) { 
-        singleModelResults[1,14] <- fit[[8]]
-    }
-    return(singleModelResults)
+    fields <- c(trait = "trait.x", ar = "ar.x", st = "state.x",
+                stab = "x.stab", aic = "aic", bic = "bic",
+                chisq = "chi2", df = "chi2df", chisqp = "chi2p",
+                cfi = "cfi", tli = "tli", srmr = "srmr", rmsea = "rmsea")
+    pcResults <- fit[[1]]
+    values <- lapply(fields, function(f) {
+        v <- if (!is.null(pcResults)) pcResults[[f]]
+        if (is.null(v)) NA_real_ else v
+    })
+    out <- as.data.frame(values)
+    out$warning <- if (length(fit) >= 7 && !is.null(fit[[7]])) fit[[7]] else NA_character_
+    out$error <- if (length(fit) >= 8 && !is.null(fit[[8]])) fit[[8]] else NA_character_
+    out
 }
-    
