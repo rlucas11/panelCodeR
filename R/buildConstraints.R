@@ -186,23 +186,28 @@
 
 
 ## Impose stationarity on AR part of model.
-.arStationarity <- function(parTable, info, constrainCor=TRUE, zero=FALSE) {
+## When initial = FALSE (e.g., dpm_p, where wave 1 is a free initial
+## condition), wave 1 is left unconstrained and only waves 2+ are equated.
+.arStationarity <- function(parTable, info, constrainCor=TRUE, zero=FALSE,
+                            initial=TRUE) {
     ## Constraint for X Variance
     ## Wave 2
-    if (info$gen$yVar==TRUE) {
-        xvar_c <- "xvar1 - a_1_2*a_1_2*xvar1 - d_1_2*d_1_2*yvar1 - 2*a_1_2*cov_ar1*d_1_2"
-    } else {
-        xvar_c <- "xvar1 - a_1_2*a_1_2*xvar1"
-    }
-    parTable <- do.call(
-        .buildConstraint,
-        list(
-            parTable,
-            "xvar2",
-            "==",
-            xvar_c
+    if (initial == TRUE) {
+        if (info$gen$yVar==TRUE) {
+            xvar_c <- "xvar1 - a_1_2*a_1_2*xvar1 - d_1_2*d_1_2*yvar1 - 2*a_1_2*cov_ar1*d_1_2"
+        } else {
+            xvar_c <- "xvar1 - a_1_2*a_1_2*xvar1"
+        }
+        parTable <- do.call(
+            .buildConstraint,
+            list(
+                parTable,
+                "xvar2",
+                "==",
+                xvar_c
+            )
         )
-    )
+    }
     ## Waves beyond 2
     if (info$gen$maxWave > 2) {
         for (i in 3:info$gen$maxWave) {
@@ -219,15 +224,17 @@
     }
     if (info$gen$yVar == TRUE) {
         ## Constraint for Y Variance
-        parTable <- do.call(
-            .buildConstraint,
-            list(
-                parTable,
-                "yvar2",
-                "==",
-                "yvar1 - b_1_2*b_1_2*yvar1 - c_1_2*c_1_2*xvar1 - 2*b_1_2*cov_ar1*c_1_2"
+        if (initial == TRUE) {
+            parTable <- do.call(
+                .buildConstraint,
+                list(
+                    parTable,
+                    "yvar2",
+                    "==",
+                    "yvar1 - b_1_2*b_1_2*yvar1 - c_1_2*c_1_2*xvar1 - 2*b_1_2*cov_ar1*c_1_2"
+                )
             )
-        )
+        }
         if (info$gen$maxWave > 2) {
             for (i in 3:info$gen$maxWave) {
                 parTable <- do.call(
@@ -243,7 +250,7 @@
         }
         ## Wave 2 Covariance
         if (constrainCor == TRUE) {
-            if (zero == FALSE) {
+            if (zero == FALSE & initial == TRUE) {
                 parTable <- do.call(
                     .buildConstraint,
                     list(
@@ -253,7 +260,7 @@
                         "(1-a_1_2*b_1_2-c_1_2*d_1_2)*cov_ar1-a_1_2*c_1_2*xvar1-b_1_2*d_1_2*yvar1"
                     )
                 )
-            } else {
+            } else if (zero == TRUE) {
                 parTable <- do.call(
                     .buildConstraint,
                     list(
@@ -507,6 +514,15 @@
                 ">",
                 0
             )
+            ## dpm_p leaves wave 2 innovation variance free of wave 1
+            if (!is.null(panelModel) && panelModel == "dpm_p") {
+                parTable <- .buildConstraint(
+                    parTable,
+                    "xvar2",
+                    ">",
+                    0
+                )
+            }
         }
         if (info$gen$yVar == TRUE) {
             if (stationarity != "full") {
@@ -525,6 +541,15 @@
                     ">",
                     0
                 )
+                ## dpm_p leaves wave 2 innovation variance free of wave 1
+                if (!is.null(panelModel) && panelModel == "dpm_p") {
+                    parTable <- .buildConstraint(
+                        parTable,
+                        "yvar2",
+                        ">",
+                        0
+                    )
+                }
             }
         }
     }

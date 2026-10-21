@@ -1551,132 +1551,47 @@
     }
 }
 
-.buildPredetermined <- function(info, slope) {
+.buildPredetermined <- function(info, slope, trait = TRUE) {
     yVar <- info$gen$yVar
     xName <- info$x$name
+    varNames <- c(x = xName)
 
     if (yVar == TRUE) {
         yName <- info$y$name
+        varNames <- c(x = xName, y = yName)
     }
 
+    ## Only correlate initial impulses with factors that exist in the model
+    factors <- character()
+    if (trait == TRUE) {
+        factors <- c(factors, "t")
+    }
+    if (slope != "none") {
+        factors <- c(factors, "sl")
+    }
+    if (length(factors) == 0) {
+        return(NULL)
+    }
+
+    pairs <- expand.grid(
+        factor = factors,
+        fVar = names(varNames),
+        iVar = names(varNames),
+        stringsAsFactors = FALSE
+    )
+
     corParTable <- data.frame(
-        lhs = paste("t", xName, sep = "_"),
+        lhs = paste(pairs$factor, varNames[pairs$fVar], sep = "_"),
         op = "~~",
-        rhs = paste("i", xName, 1, sep = "_"),
+        rhs = paste("i", varNames[pairs$iVar], 1, sep = "_"),
         user = 1,
         block = 1,
         group = 1,
         free = 1,
         ustart = NA,
         exo = 0,
-        label = "c_tx_ix"
+        label = paste0("c_", pairs$factor, pairs$fVar, "_i", pairs$iVar)
     )
-
-    if (slope != "none") {
-        sCorParTable <- data.frame(
-            lhs = paste("sl", xName, sep = "_"),
-            op = "~~",
-            rhs = paste("i", xName, 1, sep = "_"),
-            user = 1,
-            block = 1,
-            group = 1,
-            free = 1,
-            ustart = NA,
-            exo = 0,
-            label = "c_slx_ix"
-        )
-        corParTable <- do.call(
-            rbind,
-            list(
-                corParTable,
-                sCorParTable
-            )
-        )
-    }
-
-    if (yVar == TRUE) {
-        yCorParTable <- data.frame(
-            lhs = paste("t", yName, sep = "_"),
-            op = "~~",
-            rhs = paste("i", yName, 1, sep = "_"),
-            user = 1,
-            block = 1,
-            group = 1,
-            free = 1,
-            ustart = NA,
-            exo = 0,
-            label = "c_ty_iy"
-        )
-        y2CorParTable <- data.frame(
-            lhs = paste("t", xName, sep = "_"),
-            op = "~~",
-            rhs = paste("i", yName, 1, sep = "_"),
-            user = 1,
-            block = 1,
-            group = 1,
-            free = 1,
-            ustart = NA,
-            exo = 0,
-            label = "c_tx_iy"
-        )
-        y3CorParTable <- data.frame(
-            lhs = paste("t", yName, sep = "_"),
-            op = "~~",
-            rhs = paste("i", xName, 1, sep = "_"),
-            user = 1,
-            block = 1,
-            group = 1,
-            free = 1,
-            ustart = NA,
-            exo = 0,
-            label = "c_ty_ix"
-        )
-
-        corParTable <- do.call(
-            rbind,
-            list(
-                corParTable,
-                yCorParTable,
-                y2CorParTable,
-                y3CorParTable
-            )
-        )
-
-        if (slope != "none") {
-            syCorParTable <- data.frame(
-                lhs = paste("sl", yName, sep = "_"),
-                op = "~~",
-                rhs = paste("i", yName, 1, sep = "_"),
-                user = 1,
-                block = 1,
-                group = 1,
-                free = 1,
-                ustart = NA,
-                exo = 0,
-                label = "c_sly_ix"
-            )
-            sy2CorParTable <- data.frame(
-                lhs = paste("sl", xName, sep = "_"),
-                op = "~~",
-                rhs = paste("i", yName, 1, sep = "_"),
-                user = 1,
-                block = 1,
-                group = 1,
-                free = 1,
-                ustart = NA,
-                exo = 0,
-                label = "c_slx_iy"
-            )
-            corParTable <- do.call(
-                rbind,
-                list(
-                    corParTable,
-                    syCorParTable,
-                    sy2CorParTable
-                )
-            )
-        }
-    }
     corParTable$from <- "cors"
     return(corParTable)
 }
@@ -2181,7 +2096,7 @@
     }
 
     if (trait == FALSE & gclm == FALSE) {
-        traitCors == FALSE
+        traitCors <- FALSE
     }
 
     if (ar == FALSE) {
@@ -2192,8 +2107,8 @@
         stateCors <- FALSE
     }
 
-    if (dpm_c == TRUE | dpm_p == TRUE | gclm == TRUE) {
-        predetermined == FALSE
+    if (dpm_c == TRUE | dpm_p == TRUE | gclm == TRUE | ar == FALSE) {
+        predetermined <- FALSE
     }
     
     components <- list(
@@ -2215,7 +2130,7 @@
                           trait = traitCors,
                           state = stateCors,
                           slope = slope),
-        preDetCors  = .buildPredetermined(info, slope),
+        preDetCors  = .buildPredetermined(info, slope, trait = trait),
         dpmTraitCors = .buildDpmTraitCors(info),
         dpmCors = .buildDpmCors(info, slope = slope),
         dpmLoadings = .buildDpmLoadings(info),
@@ -2268,6 +2183,14 @@
     }
     if (slope == "none") {
         components$slopes <- NULL
+    }
+    ## Drop trait-slope covariances for models with no trait factor (e.g.,
+    ## ARTS, CLPM); DPM and GCLM models still have a t_ factor and keep them
+    if (slope != "none" & trait == FALSE & dpm_c == FALSE & dpm_p == FALSE &
+        gclm == FALSE & !is.null(components$cors)) {
+        cors <- components$cors
+        cors <- cors[!(startsWith(cors$lhs, "t_") & startsWith(cors$rhs, "sl_")), ]
+        components$cors <- if (nrow(cors) > 0) cors else NULL
     }
     if (measurement == FALSE) {
         components$measurement <- NULL
@@ -2368,6 +2291,20 @@
             label = rep("", length(observedVarInfo$varName)),
             from = rep("int.ov", length(observedVarInfo$varName))
         )
+        ## Models with a slope but no trait factor (e.g., ARTS, CLPM) have no
+        ## latent intercept to carry the mean, so free the observed intercepts
+        ## but constrain them equal across waves (slope mean captures change)
+        for (v in unique(observedVarInfo$variable)) {
+            if (!(paste("t", v, sep = "_") %in% latentVarInfo$varName)) {
+                rows <- which(observedVarInfo$variable == v)
+                indicator <- observedVarInfo$indicator[rows]
+                int.ov$free[rows] <- 1
+                int.ov$ustart[rows] <- NA
+                int.ov$label[rows] <- ifelse(is.na(indicator) | indicator == "",
+                                             paste("int", v, sep = "_"),
+                                             paste("int", v, indicator, sep = "_"))
+            }
+        }
     }
 
 

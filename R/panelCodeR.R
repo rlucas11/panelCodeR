@@ -341,7 +341,7 @@
         } else {
             zero <- FALSE
         }
-        model <- .arStationarity(model, info, zero=zero)
+        model <- .arStationarity(model, info, zero=zero, initial=!dpm_p)
     }
 
     ## Constrain state variances
@@ -457,6 +457,9 @@
 #'   constrains the stability and cross-lagged paths to be equal. Can also be
 #'   set to "full" which also constrains variance in the autoregressive
 #'   process to be equal across waves or "none" which removes all constraints.
+#'   For the predetermined DPM ("dpm_p"), "full" leaves the wave 1 variances
+#'   free and constrains innovation variances and covariances to be equal from
+#'   wave 2 onward (use "dpm_c" for a fully stationary DPM).
 #' @param constrainState Logical value indicating whether to constrain state
 #'   variances to be equal across waves. Defaults to TRUE.
 #' @param invariance Logical value indicating whether to constrain loadings for
@@ -582,6 +585,10 @@ panelcoder <- function(data,
         panelModel %in% c("starts", "riclpm", "sts", "gclm", "lgcm", "alt", "lcmsr",
                           "dpm_c", "dpm_p")) {
         stop("Lags greater than 1 not implemented when there is a random intercept. Choose a different model.")
+    }
+
+    if (panelModel == "dpm_p" & stationarity == "full") {
+        warning("Full stationarity of the initial wave is incompatible with the predetermined DPM. Wave 1 variances are left free; stability paths and innovation variances/covariances are constrained equal from wave 2 onward. Use dpm_c for a fully stationary DPM.")
     }
 
     if (lags > 1 & stationarity == "full") {

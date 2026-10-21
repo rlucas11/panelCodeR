@@ -107,7 +107,10 @@ If you wish to remove this option, set \code{rstarts} to NULL.}
 stationarity in the autoregressive process. Defaults to "paths" which
 constrains the stability and cross-lagged paths to be equal. Can also be
 set to "full" which also constrains variance in the autoregressive
-process to be equal across waves or "none" which removes all constraints.}
+process to be equal across waves or "none" which removes all constraints.
+For the predetermined DPM ("dpm_p"), "full" leaves the wave 1 variances
+free and constrains innovation variances and covariances to be equal from
+wave 2 onward (use "dpm_c" for a fully stationary DPM).}
 
 \item{constrainState}{Logical value indicating whether to constrain state
 variances to be equal across waves. Defaults to TRUE.}
