@@ -51,3 +51,19 @@ test_that("lavaan code: starts (bivariate, 3 indicators)", {
     d <- make_pc_data(nwaves = 5, indicators = 3, bivariate = TRUE)
     expect_snapshot(cat(pc_code(d, panelModel = "starts", program = "lavaan")))
 })
+
+test_that("lavaan code: starts with free trait loadings (bivariate, single indicator)", {
+    expect_snapshot(cat(pc_code(biv, panelModel = "starts", traitLoadings = "free",
+                                program = "lavaan")))
+})
+
+test_that("free trait loadings stay fixed on phantom waves", {
+    phantom <- make_pc_data(waves = c(1, 2, 4, 5))
+    model <- suppressWarnings(.buildModel(phantom, panelModel = "starts",
+                                          stationarity = "full",
+                                          traitLoadings = "free"))
+    loadings <- model[model$lhs == "t_x" & model$op == "=~", ]
+    expect_equal(loadings$free[loadings$rhs %in% c("l_x_1", "l_x_3")], c(0, 0))
+    expect_equal(loadings$ustart[loadings$rhs %in% c("l_x_1", "l_x_3")], c(1, 1))
+    expect_true(all(loadings$free[loadings$rhs %in% c("l_x_2", "l_x_4", "l_x_5")] == 1))
+})

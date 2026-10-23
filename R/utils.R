@@ -1911,6 +1911,26 @@ addIndicators <- function(df, var, indicators, labelType="numbers", sd = 1) {
 ## Functions to check for errors in mplus output
 ################################################################################
 
+## Returns NULL if Mplus ran, otherwise a message describing why it did not
+check_mplus_error <- function(file_path) {
+  if (!file.exists(file_path)) {
+    return(paste0("Mplus output file not found: ", file_path,
+                  ". Check that Mplus is installed and on the path."))
+  }
+  lines <- readLines(file_path, warn = FALSE)
+
+  # Mplus errors start with "*** ERROR" followed by indented explanation lines
+  start <- grep("^\\*\\*\\* ERROR", lines)
+  if (length(start) == 0) {
+    return(NULL)
+  }
+  end <- start[1]
+  while (end < length(lines) && grepl("\\S", lines[end + 1])) {
+    end <- end + 1
+  }
+  return(paste(trimws(lines[start[1]:end]), collapse = " "))
+}
+
 check_nonpos <- function(file_path) {
   # Read the entire file as a single string
   text <- paste(readLines(file_path, warn = FALSE), collapse = "\n")

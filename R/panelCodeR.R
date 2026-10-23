@@ -16,7 +16,8 @@
                         clma = FALSE,
                         slope = "none",
                         state = FALSE,
-                        measurement = FALSE
+                        measurement = FALSE,
+                        traitLoadings = "fixed"
                         ) {
     ## Collect basic info
     info <- getInfo(data)
@@ -295,7 +296,8 @@
         ma = ma,
         clma = clma,
         slope = slope,
-        measurement = measurement
+        measurement = measurement,
+        traitLoadings = traitLoadings
     )
 
     ## Build table and collect parameters
@@ -463,7 +465,18 @@
 #' @param constrainState Logical value indicating whether to constrain state
 #'   variances to be equal across waves. Defaults to TRUE.
 #' @param invariance Logical value indicating whether to constrain loadings for
-#'   the same item to be equal across waves. 
+#'   the same item to be equal across waves.
+#' @param traitLoadings String indicating how to treat loadings on the stable
+#'   trait (random intercept). Can be "fixed" (the default), which fixes all
+#'   loadings to 1, or "free", which fixes the wave 1 loading to 1 and freely
+#'   estimates the rest (loadings on phantom waves stay fixed at 1). Only used
+#'   for the STARTS, RI-CLPM, STS, and LCM-SR models. Because wave 1 is the
+#'   marker, the variance decomposition in the summary refers to wave 1. Under
+#'   "full" stationarity, the free loadings absorb any change in observed
+#'   variances over time, including change that may actually reflect a
+#'   nonstationary autoregressive process. Free loadings are identified but
+#'   less precisely estimated, especially with few waves and stationarity set
+#'   to "none".
 #' @param mplusAnalysis Quoted text. Specify ANLYSIS command for mplus. Defaults
 #'   to "MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;". If you change this, including
 #'   "MODEL=NOCOVARIANCES" is highly recommended given the way the model is
@@ -507,6 +520,7 @@ panelcoder <- function(data,
                        stationarity = "paths",
                        constrainState = TRUE,
                        invariance = TRUE,
+                       traitLoadings = "fixed",
                        mplusAnalysis = NULL,
                        mplusOutput = NULL,
                        mplusDirectory = "mplus",
@@ -596,6 +610,25 @@ panelcoder <- function(data,
         stationarity = "paths"
     }
 
+    ## Check trait loading options
+    if ((traitLoadings %in% c("fixed", "free")) == FALSE) {
+        stop("Use 'fixed' or 'free' for traitLoadings option.")
+    }
+
+    if (traitLoadings == "free") {
+        if ((panelModel %in% c("starts", "riclpm", "start", "sts", "lcmsr")) == FALSE) {
+            warning("Free trait loadings only implemented for STARTS, RI-CLPM, STS, and LCM-SR models. traitLoadings set to 'fixed'.")
+            traitLoadings <- "fixed"
+        } else {
+            if (limits == FALSE) {
+                warning("Models with free trait loadings can converge to inadmissible local solutions when limits = FALSE.")
+            }
+            if (stationarity == "none" & info$gen$maxWaves <= 5) {
+                warning("Free trait loadings with no stationarity constraints and five or fewer waves are barely identified; estimates will be imprecise.")
+            }
+        }
+    }
+
     
     model <- .buildModel(data = data,
                          panelModel = panelModel,
@@ -613,7 +646,8 @@ panelcoder <- function(data,
                          stationarity = stationarity,
                          constrainState = constrainState,
                          invariance = invariance,
-                         residVar = residVar
+                         residVar = residVar,
+                         traitLoadings = traitLoadings
                          )
 
     ## Lavaan
@@ -741,28 +775,36 @@ panelcoder <- function(data,
                     modelout = file_inp,
                     run = 1
                 )
-                nonpos <- check_nonpos(file_out)
-                if (nonpos) {
-                    warningM <- "Non-positive definite matrix"
-                }
-                noSe <- check_se(file_out)
-                if (noSe) {
+                ## Check that Mplus actually ran before looking for
+                ## estimation problems
+                mplusError <- check_mplus_error(file_out)
+                if (!is.null(mplusError)) {
                     success <- FALSE
-                    errorM <- "Standard errors could not be computed"
-                }
-                noConv <- check_convergence(file_out)
-                if (noConv) {
-                    success <- FALSE
-                    errorM <- "No convergence"
-                }
-                sparse <- check_sparse(file_out)
-                if (sparse) {
-                    success <- FALSE
-                    errorM <- "No convergence; Sparse Matrix"
-                }
-                coverage <- check_coverage(file_out)
-                if (coverage) {
-                    warningM <- "Coverage warning"
+                    errorM <- mplusError
+                } else {
+                    nonpos <- check_nonpos(file_out)
+                    if (nonpos) {
+                        warningM <- "Non-positive definite matrix"
+                    }
+                    noSe <- check_se(file_out)
+                    if (noSe) {
+                        success <- FALSE
+                        errorM <- "Standard errors could not be computed"
+                    }
+                    noConv <- check_convergence(file_out)
+                    if (noConv) {
+                        success <- FALSE
+                        errorM <- "No convergence"
+                    }
+                    sparse <- check_sparse(file_out)
+                    if (sparse) {
+                        success <- FALSE
+                        errorM <- "No convergence; Sparse Matrix"
+                    }
+                    coverage <- check_coverage(file_out)
+                    if (coverage) {
+                        warningM <- "Coverage warning"
+                    }
                 }
                 list(
                     fit = fit,
@@ -781,15 +823,29 @@ panelcoder <- function(data,
                     )
                 },
             error = function(e) {
-                conditionMessage(e)
                 list(
                     fit = fit,
                     success = FALSE,
                     warningM = warningM,
-                    errorM = errorM
+                    errorM = conditionMessage(e)
                 )
             }
             )
+
+            ## Guard against runs that ended without estimates (e.g., when a
+            ## warning interrupted the run) so the summary does not fail
+            if (output$success == TRUE &
+                is.null(output$fit$results$parameters$unstandardized)) {
+                output$success <- FALSE
+                mplusError <- check_mplus_error(file_out)
+                if (!is.null(mplusError)) {
+                    output$errorM <- mplusError
+                } else {
+                    output$errorM <- paste0("Mplus did not produce parameter estimates. ",
+                                            "Check the Mplus output file in '",
+                                            mplusDirectory, "'.")
+                }
+            }
 
             if (output$success == TRUE) {
                 pcSum <- .summarizeMplus(panelModel,

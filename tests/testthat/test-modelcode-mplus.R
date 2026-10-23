@@ -45,3 +45,8 @@ test_that("mplus code: starts (bivariate, 3 indicators)", {
     d <- make_pc_data(nwaves = 5, indicators = 3, bivariate = TRUE)
     expect_snapshot(cat(pc_code(d, panelModel = "starts", program = "mplus")))
 })
+
+test_that("mplus code: starts with free trait loadings (bivariate, single indicator)", {
+    expect_snapshot(cat(pc_code(biv, panelModel = "starts", traitLoadings = "free",
+                                program = "mplus")))
+})

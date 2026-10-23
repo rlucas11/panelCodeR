@@ -562,26 +562,23 @@
         label = character()
     )
 
-    ## Create loadings
-    if (free == FALSE) {
-        freeValues <- rep(0, length(info$x$waves))
-        ustartValues <- rep(1, length(info$x$waves))
-        xLabelsValues <- rep("", length(info$x$waves))
-        if (yVar == TRUE) {
-            yLabelsValues <- rep("", length(info$y$waves))
-        }
-    } else {
-        freeValues <- c(0, rep(1, (length(info$x$waves)-1)))
-        ustartValues <- c(1, rep(NA, (length(info$x$waves)-1)))
-        xLabelsValues <- paste0("xtl_", info$x$waves)
-        if (yVar == TRUE) {
-            yLabelsValues <- paste0("ytl_", info$y$waves)
-        }
+    ## Create loadings. When free, wave 1 is the marker (fixed to 1) and
+    ## loadings on phantom waves stay fixed because they are not identified.
+    .loadingValues <- function(varInfo, prefix) {
+        freeWave <- free == TRUE &
+            varInfo$waves != 1 &
+            varInfo$waves %in% varInfo$actualWaves
+        list(
+            free = ifelse(freeWave, 1, 0),
+            ustart = ifelse(freeWave, NA, 1),
+            label = ifelse(freeWave, paste0(prefix, varInfo$waves), "")
+        )
+    }
+    xValues <- .loadingValues(info$x, "xtl_")
+    if (yVar == TRUE) {
+        yValues <- .loadingValues(info$y, "ytl_")
     }
 
-    
-    
-    
     for (w in info$x$waves) {
         loadingParTable <- data.frame(
             lhs = paste("t", xName, sep = "_"),
@@ -590,10 +587,10 @@
             user = 1,
             block = 1,
             group = 1,
-            free = freeValues[w],
-            ustart = ustartValues[w],
+            free = xValues$free[w],
+            ustart = xValues$ustart[w],
             exo = 0,
-            label = xLabelsValues[w]
+            label = xValues$label[w]
         )
         initialParTable <- rbind(
             initialParTable,
@@ -627,10 +624,10 @@
                 user = 1,
                 block = 1,
                 group = 1,
-                free = freeValues[w],
-                ustart = ustartValues[w],
+                free = yValues$free[w],
+                ustart = yValues$ustart[w],
                 exo = 0,
-                label = yLabelsValues[w]
+                label = yValues$label[w]
             )
             initialParTable <- rbind(
                 initialParTable,
@@ -2082,7 +2079,8 @@
                         ma = FALSE,
                         clma = FALSE,
                         slope = "none",
-                        measurement = FALSE) {
+                        measurement = FALSE,
+                        traitLoadings = "fixed") {
 
     ## Check if bivariate or univariate
     yVar <- info$gen$yVar
@@ -2117,7 +2115,7 @@
         ar = .buildAr(info),
         imp = .buildImpulses(info),
         residVar = .buildResidVar(info),
-        trait = .buildTrait(info),
+        trait = .buildTrait(info, free = (traitLoadings == "free")),
         dpmTrait = .buildDpmTrait(info),
         gclmTrait = .buildGclmTrait(info),
         stability = .buildStability(info, lags),

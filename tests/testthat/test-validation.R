@@ -84,3 +84,29 @@ test_that("lags > 1 with full stationarity warns and downgrades", {
         biv, panelModel = "clpm", lags = 2, stationarity = "full"
     )
 })
+
+# --- trait loadings -----------------------------------------------------------
+
+test_that("invalid traitLoadings option is rejected", {
+    expect_error(
+        pc_code(biv, panelModel = "starts", traitLoadings = "equal"),
+        "Use 'fixed' or 'free'"
+    )
+})
+
+test_that("free trait loadings are ignored with a warning for unsupported models", {
+    expect_pc_warning("traitLoadings set to 'fixed'",
+                      biv, panelModel = "clpm", traitLoadings = "free")
+})
+
+test_that("free trait loadings without limits warn about local solutions", {
+    expect_pc_warning("inadmissible local solutions",
+                      biv, panelModel = "starts", traitLoadings = "free",
+                      limits = FALSE)
+})
+
+test_that("free trait loadings with no stationarity and few waves warn", {
+    expect_pc_warning("barely identified",
+                      biv, panelModel = "starts", traitLoadings = "free",
+                      stationarity = "none")
+})

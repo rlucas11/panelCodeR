@@ -26,6 +26,7 @@ panelcoder(
   stationarity = "paths",
   constrainState = TRUE,
   invariance = TRUE,
+  traitLoadings = "fixed",
   mplusAnalysis = NULL,
   mplusOutput = NULL,
   mplusDirectory = "mplus",
@@ -117,6 +118,18 @@ variances to be equal across waves. Defaults to TRUE.}
 
 \item{invariance}{Logical value indicating whether to constrain loadings for
 the same item to be equal across waves.}
+
+\item{traitLoadings}{String indicating how to treat loadings on the stable
+trait (random intercept). Can be "fixed" (the default), which fixes all
+loadings to 1, or "free", which fixes the wave 1 loading to 1 and freely
+estimates the rest (loadings on phantom waves stay fixed at 1). Only used
+for the STARTS, RI-CLPM, STS, and LCM-SR models. Because wave 1 is the
+marker, the variance decomposition in the summary refers to wave 1. Under
+"full" stationarity, the free loadings absorb any change in observed
+variances over time, including change that may actually reflect a
+nonstationary autoregressive process. Free loadings are identified but
+less precisely estimated, especially with few waves and stationarity set
+to "none".}
 
 \item{mplusAnalysis}{Quoted text. Specify ANLYSIS command for mplus. Defaults
 to "MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;". If you change this, including
