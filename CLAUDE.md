@@ -75,4 +75,4 @@ The `mplus/` directory contains `.inp` and `.out` files generated at runtime whe
 The `panelModel` argument in `panelcoder()` maps to these strings:
 `"starts"`, `"riclpm"` / `"start"`, `"arts"`, `"clpm"` / `"art"`, `"sts"`, `"dpm_c"`, `"dpm_p"`, `"alt"`, `"gclm"`, `"lgcm"`, `"lcmsr"`, `"measurement"`
 
-Key constraints: lags > 1 are not allowed with random-intercept models; DPM/GCLM cannot use phantom variables; LGCM requires `slope != "none"`.
+Key constraints: lags > 1 are not allowed with random-intercept models; LGCM requires `slope != "none"`.

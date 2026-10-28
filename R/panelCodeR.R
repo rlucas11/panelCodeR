@@ -414,7 +414,7 @@
 #'   should be very short. A warning is provided if these exceed 8 characters.
 #' @param title Title of analysis for mplus
 #' @param panelModel Specific model to run. Can be "starts"(the default),
-#'   "riclpm", "clpm", "arts", "sts", "dpm", "gclm", "alt", "lcmsr", or
+#'   "riclpm", "clpm", "arts", "sts", "dpm_c", "dpm_p", "gclm", "alt", "lcmsr", or
 #'   "measurement".
 #' @param predetermined Logical value indicating whether to use a
 #'   "predetermined" version of a STARTS variant (see Andersen, 2022). This
@@ -575,18 +575,12 @@ panelcoder <- function(data,
         }
     }
 
-    if (panelModel == "dpm" | panelModel == "gclm") {
-        if (length(info$x$waves) != length(info$x$actualWaves)) {
-            stop("Can't have phantom variables when fitting the dynamic panel model or generalized cross-lagged panel model",
-                 call. = FALSE)
-        }
-    }
-    if (panelModel == "dpm_c" |panelModel == "dpm_p" | panelModel == "gclpm") {
-        if (info$gen$yVar == TRUE) {    
-            if (length(info$y$waves) != length(info$y$actualWaves)) {
-                stop("Can't have phantom variables when fitting the dynamic panel model or generalized cross-lagged panel model",
-                     call. = FALSE)
-            }
+    ## Check for gclm with phantom waves that differ between variables
+    if (panelModel == "gclm" & info$gen$yVar == TRUE) {
+        phantomX <- setdiff(info$x$waves, info$x$actualWaves)
+        phantomY <- setdiff(info$y$waves, info$y$actualWaves)
+        if (!setequal(phantomX, phantomY)) {
+            warning("Phantom waves differ between variables. The GCLM can be sensitive to start values in this case and may converge to a local optimum; consider checking results with different start values.")
         }
     }
 
