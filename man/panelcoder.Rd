@@ -27,6 +27,9 @@ panelcoder(
   constrainState = TRUE,
   invariance = TRUE,
   traitLoadings = "fixed",
+  startVals = NULL,
+  startValsRule = "first",
+  iterations = NULL,
   mplusAnalysis = NULL,
   mplusOutput = NULL,
   mplusDirectory = "mplus",
@@ -130,6 +133,53 @@ variances over time, including change that may actually reflect a
 nonstationary autoregressive process. Free loadings are identified but
 less precisely estimated, especially with few waves and stationarity set
 to "none".}
+
+\item{startVals}{Starting values for free parameters. Can be:
+\itemize{
+\item \code{NULL} (the default): use the program's default starting values.
+\item \code{"data"}: data-based starting values. Each variable's variance (the
+wave-level latent variance when there are multiple indicators) is split
+evenly across the variance components in the model (e.g., thirds for
+STARTS, halves for RI-CLPM, ARTS, and STS). Stabilities start at .5,
+innovation variances are consistent with that stability, and
+cross-lagged paths, moving averages, and covariances start at 0. Free
+loadings start at 1.
+\item A named list or vector of values by role, by parameter label, or both,
+e.g., \code{list(stab = .7, cl = 0, trait_x = 2)} or \code{c(a_1_2 = .6, xvar1 = 2.1)}. Roles are \code{stab}, \code{cl}, \code{ma}, \code{clma}, \code{trait}, \code{ar} (wave 1 AR
+variance), \code{innov} (AR innovation variances after wave 1), \code{state},
+\code{slope}, \code{trait_loading}, \code{slope_loading}, \code{loading}, \code{resid},
+\code{resid_cov}, \code{cov_trait}, \code{cov_ar}, \code{cov_innov}, \code{cov_state},
+\code{cov_slope}, \code{cov_trait_slope}, \code{cov_trait_ar}, and \code{cov_slope_ar}. Add
+\verb{_x} or \verb{_y} to apply a value to one variable only (e.g., \code{stab_y}). For
+cross-lagged paths, \code{cl_xy} is the effect of x on y and \code{cl_yx} is the
+effect of y on x. Labels override variable-specific roles, which
+override general roles. Use \code{modelCode()} or the parameter table in
+the returned object to see labels.
+\item A previous \code{panelcoder()} result: its estimates are used as starting
+values for parameters with the same label (e.g., to start a model with
+full stationarity from the solution of a model with stationarity set
+to "paths").
+\item A function with arguments \code{data}, \code{info}, and/or \code{table} that returns
+any of the above.
+\item An unnamed list of any of the above, e.g., \code{list(NULL, "data")}. Each
+set is tried in turn (see \code{startValsRule}). The returned object then
+includes an element \code{startVals}, a data frame describing each attempt.
+}
+
+Only free parameters receive starting values; parameters that are fixed
+or determined by constraints (e.g., later-wave variances under full
+stationarity) are never changed. Parameters that are not given a value
+keep the program default.}
+
+\item{startValsRule}{When \code{startVals} is a list of start value sets, how
+to choose among them. "first" (the default) stops at the first set that
+converges with usable standard errors. "best" runs all sets and keeps the
+converged solution with the highest log-likelihood, which guards against
+local optima.}
+
+\item{iterations}{Maximum number of iterations. For Mplus this adds
+\verb{ITERATIONS=} to the ANALYSIS command; for lavaan it sets \code{iter.max}.
+Defaults to \code{NULL}, which uses the program default (1000 in Mplus).}
 
 \item{mplusAnalysis}{Quoted text. Specify ANLYSIS command for mplus. Defaults
 to "MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;". If you change this, including

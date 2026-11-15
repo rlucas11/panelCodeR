@@ -1976,17 +1976,11 @@ check_convergence <- function(file_path) {
   # Read the entire file as a single string
   text <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
   
-  # Define the target text (collapse newlines and spacing)
-    warning_text <- paste(
-        "NO CONVERGENCE.  NUMBER OF ITERATIONS EXCEEDED.",
-        sep = " "
-  )
-  
-  # Normalize whitespace in both strings before searching
-  normalize_ws <- function(x) gsub("\\s+", " ", x)
-  
-  found <- grepl(normalize_ws(warning_text), normalize_ws(text), fixed = TRUE)
-    
+  # Mplus reports several kinds of nonconvergence, e.g.
+  # "NO CONVERGENCE.  NUMBER OF ITERATIONS EXCEEDED." and
+  # "NO CONVERGENCE.  SERIOUS PROBLEMS IN ITERATIONS."
+  found <- grepl("NO CONVERGENCE.", text, fixed = TRUE)
+
   return(found)
 }
 

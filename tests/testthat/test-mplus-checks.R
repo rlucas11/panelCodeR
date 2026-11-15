@@ -33,3 +33,13 @@ test_that("output without errors returns NULL", {
     path <- write_out(c("INPUT READING TERMINATED NORMALLY", "", "MODEL RESULTS"))
     expect_null(check_mplus_error(path))
 })
+
+test_that("all kinds of Mplus nonconvergence are detected", {
+    expect_true(check_convergence(write_out(c(
+        "     NO CONVERGENCE.  NUMBER OF ITERATIONS EXCEEDED."))))
+    expect_true(check_convergence(write_out(c(
+        "     NO CONVERGENCE.  SERIOUS PROBLEMS IN ITERATIONS.",
+        "     ESTIMATED COVARIANCE MATRIX NON-INVERTIBLE."))))
+    expect_false(check_convergence(write_out(c(
+        "THE MODEL ESTIMATION TERMINATED NORMALLY"))))
+})

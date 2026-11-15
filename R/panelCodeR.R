@@ -477,6 +477,49 @@
 #'   nonstationary autoregressive process. Free loadings are identified but
 #'   less precisely estimated, especially with few waves and stationarity set
 #'   to "none".
+#' @param startVals Starting values for free parameters. Can be:
+#'   * `NULL` (the default): use the program's default starting values.
+#'   * `"data"`: data-based starting values. Each variable's variance (the
+#'     wave-level latent variance when there are multiple indicators) is split
+#'     evenly across the variance components in the model (e.g., thirds for
+#'     STARTS, halves for RI-CLPM, ARTS, and STS). Stabilities start at .5,
+#'     innovation variances are consistent with that stability, and
+#'     cross-lagged paths, moving averages, and covariances start at 0. Free
+#'     loadings start at 1.
+#'   * A named list or vector of values by role, by parameter label, or both,
+#'     e.g., `list(stab = .7, cl = 0, trait_x = 2)` or `c(a_1_2 = .6, xvar1 =
+#'     2.1)`. Roles are `stab`, `cl`, `ma`, `clma`, `trait`, `ar` (wave 1 AR
+#'     variance), `innov` (AR innovation variances after wave 1), `state`,
+#'     `slope`, `trait_loading`, `slope_loading`, `loading`, `resid`,
+#'     `resid_cov`, `cov_trait`, `cov_ar`, `cov_innov`, `cov_state`,
+#'     `cov_slope`, `cov_trait_slope`, `cov_trait_ar`, and `cov_slope_ar`. Add
+#'     `_x` or `_y` to apply a value to one variable only (e.g., `stab_y`). For
+#'     cross-lagged paths, `cl_xy` is the effect of x on y and `cl_yx` is the
+#'     effect of y on x. Labels override variable-specific roles, which
+#'     override general roles. Use `modelCode()` or the parameter table in
+#'     the returned object to see labels.
+#'   * A previous `panelcoder()` result: its estimates are used as starting
+#'     values for parameters with the same label (e.g., to start a model with
+#'     full stationarity from the solution of a model with stationarity set
+#'     to "paths").
+#'   * A function with arguments `data`, `info`, and/or `table` that returns
+#'     any of the above.
+#'   * An unnamed list of any of the above, e.g., `list(NULL, "data")`. Each
+#'     set is tried in turn (see `startValsRule`). The returned object then
+#'     includes an element `startVals`, a data frame describing each attempt.
+#'
+#'   Only free parameters receive starting values; parameters that are fixed
+#'   or determined by constraints (e.g., later-wave variances under full
+#'   stationarity) are never changed. Parameters that are not given a value
+#'   keep the program default.
+#' @param startValsRule When `startVals` is a list of start value sets, how
+#'   to choose among them. "first" (the default) stops at the first set that
+#'   converges with usable standard errors. "best" runs all sets and keeps the
+#'   converged solution with the highest log-likelihood, which guards against
+#'   local optima.
+#' @param iterations Maximum number of iterations. For Mplus this adds
+#'   `ITERATIONS=` to the ANALYSIS command; for lavaan it sets `iter.max`.
+#'   Defaults to `NULL`, which uses the program default (1000 in Mplus).
 #' @param mplusAnalysis Quoted text. Specify ANLYSIS command for mplus. Defaults
 #'   to "MODEL=NOCOVARIANCES;\\nCOVERAGE=.001;". If you change this, including
 #'   "MODEL=NOCOVARIANCES" is highly recommended given the way the model is
@@ -521,6 +564,9 @@ panelcoder <- function(data,
                        constrainState = TRUE,
                        invariance = TRUE,
                        traitLoadings = "fixed",
+                       startVals = NULL,
+                       startValsRule = "first",
+                       iterations = NULL,
                        mplusAnalysis = NULL,
                        mplusOutput = NULL,
                        mplusDirectory = "mplus",
@@ -528,6 +574,16 @@ panelcoder <- function(data,
                        run = TRUE,
                        ...
                        ) {
+    ## Try a sequence of start value sets, if requested
+    if ((startValsRule %in% c("first", "best")) == FALSE) {
+        stop("Use 'first' or 'best' for startValsRule option.")
+    }
+    if (.isStartValsSeq(startVals)) {
+        args <- mget(names(formals(sys.function()))[names(formals(sys.function())) != "..."],
+                     envir = environment())
+        return(.runStartValsSeq(args, list(...), startVals, startValsRule))
+    }
+
     info <- getInfo(data)
 
     ## Set impossible options
@@ -550,7 +606,7 @@ panelcoder <- function(data,
 
     ## Set other conflicting options
     if (limits == FALSE) {
-        rstarts == NULL
+        rstarts <- NULL
     }
 
     ## Check if univariate gclm with clma
@@ -644,9 +700,28 @@ panelcoder <- function(data,
                          traitLoadings = traitLoadings
                          )
 
+    ## Starting values
+    if (!is.null(startVals)) {
+        model <- .applyStartVals(model,
+                                 .resolveStartVals(startVals, model, info, data))
+    }
+
     ## Lavaan
     if (program == "lavaan") {
         modelCode <- lav2lavaan(model)
+        fitLavaan <- function(...) {
+            lavaan::lavaan(model,
+                           data = data,
+                           meanstructure = TRUE,
+                           missing = "fiml",
+                           int.ov.free = TRUE,
+                           int.lv.free = FALSE,
+                           ...)
+        }
+        if (!is.null(iterations) & "control" %in% ...names()) {
+            warning("'iterations' is ignored because 'control' was passed to lavaan.")
+            iterations <- NULL
+        }
         if (run == TRUE) {
             fit <- NULL
             warningM <- NULL
@@ -654,14 +729,11 @@ panelcoder <- function(data,
             output <- tryCatch(
                 withCallingHandlers(
                 {
-                    fit <- lavaan::lavaan(model,
-                        data = data,
-                        meanstructure = TRUE,
-                        missing = "fiml",
-                        int.ov.free = TRUE,
-                        int.lv.free = FALSE,
-                        ...
-                        )
+                    fit <- if (is.null(iterations)) {
+                        fitLavaan(...)
+                    } else {
+                        fitLavaan(control = list(iter.max = iterations), ...)
+                    }
                     list(
                         fit = fit,
                         success = TRUE,
@@ -734,6 +806,16 @@ panelcoder <- function(data,
                                     "STARTS=",
                                     rstarts,
                                     ";\n")
+        }
+        if (!is.null(iterations)) {
+            if (grepl("ITERATIONS", toupper(mplusAnalysis))) {
+                warning("'iterations' is ignored because mplusAnalysis already sets ITERATIONS.")
+            } else {
+                mplusAnalysis <- paste0(mplusAnalysis,
+                                        "ITERATIONS=",
+                                        iterations,
+                                        ";\n")
+            }
         }
         if (is.null(mplusOutput)) {
             mplusOutput <- "stdyx; cinterval; TECH4; \n"
