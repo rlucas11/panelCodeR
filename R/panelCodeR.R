@@ -174,7 +174,7 @@
         state <- state
         traitCors <- FALSE
         arCors <- arCors
-        stateCors <- FALSE
+        stateCors <- stateCors
         residCors <- residCors
         dpm_c <- TRUE
         dpm_p <- FALSE
@@ -192,7 +192,7 @@
         state <- state
         traitCors <- FALSE
         arCors <- arCors
-        stateCors <- FALSE
+        stateCors <- stateCors
         residCors <- residCors
         dpm_c <- FALSE
         dpm_p <- TRUE
@@ -210,7 +210,7 @@
         state <- state
         traitCors <- FALSE
         arCors <- arCors
-        stateCors <- FALSE
+        stateCors <- stateCors
         residCors <- residCors
         dpm_c <- FALSE
         dpm_p <- TRUE
@@ -228,7 +228,7 @@
         state <- state
         traitCors <- TRUE
         arCors <- arCors
-        stateCors <- FALSE
+        stateCors <- stateCors
         residCors <- residCors
         dpm_c <- FALSE
         dpm_p <- FALSE
