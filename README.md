@@ -16,7 +16,7 @@ This R package generates and runs lavaan and mplus code for models for analyzing
   - Predetermined DPM
 * Latent Growth Curve Model (LGCM)
 * Autoregressive Latent Trajectory Model (ALT)
-* Latent Curve Model with Structured Residuals (LCM-SC)
+* Latent Curve Model with Structured Residuals (LCM-SR)
 * Simple measurement model (for data with multiple indicators per wave)
 
 Models can include multiple indicators per wave. In addition, if stationarity is imposed, missing waves can be included by modeling phantom variables (which the package handles automatically). "State" variance (as in the state component from the STARTS model) can  also be added to models that do not have it by default (e.g., the DPM or GLCM). 
@@ -58,11 +58,16 @@ panelcoder(data,
            residCors = FALSE,
            residVar = FALSE,
            slope = "none",
+           state = FALSE,
            limits = TRUE,
            rstarts = 5,
            stationarity = "paths",
            constrainState = TRUE,
            invariance = TRUE,
+           traitLoadings = "fixed",
+           startVals = NULL,
+           startValsRule = "first",
+           iterations = NULL,
            mplusAnalysis = NULL,
            mplusOutput = NULL,
            mplusDirectory = "mplus",
@@ -100,17 +105,23 @@ The other options are described below (and in the R help functions).
 - `clma` specifies whether to include cross-lagged moving averages (again introduced in the context of the GCLM).
 - `traitCors` specifies whether to include the correlation between the stable trait components.
 - `arCors` specifies whether to include correlations between AR components in the same wave (in bivariate models).
-- `stateCors` specifies whether to include correlations between state components in the same wave (in bivariate models).
+- `stateCors` specifies whether to include correlations between state components in the same wave (in bivariate models). This also works for models where a state component has been added with `state = TRUE` (e.g., the DPM). It is ignored for models without a state component (CLPM, RI-CLPM).
 - `residCors` specifies whether to include correlations between the residuals from a specific indicator at a specific wave with the residuals for the same indicator at other waves. 
 - `residVar` specifies whether to constraint the residuals for specific indicators to be the same across waves
-- `slope` specifies how to set loadings for models that include a latent slope. Can be "none" (the default), "linear", "centered", or "basis". The "linear" option is required when using the ALT or LGM-SC models. 
+- `slope` specifies how to set loadings for models that include a latent slope. Can be "none" (the default), "linear", "centered", or "basis". The ALT and LCM-SR models always use a "linear" slope. 
   - Linear sets the first loading to 0 and increments by 1.
   - Centered finds the midpoint of the waves and centers loadings around this.
   - Basis sets the first wave to 0 and the last wave to 1 and then freely estimates the loading for all other waves.
+- `state` specifies whether to add a state component to models that do not include one by default (e.g., the DPM or GCLM). Models such as the STARTS include it automatically.
 - `limits` specifies whether to restrict variances to be greater than zero and correlations to be between -1 and 1. This is sometimes needed to prevent inadmissible solutions when a variance component is very small or zero. This is not currently implemented perfectly, but will be fixed in a future version. 
 - `rstarts` specifies the number of random starts to use in Mplus. This is sometimes necessary when setting limits on variances to avoid a local maximum. It is set to 5 by default for models that include limits and it is not included in the Mplus analysis command otherwise. This default can be overridden by including a different value. Setting this to NULL will remove the default statement from the analysis command.
-- `stationarity` specifies whether to impose stationarity. This can be set to "paths" (the default), "full", or "none". In the STARTS and derivatives, full stationarity can be achieved by setting autoregressive paths, cross-lagged paths, and variance of the autoregressive processes to be equal across waves. The "full" setting does this. If set to "paths" only the autoregressive paths and cross-lagged paths are set to be equal across waves. 
+- `stationarity` specifies whether to impose stationarity. This can be set to "paths" (the default), "full", or "none". In the STARTS and derivatives, full stationarity can be achieved by setting autoregressive paths, cross-lagged paths, and variance of the autoregressive processes to be equal across waves. The "full" setting does this. If set to "paths" only the autoregressive paths and cross-lagged paths are set to be equal across waves. Full stationarity is required when there are missing waves (phantom variables), and it is not available with `lags` greater than 1 (stationarity is reset to "paths" with a warning). For the predetermined DPM ("dpm_p"), "full" leaves the wave 1 variances free and constrains innovation variances and covariances to be equal from wave 2 onward; use "dpm_c" for a fully stationary DPM.
 - `constrainState` specifies whether to constrain state variances to be equal across waves. This is required for stationarity, and may also be required in the STARTS model when full stationarity is not imposed. 
+- `invariance` specifies whether to constrain loadings for the same indicator to be equal across waves (when there are multiple indicators).
+- `traitLoadings` specifies how to treat loadings on the stable trait (random intercept). The default, "fixed", fixes all loadings to 1. "free" fixes the wave 1 loading to 1 and freely estimates the rest (loadings for phantom waves stay at 1). This is available for the STARTS, RI-CLPM, STS, and LCM-SR models. Because wave 1 is the marker, the variance decomposition in the summary refers to wave 1. Note that under full stationarity, free loadings will absorb any change in observed variances over time, and free loadings are less precisely estimated, especially with few waves.
+- `startVals` specifies starting values for free parameters. See [Starting Values](#starting-values) below.
+- `startValsRule` specifies how to choose among multiple sets of starting values: "first" (the default) or "best". See [Starting Values](#starting-values) below.
+- `iterations` sets the maximum number of iterations (`ITERATIONS` in the Mplus ANALYSIS command; `iter.max` in lavaan). The default (`NULL`) uses the program default.
 - `mplusAnalysis` specifies the ANALYSIS command to use for mplus if different from the default.
 - `mplusOutput` specifies the OUTPUT command to use for mplus if different from the default.
 - `mplusDirectory` specifies the directory to store .inp and .out files from mplus. This needs to be created before running the model or the command will fail with a 'file not found' error. 
@@ -132,9 +143,55 @@ panelPlot(clpm, measurement)
 
 The function `modelCode()` will produce a formatted version of the mplus or lavaan code representing the model. This could be used to check that the model was specified correctly, and it can also be copied, pasted, and modified to run models that can't be specified with panelCodeR. 
 
-The function `modelEstimates()` will extract and print the lavaan or mplus estimates. The actual lavaan or mplus object that is created from running the model is stored in the panelCodeR output; you can access it by selecting the fourth element of the panelCodeR output (e.g., `pcOutput[[4]]`). 
+The function `panelEstimates()` will extract and print the lavaan or mplus estimates. The actual lavaan or mplus object that is created from running the model is stored in the panelCodeR output; you can access it by selecting the fourth element of the panelCodeR output (e.g., `pcOutput[[4]]`). 
 
-The function `getLags()` will extract and print the estimates (including unstandardized and standardized estimates, along with standard errors and p-values) for all lags. 
+The function `getLags()` will extract and print the estimates (including unstandardized and standardized estimates, along with standard errors and p-values) for all lags. Use the `lag` and `type` ("AR" or "CL") arguments to report only specific lags or types of paths (e.g., `getLags(pcOutput, lag = 1, type = "CL")`).
+
+### Output Object
+
+The object returned by `panelcoder()` is a list. The first eight elements are, in order:
+
+1. a summary of the most important results (`NULL` if the run failed)
+2. basic information about the data and model
+3. the parameter table used to build the model
+4. the lavaan or MplusAutomation fit object
+5. the actual and implied stability coefficients used by `panelPlot()`
+6. the model code
+7. a single warning message (or `NULL`)
+8. a single error message (or `NULL`)
+
+Two named elements follow, which record problems with estimation in more detail:
+
+- `diagnostics`: a data frame with one row per problem found, with columns `type`, `severity`, `message`, `parameter`, and `value`. Severities are "error" (estimation failed), "inadmissible" (non-positive definite latent or residual covariance matrix), "local_optimum" (the best log-likelihood was not replicated across Mplus random starts), "se" (standard errors missing, zero, or untrustworthy), "boundary" (a constraint imposed by `limits = TRUE` is active, such as a variance at 0 or the trait correlation at the .99 bound), and "info".
+- `status`: a one-row data frame of flags summarizing the diagnostics: `converged`, `seTrusted`, `admissible`, `llReplicated` (`NA` for lavaan, when random starts were not used, or when fewer than two starts converged), `boundary`, `condNumber` (Mplus), and `minCoverage`.
+
+```R
+pcOutput <- panelcoder(data)
+pcOutput$status
+pcOutput$diagnostics
+```
+
+Boundary solutions (variance components at 0 or a correlation at the .99 bound) have valid estimates and log-likelihoods but suspect standard errors. Elements 7 and 8 are kept for compatibility with older code; `diagnostics` records every problem.
+
+### Starting Values
+
+Models like the STARTS can be difficult to estimate, and better starting values can help. The `startVals` option can be:
+
+- `NULL` (the default): use the program's default starting values.
+- `"data"`: data-based starting values. Each variable's variance is split evenly across the variance components in the model (e.g., thirds for the STARTS, halves for the RI-CLPM). Stabilities start at .5, innovation variances are consistent with that stability, and cross-lagged paths, moving averages, and covariances start at 0.
+- A named list or vector of values by role, by parameter label, or both, e.g., `list(stab = .7, cl = 0, trait_x = 2)` or `c(a_1_2 = .6, xvar1 = 2.1)`. Roles are `stab`, `cl`, `ma`, `clma`, `trait`, `ar` (wave 1 AR variance), `innov` (AR innovation variances after wave 1), `state`, `slope`, `trait_loading`, `slope_loading`, `loading`, `resid`, `resid_cov`, `cov_trait`, `cov_ar`, `cov_innov`, `cov_state`, `cov_slope`, `cov_trait_slope`, `cov_trait_ar`, and `cov_slope_ar`. Add `_x` or `_y` to apply a value to one variable only (e.g., `stab_y`); for cross-lagged paths, `cl_xy` is the effect of x on y and `cl_yx` the effect of y on x. Labels override variable-specific roles, which override general roles. Use `modelCode()` to see the labels.
+- A previous `panelcoder()` result, whose estimates are used for parameters with the same label (e.g., to start a fully stationary model from the solution of a model with `stationarity = "paths"`).
+- A function with arguments `data`, `info`, and/or `table` that returns any of the above.
+- An unnamed list of any of the above, e.g., `list(NULL, "data")`. Each set is tried in turn. With `startValsRule = "first"` (the default), the first set that converges with usable standard errors is kept; with `startValsRule = "best"`, all sets are run and the converged solution with the highest log-likelihood is kept. The returned object then includes a `startVals` element describing each attempt.
+
+Only free parameters receive starting values; parameters that are fixed or determined by equality constraints are never changed, and parameters that are not given a value keep the program default.
+
+```R
+fit1 <- panelcoder(data, stationarity = "paths")
+fit2 <- panelcoder(data, stationarity = "full", startVals = fit1)
+fit3 <- panelcoder(data, startVals = list(NULL, "data", list(stab = .8)),
+                   startValsRule = "best")
+```
 
 
 ## Models
@@ -177,7 +234,7 @@ The ALT model is equivalent to the predetermined DPM with a linear slope.
 
 ### Latent Curve Model with Structured Residuals
 
-The LCM-SC model is equivalent to the RI-CLPM with a linear slope. 
+The LCM-SR model is equivalent to the RI-CLPM with a linear slope. 
 
 ### Measurement Model
 
@@ -187,13 +244,13 @@ If there are multiple indicators for one or both variables, it is possible to te
 
 A number of additional options and features are also available. First, there are different options for constraining parameter estimates across waves. For instance, with the STARTS and variance, it is possible to impose stationarity, where the variances, stabilities, and cross-lagged paths are set to be equal across waves; but this constraint can often be removed (stationarity options refer to the autoregressive process; state variances are set to be equal with a different option). It is also possible to remove the lagged paths. Correlations between the components for the two variables in bivariate models can also be included or excluded. 
 
-The package handles data with multiple indicators per wave (as long as the same indicators are available at each wave). In addition, most models can be run even if some waves are missing. This is accomplished through the use of phantom variables for missing waves, but stationarity constraints must be included for these to work. 
+The package handles data with multiple indicators per wave (as long as the same indicators are available at each wave). In addition, most models can be run even if some waves are missing. This is accomplished through the use of phantom variables for missing waves (including in the DPM), but full stationarity (`stationarity = "full"`) must be imposed for these to work. 
 
 As described above, there are four functions that are useful after you have run a model. `panelPlot()` will plot the implied stabilities and actual stabilities for increasingly long waves (up to the length of the study). This can be useful for visualizing the ways that the model might not describe the underlying data well. If you have multiple indicators, you will first need to run a measurement model and pass the results of the measurement model and the fitted model to `panelPlot`. The function `panelEstimates()` prints all estimates from the model. The function `getLags()` prints just the estimates from the autoregressive and cross-lagged paths (for all lags). The function `modelCode()` prints a formatted version of lavaan or mplus code used to run the model. This can be useful for checking that everything was specified correctly or for modifying the basic code for variations that the package cannot handle. Note that the way that panelCodeR specifies code might be a little different than if you were writing the code from scratch. For instance, because of the way the code building is automated, it avoids some of the shortcuts that can be used to write lavaan or mplus code more efficiently. 
 
 ### Comparing Models
 
-There is also one more function that can be used to compare a set of models. The function `compareModels` takes four arguments: `data` (the data file) `program` (currently defaults to mplus because it is faster than lavaan), a list of models that the `panelcoder()` command can run (default = list("starts", "riclpm", "arts", "sts", and "clpm"), and an optional title. It is also possible to include additional options to pass to the panelcoder command. The function then runs the models and creates a table with fit statistics and basic info about the variance decomposition and stability (most relevant for residualized models like the STARTS and RI-CLPM). 
+There is also one more function that can be used to compare a set of models. The function `compareModels` takes four arguments: `data` (the data file) `program` (currently defaults to mplus because it is faster than lavaan), a list of models that the `panelcoder()` command can run (default = list("starts", "riclpm", "arts", "sts", and "clpm"), and an optional title. It is also possible to include additional options to pass to the panelcoder command. The function then runs the models and creates a table with fit statistics and basic info about the variance decomposition and stability (most relevant for residualized models like the STARTS and RI-CLPM). The table also includes the diagnostic flags from each model's `status` (`converged`, `seTrusted`, `admissible`, `llReplicated`, `condNumber`), a description of any active boundary constraints, a list of the diagnostic types found, and the correlations between the components of the two variables (`trait.cor`, `ar.cor`, `state.cor`), which makes it easy to spot models whose solutions should not be trusted.
 
 ## Modifying Model Code
 

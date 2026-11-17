@@ -7,7 +7,7 @@
 #' @param program Name of the program. Defaults to mplus as it is much quicker.
 #' @param models List of models to compare. Defaults to list("starts", "riclpm",
 #'   "arts", "sts", "clpm"). Can also include "dpm_c", "dpm_p", "gclm", "alt",
-#'   "lgm_sm", or "lgcm" (see panelCodeR documentation). 
+#'   "lcmsr", or "lgcm" (see panelCodeR documentation). 
 #' @param title Optional character string to be attended to title of model.
 #' @param ... Options to pass to panelcoder function.
 #' @export
