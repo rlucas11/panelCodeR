@@ -219,19 +219,31 @@
         i <- i + 1
     }
     vals <- vals[is.finite(vals)]
+    ## Starts that did not converge ("Unperturbed starting value run did not
+    ## converge." and "4 perturbed starting value run(s) did not converge.")
+    after <- lines[seq.int(hdr, length(lines))]
+    nFailed <- sum(grepl("^\\s*Unperturbed starting value run did not converge",
+                         after))
+    m <- regmatches(after, regexpr(
+        "^\\s*[0-9]+ (perturbed )?starting value run\\(s\\) did not converge",
+        after))
+    if (length(m) > 0) nFailed <- nFailed + sum(as.numeric(sub("^\\s*([0-9]+).*", "\\1", m)))
     if (length(vals) == 0) {
-        return(list(n = 0, nReplicated = 0, best = NA_real_, isLL = isLL))
+        return(list(n = 0, nReplicated = 0, best = NA_real_, isLL = isLL,
+                    nFailed = nFailed))
     }
     best <- if (isLL) max(vals) else min(vals)
     tol <- if (isLL) .startsLLTol else .startsFitTol
     list(n = length(vals),
          nReplicated = sum(abs(vals - best) <= tol + 1e-12),
          best = best,
-         isLL = isLL)
+         isLL = isLL,
+         nFailed = nFailed)
 }
 
 ## Was the best solution replicated across random starts? NA when random
-## starts were not used or no start converged.
+## starts were not used or fewer than two starts converged (replication
+## cannot be checked).
 .mplusLLReplicated <- function(lines) {
     text <- paste(.mplusParagraphs(lines), collapse = " ")
     if (grepl("THE BEST LOGLIKELIHOOD VALUE WAS NOT REPLICATED", text, fixed = TRUE)) {
@@ -241,7 +253,7 @@
         return(TRUE)
     }
     tab <- .mplusStartsTable(lines)
-    if (is.null(tab) || tab$n == 0) return(NA)
+    if (is.null(tab) || tab$n < 2) return(NA)
     tab$nReplicated >= 2
 }
 
@@ -471,7 +483,14 @@
     out <- list(do.call(.bindDiagnostics, out))
     if (!("ll_not_replicated" %in% out[[1]]$type)) {
         tab <- .mplusStartsTable(outputLines)
-        if (!is.null(tab) && tab$n > 0 && tab$nReplicated < 2) {
+        if (!is.null(tab) && tab$n == 1) {
+            ## Only one start converged: nothing to replicate against
+            out[[length(out) + 1]] <- .diagRow(
+                "starts_insufficient", "info",
+                paste0("Only 1 of ", 1 + tab$nFailed,
+                       " starts converged; replication of the best solution could not be checked"),
+                value = 1)
+        } else if (!is.null(tab) && tab$n >= 2 && tab$nReplicated < 2) {
             what <- if (tab$isLL) "loglikelihood" else "fit function value"
             out[[length(out) + 1]] <- .diagRow(
                 "ll_not_replicated", "local_optimum",

@@ -556,11 +556,13 @@
 #'     correlation at the .99 bound) and `"info"`. Types include
 #'     `mplus_input_error`, `se_untrusted`, `se_failed`, `se_undefined`,
 #'     `psi_npd`, `theta_npd`, `post_check` (lavaan), `ll_not_replicated`,
-#'     `not_terminated`, `no_convergence`, `sparse`, `coverage`, `boundary`,
+#'     `starts_insufficient`, `not_terminated`, `no_convergence`, `sparse`,
+#'     `coverage`, `boundary`,
 #'     `mplus_warning`, `r_warning`, `r_error` and `no_estimates`.
 #'   * `status`: a one-row data frame of flags summarizing the diagnostics:
 #'     `converged`, `seTrusted`, `admissible`, `llReplicated` (`NA` when
-#'     random starts were not used, and always `NA` for lavaan), `boundary`,
+#'     random starts were not used or fewer than two starts converged, and
+#'     always `NA` for lavaan), `boundary`,
 #'     `condNumber` (Mplus) and `minCoverage`.
 #'
 #'   Boundary solutions (variance components at 0 or a correlation at the .99

@@ -102,6 +102,15 @@ fx_starts_local <- sub("21.0168", "21.0368", fx_starts, fixed = TRUE)
 fx_starts_local <- sub("21.0169", "21.0369", fx_starts_local, fixed = TRUE)
 fx_starts_local <- sub("21.0171", "21.0371", fx_starts_local, fixed = TRUE)
 
+# The same table with only one converged start
+fx_starts_one <- c(fx_starts[1:5],
+                   "",
+                   "Unperturbed starting value run did not converge.",
+                   "",
+                   "4 perturbed starting value run(s) did not converge.",
+                   "",
+                   "MODEL FIT INFORMATION")
+
 # Real: little overlap between x_1 and y_4, COVERAGE = .1
 fx_coverage <- c(
     "     PROPORTION OF DATA PRESENT",
@@ -183,6 +192,13 @@ test_that("random-start replication is read from the starts table", {
     expect_equal(d$value, 1)
     # No table (no random starts): NA
     expect_true(is.na(.mplusLLReplicated(fx_psi)))
+    # Only one start converged: replication cannot be checked, so NA and an
+    # info diagnostic rather than ll_not_replicated
+    expect_true(is.na(.mplusLLReplicated(fx_starts_one)))
+    d <- .mplusDiagnostics(fx_starts_one)
+    expect_equal(d$type, "starts_insufficient")
+    expect_equal(d$severity, "info")
+    expect_match(d$message, "Only 1 of 6 starts converged")
     # Mplus's own message takes precedence
     expect_false(.mplusLLReplicated(c(fx_starts, "",
         "     WARNING:  THE BEST LOGLIKELIHOOD VALUE WAS NOT REPLICATED.  THE",

@@ -224,11 +224,13 @@ or untrustworthy), \code{"boundary"} (a constraint imposed by
 correlation at the .99 bound) and \code{"info"}. Types include
 \code{mplus_input_error}, \code{se_untrusted}, \code{se_failed}, \code{se_undefined},
 \code{psi_npd}, \code{theta_npd}, \code{post_check} (lavaan), \code{ll_not_replicated},
-\code{not_terminated}, \code{no_convergence}, \code{sparse}, \code{coverage}, \code{boundary},
+\code{starts_insufficient}, \code{not_terminated}, \code{no_convergence}, \code{sparse},
+\code{coverage}, \code{boundary},
 \code{mplus_warning}, \code{r_warning}, \code{r_error} and \code{no_estimates}.
 \item \code{status}: a one-row data frame of flags summarizing the diagnostics:
 \code{converged}, \code{seTrusted}, \code{admissible}, \code{llReplicated} (\code{NA} when
-random starts were not used, and always \code{NA} for lavaan), \code{boundary},
+random starts were not used or fewer than two starts converged, and
+always \code{NA} for lavaan), \code{boundary},
 \code{condNumber} (Mplus) and \code{minCoverage}.
 }
 
