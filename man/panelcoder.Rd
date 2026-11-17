@@ -205,10 +205,37 @@ meanstructure=TRUE, missing = 'fiml', int.ov.free=TRUE, and
 int.lv.free=FALSE.}
 }
 \value{
-pcObject, which is a list that includes the parameter table used to
-create the model, a list of basic information about the model, the actual
-and implied stability coefficients used for plotting, the model code and
-the fit object produced by lavaan or MplusAutomation.
+A \code{pcOutput} object: a list whose first eight elements are, in
+order, the summary (\code{NULL} if the run failed), basic information about
+the model, the parameter table, the lavaan or MplusAutomation fit object,
+the actual and implied stability coefficients used for plotting, the model
+code, a single warning message (or \code{NULL}), and a single error message (or
+\code{NULL}). Two named elements follow:
+\itemize{
+\item \code{diagnostics}: a data frame with one row per problem found, with
+columns \code{type}, \code{severity}, \code{message}, \code{parameter} (a parameter label or
+Mplus parameter, else \code{NA}) and \code{value} (e.g., a condition number,
+minimum coverage, or estimate; else \code{NA}). Severities are \code{"error"}
+(estimation failed), \code{"inadmissible"} (non-positive definite latent or
+residual covariance matrix), \code{"local_optimum"} (best solution not
+replicated across random starts), \code{"se"} (standard errors missing, zero,
+or untrustworthy), \code{"boundary"} (a constraint imposed by
+\code{limits = TRUE} is active, such as a variance at 0 or the trait
+correlation at the .99 bound) and \code{"info"}. Types include
+\code{mplus_input_error}, \code{se_untrusted}, \code{se_failed}, \code{se_undefined},
+\code{psi_npd}, \code{theta_npd}, \code{post_check} (lavaan), \code{ll_not_replicated},
+\code{not_terminated}, \code{no_convergence}, \code{sparse}, \code{coverage}, \code{boundary},
+\code{mplus_warning}, \code{r_warning}, \code{r_error} and \code{no_estimates}.
+\item \code{status}: a one-row data frame of flags summarizing the diagnostics:
+\code{converged}, \code{seTrusted}, \code{admissible}, \code{llReplicated} (\code{NA} when
+random starts were not used, and always \code{NA} for lavaan), \code{boundary},
+\code{condNumber} (Mplus) and \code{minCoverage}.
+}
+
+Boundary solutions (variance components at 0 or a correlation at the .99
+bound) have valid estimates and log-likelihoods but suspect standard
+errors. The warning and error messages in elements 7 and 8 are kept for
+compatibility; \code{diagnostics} records every problem.
 }
 \description{
 \code{panelcoder()} produces lavaan and mplus code for variations of the general

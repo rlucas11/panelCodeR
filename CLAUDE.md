@@ -64,6 +64,13 @@ The central intermediate representation is a **parameter table** (a data frame w
 7. `warningM` — captured warning message (or NULL)
 8. `errorM` — captured error message (or NULL)
 
+Two named elements follow (added in 0.0.3.7, see `R/diagnostics.R`):
+`diagnostics` (a data frame, one row per detected problem: `type`, `severity`,
+`message`, `parameter`, `value`) and `status` (one-row data frame of flags:
+`converged`, `seTrusted`, `admissible`, `llReplicated`, `boundary`,
+`condNumber`, `minCoverage`). `[[7]]`/`[[8]]` keep their legacy single-string
+values for downstream code; `diagnostics` records every problem.
+
 Access the raw lavaan object via `pcOutput[[4]]`; use `modelCode(pcOutput)` to print model syntax.
 
 ## Directories to ignore

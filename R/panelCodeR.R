@@ -537,10 +537,36 @@
 #' @param ... Additional options passed to lavaan. Default options are
 #'   meanstructure=TRUE, missing = 'fiml', int.ov.free=TRUE, and
 #'   int.lv.free=FALSE.
-#' @returns pcObject, which is a list that includes the parameter table used to
-#'   create the model, a list of basic information about the model, the actual
-#'   and implied stability coefficients used for plotting, the model code and
-#'   the fit object produced by lavaan or MplusAutomation.
+#' @returns A `pcOutput` object: a list whose first eight elements are, in
+#'   order, the summary (`NULL` if the run failed), basic information about
+#'   the model, the parameter table, the lavaan or MplusAutomation fit object,
+#'   the actual and implied stability coefficients used for plotting, the model
+#'   code, a single warning message (or `NULL`), and a single error message (or
+#'   `NULL`). Two named elements follow:
+#'
+#'   * `diagnostics`: a data frame with one row per problem found, with
+#'     columns `type`, `severity`, `message`, `parameter` (a parameter label or
+#'     Mplus parameter, else `NA`) and `value` (e.g., a condition number,
+#'     minimum coverage, or estimate; else `NA`). Severities are `"error"`
+#'     (estimation failed), `"inadmissible"` (non-positive definite latent or
+#'     residual covariance matrix), `"local_optimum"` (best solution not
+#'     replicated across random starts), `"se"` (standard errors missing, zero,
+#'     or untrustworthy), `"boundary"` (a constraint imposed by
+#'     `limits = TRUE` is active, such as a variance at 0 or the trait
+#'     correlation at the .99 bound) and `"info"`. Types include
+#'     `mplus_input_error`, `se_untrusted`, `se_failed`, `se_undefined`,
+#'     `psi_npd`, `theta_npd`, `post_check` (lavaan), `ll_not_replicated`,
+#'     `not_terminated`, `no_convergence`, `sparse`, `coverage`, `boundary`,
+#'     `mplus_warning`, `r_warning`, `r_error` and `no_estimates`.
+#'   * `status`: a one-row data frame of flags summarizing the diagnostics:
+#'     `converged`, `seTrusted`, `admissible`, `llReplicated` (`NA` when
+#'     random starts were not used, and always `NA` for lavaan), `boundary`,
+#'     `condNumber` (Mplus) and `minCoverage`.
+#'
+#'   Boundary solutions (variance components at 0 or a correlation at the .99
+#'   bound) have valid estimates and log-likelihoods but suspect standard
+#'   errors. The warning and error messages in elements 7 and 8 are kept for
+#'   compatibility; `diagnostics` records every problem.
 #' @export
 panelcoder <- function(data,
                        title = "panelcoder",
@@ -726,6 +752,7 @@ panelcoder <- function(data,
             fit <- NULL
             warningM <- NULL
             errorM <- NULL
+            rWarnings <- character(0)
             output <- tryCatch(
                 withCallingHandlers(
                 {
@@ -743,6 +770,7 @@ panelcoder <- function(data,
                 },
                 warning = function(w) {
                     warningM <<- conditionMessage(w)
+                    rWarnings <<- c(rWarnings, conditionMessage(w))
                     invokeRestart("muffleWarning")
                 },
                 error = function(e) {
@@ -755,7 +783,26 @@ panelcoder <- function(data,
                 }
                 )
             )
-            
+            ## Diagnostics: all recorded warnings plus convergence,
+            ## admissibility, standard error and active-bound checks
+            diag <- .lavaanDiagnostics(output$fit, rWarnings, model)
+            hasEstimates <- !is.null(output$fit) &&
+                isTRUE(output$success) &&
+                !("no_convergence" %in% diag$type)
+            if (hasEstimates) {
+                diag <- .bindDiagnostics(
+                    diag,
+                    .activeBounds(model,
+                                  .lavaanLabelEstimates(model, output$fit),
+                                  info, data))
+            }
+            output$diagnostics <- diag
+            output$status <- .diagStatus(
+                diag,
+                hasEstimates = !is.null(output$fit) && isTRUE(output$success),
+                minCoverage = if (is.null(output$fit)) NA_real_ else
+                                  .lavaanMinCoverage(output$fit))
+
             if (output$success == TRUE) {
                 pcSum <- .summarizeLavaan(panelModel,
                     info = info,
@@ -782,6 +829,8 @@ panelcoder <- function(data,
                     output$warningM,
                     output$errorM
                 )
+                pcOutput$diagnostics <- output$diagnostics
+                pcOutput$status <- output$status
                 if (!is.null(output$errorM)) {
                     print(paste0("lavaan error: ", output$errorM))
                 }
@@ -829,99 +878,47 @@ panelcoder <- function(data,
                                       MODEL = modelCode)
         if (run == TRUE) {
             fit <- NULL
-            warningM <- NULL
-            errorM <- NULL
-            success <- TRUE
-            output <- tryCatch(
-            {
-                file_stem <- paste0(
-                    mplusDirectory,
-                    "/",
-                    title
-                )
-                file_inp <- paste0(
-                    file_stem,
-                    ".inp"
-                )
-                file_out <- paste0(
-                    file_stem,
-                    ".out"
-                )
-                fit <- MplusAutomation::mplusModeler(mplusStatement,
-                    modelout = file_inp,
-                    run = 1
-                )
-                ## Check that Mplus actually ran before looking for
-                ## estimation problems
-                mplusError <- check_mplus_error(file_out)
-                if (!is.null(mplusError)) {
-                    success <- FALSE
-                    errorM <- mplusError
-                } else {
-                    nonpos <- check_nonpos(file_out)
-                    if (nonpos) {
-                        warningM <- "Non-positive definite matrix"
-                    }
-                    noSe <- check_se(file_out)
-                    if (noSe) {
-                        success <- FALSE
-                        errorM <- "Standard errors could not be computed"
-                    }
-                    noConv <- check_convergence(file_out)
-                    if (noConv) {
-                        success <- FALSE
-                        errorM <- "No convergence"
-                    }
-                    sparse <- check_sparse(file_out)
-                    if (sparse) {
-                        success <- FALSE
-                        errorM <- "No convergence; Sparse Matrix"
-                    }
-                    coverage <- check_coverage(file_out)
-                    if (coverage) {
-                        warningM <- "Coverage warning"
-                    }
-                }
-                list(
-                    fit = fit,
-                    success = success,
-                    warningM = warningM,
-                    errorM = errorM
+            rWarnings <- character(0)
+            file_stem <- paste0(
+                mplusDirectory,
+                "/",
+                title
+            )
+            file_inp <- paste0(
+                file_stem,
+                ".inp"
+            )
+            file_out <- paste0(
+                file_stem,
+                ".out"
+            )
+            ## Record R warnings and carry on, so that the checks of the Mplus
+            ## output always run; only real errors stop the run
+            runError <- tryCatch(
+                withCallingHandlers(
+                {
+                    fit <- MplusAutomation::mplusModeler(mplusStatement,
+                        modelout = file_inp,
+                        run = 1
                     )
+                    NULL
                 },
                 warning = function(w) {
-                    warningM = conditionMessage(w)
-                    list(
-                        fit = fit,
-                        success = TRUE,
-                        warningM = warningM,
-                        errorM = errorM
-                    )
-                },
-            error = function(e) {
-                list(
-                    fit = fit,
-                    success = FALSE,
-                    warningM = warningM,
-                    errorM = conditionMessage(e)
-                )
-            }
-            )
-
-            ## Guard against runs that ended without estimates (e.g., when a
-            ## warning interrupted the run) so the summary does not fail
-            if (output$success == TRUE &
-                is.null(output$fit$results$parameters$unstandardized)) {
-                output$success <- FALSE
-                mplusError <- check_mplus_error(file_out)
-                if (!is.null(mplusError)) {
-                    output$errorM <- mplusError
-                } else {
-                    output$errorM <- paste0("Mplus did not produce parameter estimates. ",
-                                            "Check the Mplus output file in '",
-                                            mplusDirectory, "'.")
+                    rWarnings <<- c(rWarnings, conditionMessage(w))
+                    invokeRestart("muffleWarning")
                 }
-            }
+                ),
+                error = function(e) {
+                    conditionMessage(e)
+                }
+            )
+            output <- .mplusRunResult(fit,
+                                      file_out,
+                                      rWarnings = rWarnings,
+                                      runError = runError,
+                                      model = model,
+                                      info = info,
+                                      data = data)
 
             if (output$success == TRUE) {
                 pcSum <- .summarizeMplus(panelModel,
@@ -949,6 +946,8 @@ panelcoder <- function(data,
                     output$warningM,
                     output$errorM
                 )
+                pcOutput$diagnostics <- output$diagnostics
+                pcOutput$status <- output$status
                 if (!is.null(output$errorM)) {
                     print(paste0("Mplus error: ", output$errorM))
                 }
@@ -988,7 +987,11 @@ panelcoder <- function(data,
                               output$fit,
                               latent)
     
+    pcSum$diagnostics <- output$diagnostics
+    pcSum$status <- output$status
     pcOutput <- list(pcSum, info, model, fit, corSummary, modelCode, output$warningM, output$errorM)
+    pcOutput$diagnostics <- output$diagnostics
+    pcOutput$status <- output$status
     class(pcOutput) <- "pcOutput"
     print(pcSum)
     if (!is.null(output$warningM)) {

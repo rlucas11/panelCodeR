@@ -198,36 +198,12 @@
         keep <- pt$label != "" & pt$free > 0
         return(stats::setNames(pt$est[keep], pt$label[keep]))
     }
-    est <- fit$results$parameters$unstandardized
-    if (is.null(est)) {
+    if (is.null(fit$results$parameters$unstandardized)) {
         stop("Could not find parameter estimates in the panelcoder() result supplied to startVals.",
              call. = FALSE)
     }
-    rows <- which(oldModel$free != 0 & oldModel$label != "" &
-                  oldModel$op %in% c("~", "~~", "=~"))
-    vals <- rep(NA_real_, length(rows))
-    hdr <- toupper(est$paramHeader)
-    prm <- toupper(est$param)
-    for (k in seq_along(rows)) {
-        r <- rows[k]
-        lhs <- toupper(gsub(".", "_", oldModel$lhs[r], fixed = TRUE))
-        rhs <- toupper(gsub(".", "_", oldModel$rhs[r], fixed = TRUE))
-        op <- oldModel$op[r]
-        hit <- integer(0)
-        if (op == "~") {
-            hit <- which(hdr == paste0(lhs, ".ON") & prm == rhs)
-        } else if (op == "=~") {
-            hit <- which(hdr == paste0(lhs, ".BY") & prm == rhs)
-        } else if (lhs == rhs) {
-            hit <- which(hdr %in% c("VARIANCES", "RESIDUAL.VARIANCES") &
-                         prm == lhs)
-        } else {
-            hit <- which((hdr == paste0(lhs, ".WITH") & prm == rhs) |
-                         (hdr == paste0(rhs, ".WITH") & prm == lhs))
-        }
-        if (length(hit) > 0) vals[k] <- est$est[hit[1]]
-    }
-    out <- stats::setNames(vals, oldModel$label[rows])
+    le <- .mplusLabelEstimates(oldModel, fit)
+    out <- stats::setNames(le$est, le$label)
     out[!is.na(out)]
 }
 
@@ -430,15 +406,25 @@
     table
 }
 
-## Did a panelcoder() attempt converge with usable standard errors?
-.startValsConverged <- function(pcOut, program) {
+## Did a panelcoder() attempt converge (and, with requireSE = TRUE, also
+## have trustworthy standard errors)? Uses the result's status flags.
+.startValsConverged <- function(pcOut, program, requireSE = TRUE) {
     if (!inherits(pcOut, "pcOutput")) return(FALSE)
-    if (is.null(pcOut[[1]]) || !is.null(pcOut[[8]])) return(FALSE)
+    if (is.null(pcOut[[1]])) return(FALSE)
+    status <- pcOut[["status"]]
+    if (!is.null(status)) {
+        if (!isTRUE(status$converged)) return(FALSE)
+        if (requireSE && isFALSE(status$seTrusted)) return(FALSE)
+        return(TRUE)
+    }
+    ## Results without status flags
+    if (!is.null(pcOut[[8]])) return(FALSE)
     fit <- pcOut[[4]]
     if (program == "lavaan") {
         if (!isTRUE(lavaan::lavInspect(fit, "converged"))) return(FALSE)
         pt <- lavaan::parTable(fit)
-        if (is.null(pt$se) || !all(is.finite(pt$se[pt$free > 0]))) {
+        if (requireSE &&
+            (is.null(pt$se) || !all(is.finite(pt$se[pt$free > 0])))) {
             return(FALSE)
         }
     }
@@ -473,14 +459,17 @@
     program <- args$program
     n <- length(startValsSeq)
     results <- vector("list", n)
+    usable <- rep(FALSE, n)
     logs <- vector("list", n)
     warns <- character(0)
     attempts <- data.frame(attempt = seq_len(n),
                            startVals = vapply(startValsSeq, .describeStartVals,
                                               character(1)),
                            converged = NA,
+                           seTrusted = NA,
                            logLik = NA_real_,
                            error = NA_character_,
+                           diagnostics = NA_character_,
                            selected = FALSE,
                            stringsAsFactors = FALSE)
     for (i in seq_len(n)) {
@@ -498,11 +487,27 @@
                 })
         )
         results[[i]] <- res
+        usable[i] <- FALSE
         if (inherits(res, "error")) {
             attempts$converged[i] <- FALSE
             attempts$error[i] <- conditionMessage(res)
         } else {
-            attempts$converged[i] <- .startValsConverged(res, program)
+            attempts$converged[i] <- .startValsConverged(res, program,
+                                                         requireSE = FALSE)
+            usable[i] <- .startValsConverged(res, program)
+            status <- if (inherits(res, "pcOutput")) res[["status"]]
+            attempts$seTrusted[i] <- if (!is.null(status)) {
+                status$seTrusted
+            } else if (attempts$converged[i]) {
+                usable[i]
+            } else {
+                NA
+            }
+            diag <- if (inherits(res, "pcOutput")) res[["diagnostics"]]
+            if (!is.null(diag) && nrow(diag) > 0) {
+                attempts$diagnostics[i] <- paste(unique(diag$type),
+                                                 collapse = "; ")
+            }
             attempts$logLik[i] <- .startValsLogLik(res, program)
             if (inherits(res, "pcOutput") && !is.null(res[[8]])) {
                 attempts$error[i] <- res[[8]]
@@ -510,10 +515,17 @@
                 attempts$error[i] <- "Did not converge"
             }
         }
-        if (rule == "first" && attempts$converged[i]) break
+        if (rule == "first" && usable[i]) break
     }
 
-    ok <- which(attempts$converged %in% TRUE)
+    ## Prefer attempts that converged with trustworthy standard errors; if
+    ## there are none, fall back to attempts that converged
+    ok <- which(usable)
+    seFallback <- FALSE
+    if (length(ok) == 0) {
+        ok <- which(attempts$converged %in% TRUE)
+        seFallback <- length(ok) > 0
+    }
     if (length(ok) == 0) {
         chosen <- 1
     } else if (rule == "best") {
@@ -539,6 +551,9 @@
     } else {
         cat(paste0("\nStart values: used attempt ", chosen, " (",
                    attempts$startVals[chosen], ") of ", n, ".\n"))
+        if (seFallback) {
+            cat("No start value set produced trustworthy standard errors; used a converged solution.\n")
+        }
     }
     out$startVals <- attempts
     out

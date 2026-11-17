@@ -35,9 +35,13 @@ expect_fits <- function(data, ...) {
         out <- panelcoder(data = data, program = "lavaan", run = TRUE, ...)
     ))
     expect_s3_class(out, "pcOutput")
-    expect_length(out, 8)
+    # Elements 1-8 are positional; diagnostics are added as named elements
+    expect_length(out, 10)
+    expect_equal(names(out)[9:10], c("diagnostics", "status"))
     expect_false(is.null(out[[1]]), label = "pcSum (summary) present on success")
     expect_null(out[[8]], label = "errorM (fatal error)")
+    expect_s3_class(out$diagnostics, "data.frame")
+    expect_true(isTRUE(out$status$converged))
     invisible(out)
 }
 

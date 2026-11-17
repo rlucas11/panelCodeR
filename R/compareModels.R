@@ -68,5 +68,35 @@ compareModels <- function(data,
     out <- as.data.frame(values)
     out$warning <- if (length(fit) >= 7 && !is.null(fit[[7]])) fit[[7]] else NA_character_
     out$error <- if (length(fit) >= 8 && !is.null(fit[[8]])) fit[[8]] else NA_character_
+
+    ## Diagnostics (NA when the result has none, e.g., a failed run)
+    status <- if (is.list(fit)) fit[["status"]] else NULL
+    diag <- if (is.list(fit)) fit[["diagnostics"]] else NULL
+    flag <- function(name, na) {
+        v <- if (!is.null(status)) status[[name]]
+        if (is.null(v) || length(v) == 0) na else v[1]
+    }
+    out$converged <- flag("converged", NA)
+    out$seTrusted <- flag("seTrusted", NA)
+    out$admissible <- flag("admissible", NA)
+    out$llReplicated <- flag("llReplicated", NA)
+    bounds <- if (!is.null(diag)) diag$message[diag$type == "boundary"]
+    out$boundary <- if (length(bounds) > 0) {
+        paste(bounds, collapse = "; ")
+    } else {
+        NA_character_
+    }
+    out$condNumber <- flag("condNumber", NA_real_)
+    out$diagnostics <- if (!is.null(diag) && nrow(diag) > 0) {
+        paste(unique(diag$type), collapse = "; ")
+    } else {
+        NA_character_
+    }
+
+    ## Correlations between the components of the two variables
+    for (f in c("trait.cor", "ar.cor", "state.cor")) {
+        v <- if (!is.null(pcResults)) pcResults[[f]]
+        out[[f]] <- if (is.null(v) || length(v) == 0) NA_real_ else as.numeric(v[1])
+    }
     out
 }

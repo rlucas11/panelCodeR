@@ -1277,6 +1277,11 @@ print.pcSum <- function(x, ...) {
         )
     }
     cat("\n")
+    if (!is.null(x$status)) {
+        cat("Diagnostics: \n")
+        cat(.formatDiagnostics(x$diagnostics, x$status), sep = "\n")
+        cat("\n")
+    }
     cat("\n")
 }
 
@@ -1917,8 +1922,11 @@ check_mplus_error <- function(file_path) {
     return(paste0("Mplus output file not found: ", file_path,
                   ". Check that Mplus is installed and on the path."))
   }
-  lines <- readLines(file_path, warn = FALSE)
+  .mplusErrorFromLines(readLines(file_path, warn = FALSE))
+}
 
+## First "*** ERROR" paragraph of Mplus output, or NULL
+.mplusErrorFromLines <- function(lines) {
   # Mplus errors start with "*** ERROR" followed by indented explanation lines
   start <- grep("^\\*\\*\\* ERROR", lines)
   if (length(start) == 0) {
@@ -1931,93 +1939,39 @@ check_mplus_error <- function(file_path) {
   return(paste(trimws(lines[start[1]:end]), collapse = " "))
 }
 
-check_nonpos <- function(file_path) {
-  # Read the entire file as a single string
-  text <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
-  
-  # Define the target text (collapse newlines and spacing)
-  warning_text <- paste(
-    "THE STANDARD ERRORS OF THE MODEL PARAMETER ESTIMATES MAY NOT BE",
-    "TRUSTWORTHY FOR SOME PARAMETERS DUE TO A NON-POSITIVE DEFINITE",
-    "FIRST-ORDER DERIVATIVE PRODUCT MATRIX.  THIS MAY BE DUE TO THE STARTING",
-    "VALUES BUT MAY ALSO BE AN INDICATION OF MODEL NONIDENTIFICATION.",
-    sep = " "
-  )
-  
-  # Normalize whitespace in both strings before searching
-  normalize_ws <- function(x) gsub("\\s+", " ", x)
-  
-  found <- grepl(normalize_ws(warning_text), normalize_ws(text), fixed = TRUE)
-    
-  return(found)
+## The check_*() functions below are kept for compatibility. Each reports
+## whether one kind of problem appears in an Mplus output file; panelcoder()
+## itself uses .mplusDiagnostics() (R/diagnostics.R), which finds all of them.
+.checkMplusType <- function(file_path, type, filter = NULL) {
+  diag <- .mplusDiagnostics(readLines(file_path, warn = FALSE))
+  hit <- diag$type == type
+  if (!is.null(filter)) hit <- hit & grepl(filter, diag$message)
+  any(hit)
 }
 
+## "THE STANDARD ERRORS ... MAY NOT BE TRUSTWORTHY ... NON-POSITIVE DEFINITE
+## FIRST-ORDER DERIVATIVE PRODUCT MATRIX" (diagnostic type se_untrusted)
+check_nonpos <- function(file_path) {
+  .checkMplusType(file_path, "se_untrusted", "first-order derivative")
+}
 
 check_se <- function(file_path) {
-  # Read the entire file as a single string
-  text <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
-  
-  # Define the target text (collapse newlines and spacing)
-  warning_text <- paste(
-    "THE STANDARD ERRORS OF THE MODEL PARAMETER ESTIMATES COULD NOT BE",
-    "COMPUTED.  THE MODEL MAY NOT BE IDENTIFIED.  CHECK YOUR MODEL.",
-    sep = " "
-  )
-  
-  # Normalize whitespace in both strings before searching
-  normalize_ws <- function(x) gsub("\\s+", " ", x)
-  
-  found <- grepl(normalize_ws(warning_text), normalize_ws(text), fixed = TRUE)
-    
-  return(found)
+  .checkMplusType(file_path, "se_failed")
 }
 
+## Mplus reports several kinds of nonconvergence, e.g.
+## "NO CONVERGENCE.  NUMBER OF ITERATIONS EXCEEDED." and
+## "NO CONVERGENCE.  SERIOUS PROBLEMS IN ITERATIONS."
 check_convergence <- function(file_path) {
-  # Read the entire file as a single string
-  text <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
-  
-  # Mplus reports several kinds of nonconvergence, e.g.
-  # "NO CONVERGENCE.  NUMBER OF ITERATIONS EXCEEDED." and
-  # "NO CONVERGENCE.  SERIOUS PROBLEMS IN ITERATIONS."
-  found <- grepl("NO CONVERGENCE.", text, fixed = TRUE)
-
-  return(found)
+  .checkMplusType(file_path, "no_convergence")
 }
 
 check_sparse <- function(file_path) {
-  # Read the entire file as a single string
-  text <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
-  
-  # Define the target text (collapse newlines and spacing)
-    warning_text <- paste(
-        "THE MISSING DATA EM ALGORITHM FOR THE H1 MODEL",
-        "HAS NOT CONVERGED WITH RESPECT TO THE PARAMETER",
-        "ESTIMATES.  THIS MAY BE DUE TO SPARSE DATA",
-        "LEADING TO A SINGULAR COVARIANCE MATRIX ESTIMATE.",
-        sep = " "
-  )
-  
-  # Normalize whitespace in both strings before searching
-  normalize_ws <- function(x) gsub("\\s+", " ", x)
-  
-  found <- grepl(normalize_ws(warning_text), normalize_ws(text), fixed = TRUE)
-    
-  return(found)
+  .checkMplusType(file_path, "sparse")
 }
 
 check_coverage <- function(file_path) {
-  # Read the entire file as a single string
-  text <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
-  
-  # Define the target text (collapse newlines and spacing)
-    warning_text <- "THE COVARIANCE COVERAGE FALLS BELOW THE SPECIFIED LIMIT."
-  
-  # Normalize whitespace in both strings before searching
-  normalize_ws <- function(x) gsub("\\s+", " ", x)
-  
-  found <- grepl(normalize_ws(warning_text), normalize_ws(text), fixed = TRUE)
-    
-  return(found)
+  .checkMplusType(file_path, "coverage")
 }
 
 
