@@ -1,0 +1,522 @@
+Mplus VERSION 8.11 (Linux)
+MUTHEN & MUTHEN
+11/18/2026  12:48 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE:
+  small
+  DATA:
+  FILE = "small.dat";
+  VARIABLE:
+  NAMES = x_1 x_2 x_3;
+   MISSING=.;
+
+  ANALYSIS:
+  MODEL=NOCOVARIANCES;
+  COVERAGE=.001;STARTS=5;
+
+  MODEL:
+    l_x_1 BY x_1@1 (p1);
+    x_1@0 (p2);
+    l_x_2 BY x_2@1 (p3);
+    x_2@0 (p4);
+    l_x_3 BY x_3@1 (p5);
+    x_3@0 (p6);
+    l_x_1@0 (p7);
+    l_x_2@0 (p8);
+    l_x_3@0 (p9);
+    a_x_1 BY l_x_1@1 (p10);
+    a_x_2 BY l_x_2@1 (p11);
+    a_x_3 BY l_x_3@1 (p12);
+    a_x_1@0 (p13);
+    a_x_2@0 (p14);
+    a_x_3@0 (p15);
+    i_x_1 BY a_x_1@1 (p16);
+    i_x_2 BY a_x_2@1 (p17);
+    i_x_3 BY a_x_3@1 (p18);
+    i_x_1* (xvar1);
+    i_x_2* (xvar2);
+    i_x_3* (xvar3);
+    a_x_2 ON a_x_1* (a_1_2);
+    a_x_3 ON a_x_2* (a_1_3);
+    [x_1*] (p24);
+    [x_2*] (p25);
+    [x_3*] (p26);
+    [l_x_1@0] (p27);
+    [l_x_2@0] (p28);
+    [l_x_3@0] (p29);
+    [a_x_1@0] (p30);
+    [a_x_2@0] (p31);
+    [a_x_3@0] (p32);
+    [i_x_1@0] (p33);
+    [i_x_2@0] (p34);
+    [i_x_3@0] (p35);
+  MODEL CONSTRAINT:
+
+     a_1_3 = a_1_2;
+     xvar1 > 0;
+     xvar2 > 0;
+     xvar3 > 0;
+  OUTPUT:
+  stdyx; cinterval; TECH4;
+
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+RANDOM STARTS RESULTS RANKED FROM THE BEST TO THE WORST FIT FUNCTION VALUES
+
+Fit function values at local maxima and random start numbers:
+
+             25.4912         2
+             25.4912         3
+             25.4912         5
+             25.4912         4
+             25.4912         unperturbed
+             25.4912         1
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                        7
+
+Loglikelihood
+
+          H0 Value                       -1531.298
+          H1 Value                       -1518.553
+
+Information Criteria
+
+          Akaike (AIC)                    3076.597
+          Bayesian (BIC)                  3102.523
+          Sample-Size Adjusted BIC        3080.324
+            (n* = (n + 2) / 24)
+
+Chi-Square Test of Model Fit
+
+          Value                             25.491
+          Degrees of Freedom                     2
+          P-Value                           0.0000
+
+RMSEA (Root Mean Square Error Of Approximation)
+
+          Estimate                           0.198
+          90 Percent C.I.                    0.134  0.270
+          Probability RMSEA <= .05           0.000
+
+CFI/TLI
+
+          CFI                                0.925
+          TLI                                0.887
+
+Chi-Square Test of Model Fit for the Baseline Model
+
+          Value                            314.432
+          Degrees of Freedom                     3
+          P-Value                           0.0000
+
+SRMR (Standardized Root Mean Square Residual)
+
+          Value                              0.060
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ L_X_1    BY
+    X_1                1.000      0.000    999.000    999.000
+
+ L_X_2    BY
+    X_2                1.000      0.000    999.000    999.000
+
+ L_X_3    BY
+    X_3                1.000      0.000    999.000    999.000
+
+ A_X_1    BY
+    L_X_1              1.000      0.000    999.000    999.000
+
+ A_X_2    BY
+    L_X_2              1.000      0.000    999.000    999.000
+
+ A_X_3    BY
+    L_X_3              1.000      0.000    999.000    999.000
+
+ I_X_1    BY
+    A_X_1              1.000      0.000    999.000    999.000
+
+ I_X_2    BY
+    A_X_2              1.000      0.000    999.000    999.000
+
+ I_X_3    BY
+    A_X_3              1.000      0.000    999.000    999.000
+
+ A_X_2    ON
+    A_X_1              0.598      0.031     19.258      0.000
+
+ A_X_3    ON
+    A_X_2              0.598      0.031     19.258      0.000
+
+ Means
+    I_X_1              0.000      0.000    999.000    999.000
+    I_X_2              0.000      0.000    999.000    999.000
+    I_X_3              0.000      0.000    999.000    999.000
+
+ Intercepts
+    X_1               -0.076      0.092     -0.822      0.411
+    X_2               -0.072      0.091     -0.799      0.424
+    X_3                0.022      0.087      0.258      0.797
+    L_X_1              0.000      0.000    999.000    999.000
+    L_X_2              0.000      0.000    999.000    999.000
+    L_X_3              0.000      0.000    999.000    999.000
+    A_X_1              0.000      0.000    999.000    999.000
+    A_X_2              0.000      0.000    999.000    999.000
+    A_X_3              0.000      0.000    999.000    999.000
+
+ Variances
+    I_X_1              2.539 *********     12.247      0.000
+    I_X_2              1.556      0.127     12.245      0.000
+    I_X_3              1.379      0.113     12.245      0.000
+
+ Residual Variances
+    X_1                0.000      0.000    999.000    999.000
+    X_2                0.000      0.000    999.000    999.000
+    X_3                0.000      0.000    999.000    999.000
+    L_X_1              0.000      0.000    999.000    999.000
+    L_X_2              0.000      0.000    999.000    999.000
+    L_X_3              0.000      0.000    999.000    999.000
+    A_X_1              0.000      0.000    999.000    999.000
+    A_X_2              0.000      0.000    999.000    999.000
+    A_X_3              0.000      0.000    999.000    999.000
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.965E-03
+       (ratio of smallest to largest eigenvalue)
+
+
+STANDARDIZED MODEL RESULTS
+
+
+STDYX Standardization
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ L_X_1    BY
+    X_1                1.000      0.000    999.000    999.000
+
+ L_X_2    BY
+    X_2                1.000      0.000    999.000    999.000
+
+ L_X_3    BY
+    X_3                1.000      0.000    999.000    999.000
+
+ A_X_1    BY
+    L_X_1              1.000      0.000    999.000    999.000
+
+ A_X_2    BY
+    L_X_2              1.000      0.000    999.000    999.000
+
+ A_X_3    BY
+    L_X_3              1.000      0.000    999.000    999.000
+
+ I_X_1    BY
+    A_X_1              1.000      0.000    999.000    999.000
+
+ I_X_2    BY
+    A_X_2              0.794      0.023     34.670      0.000
+
+ I_X_3    BY
+    A_X_3              0.781      0.026     29.751      0.000
+
+ A_X_2    ON
+    A_X_1              0.607      0.030     20.256      0.000
+
+ A_X_3    ON
+    A_X_2              0.625      0.033     19.042      0.000
+
+ Means
+    I_X_1              0.000      0.000    999.000    999.000
+    I_X_2              0.000      0.000    999.000    999.000
+    I_X_3              0.000      0.000    999.000    999.000
+
+ Intercepts
+    X_1               -0.047      0.058     -0.822      0.411
+    X_2               -0.046      0.058     -0.799      0.425
+    X_3                0.015      0.058      0.258      0.797
+    L_X_1              0.000      0.000    999.000    999.000
+    L_X_2              0.000      0.000    999.000    999.000
+    L_X_3              0.000      0.000    999.000    999.000
+    A_X_1              0.000      0.000    999.000    999.000
+    A_X_2              0.000      0.000    999.000    999.000
+    A_X_3              0.000      0.000    999.000    999.000
+
+ Variances
+    I_X_1              1.000      0.000    999.000    999.000
+    I_X_2              1.000      0.000    999.000    999.000
+    I_X_3              1.000      0.000    999.000    999.000
+
+ Residual Variances
+    X_1                0.000    999.000    999.000    999.000
+    X_2                0.000    999.000    999.000    999.000
+    X_3                0.000    999.000    999.000    999.000
+    L_X_1              0.000    999.000    999.000    999.000
+    L_X_2              0.000    999.000    999.000    999.000
+    L_X_3              0.000    999.000    999.000    999.000
+    A_X_1              0.000    999.000    999.000    999.000
+    A_X_2              0.000    999.000    999.000    999.000
+    A_X_3              0.000    999.000    999.000    999.000
+
+
+TECHNICAL 4 OUTPUT
+
+
+     ESTIMATES DERIVED FROM THE MODEL
+
+
+           ESTIMATED MEANS FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           ESTIMATED MEANS FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+                0.000         0.000         0.000         0.000
+
+
+           S.E. FOR ESTIMATED MEANS FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           S.E. FOR ESTIMATED MEANS FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+                0.000         0.000         0.000         0.000
+
+
+           EST./S.E. FOR ESTIMATED MEANS FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+                0.000         0.000         0.000         0.000         0.000
+
+
+           EST./S.E. FOR ESTIMATED MEANS FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+                0.000         0.000         0.000         0.000
+
+
+           TWO-TAILED P-VALUE FOR ESTIMATED MEANS FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+                1.000         1.000         1.000         1.000         1.000
+
+
+           TWO-TAILED P-VALUE FOR ESTIMATED MEANS FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+                1.000         1.000         1.000         1.000
+
+
+           ESTIMATED COVARIANCE MATRIX FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+ L_X_1          2.539
+ L_X_2          1.519         2.465
+ L_X_3          0.909         1.475         2.261
+ A_X_1          2.539         1.519         0.909         2.539
+ A_X_2          1.519         2.465         1.475         1.519         2.465
+ A_X_3          0.909         1.475         2.261         0.909         1.475
+ I_X_1          2.539         1.519         0.909         2.539         1.519
+ I_X_2          0.000         1.556         0.931         0.000         1.556
+ I_X_3          0.000         0.000         1.379         0.000         0.000
+
+
+           ESTIMATED COVARIANCE MATRIX FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+ A_X_3          2.261
+ I_X_1          0.909         2.539
+ I_X_2          0.931         0.000         1.556
+ I_X_3          1.379         0.000         0.000         1.379
+
+
+           S.E. FOR ESTIMATED COVARIANCE MATRIX FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+ L_X_1          0.207
+ L_X_2          0.147         0.173
+ L_X_3          0.120         0.158         0.178
+ A_X_1          0.207         0.147         0.120         0.207
+ A_X_2          0.147         0.173         0.158         0.147         0.173
+ A_X_3          0.120         0.158         0.178         0.120         0.158
+ I_X_1          0.207         0.147         0.120         0.207         0.147
+ I_X_2          0.000         0.127         0.089         0.000         0.127
+ I_X_3          0.000         0.000         0.113         0.000         0.000
+
+
+           S.E. FOR ESTIMATED COVARIANCE MATRIX FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+ A_X_3          0.178
+ I_X_1          0.120         0.207
+ I_X_2          0.089         0.000         0.127
+ I_X_3          0.113         0.000         0.000         0.113
+
+
+           EST./S.E. FOR ESTIMATED COVARIANCE MATRIX FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+ L_X_1         12.247
+ L_X_2         10.335        14.213
+ L_X_3          7.570         9.319        12.735
+ A_X_1         12.247        10.335         7.570        12.247
+ A_X_2         10.335        14.213         9.319        10.335        14.213
+ A_X_3          7.570         9.319        12.735         7.570         9.319
+ I_X_1         12.247        10.335         7.570        12.247        10.335
+ I_X_2          0.000        12.245        10.430         0.000        12.245
+ I_X_3          0.000         0.000        12.245         0.000         0.000
+
+
+           EST./S.E. FOR ESTIMATED COVARIANCE MATRIX FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+ A_X_3         12.735
+ I_X_1          7.570        12.247
+ I_X_2         10.430         0.000        12.245
+ I_X_3         12.245         0.000         0.000        12.245
+
+
+           TWO-TAILED P-VALUE FOR ESTIMATED COVARIANCE MATRIX FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+ L_X_1          0.000
+ L_X_2          0.000         0.000
+ L_X_3          0.000         0.000         0.000
+ A_X_1          0.000         0.000         0.000         0.000
+ A_X_2          0.000         0.000         0.000         0.000         0.000
+ A_X_3          0.000         0.000         0.000         0.000         0.000
+ I_X_1          0.000         0.000         0.000         0.000         0.000
+ I_X_2          1.000         0.000         0.000         1.000         0.000
+ I_X_3          1.000         1.000         0.000         1.000         1.000
+
+
+           TWO-TAILED P-VALUE FOR ESTIMATED COVARIANCE MATRIX FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+ A_X_3          0.000
+ I_X_1          0.000         0.000
+ I_X_2          0.000         1.000         0.000
+ I_X_3          0.000         1.000         1.000         0.000
+
+
+           ESTIMATED CORRELATION MATRIX FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+ L_X_1          1.000
+ L_X_2          0.607         1.000
+ L_X_3          0.379         0.625         1.000
+ A_X_1          1.000         0.607         0.379         1.000
+ A_X_2          0.607         1.000         0.625         0.607         1.000
+ A_X_3          0.379         0.625         1.000         0.379         0.625
+ I_X_1          1.000         0.607         0.379         1.000         0.607
+ I_X_2          0.000         0.794         0.496         0.000         0.794
+ I_X_3          0.000         0.000         0.781         0.000         0.000
+
+
+           ESTIMATED CORRELATION MATRIX FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+ A_X_3          1.000
+ I_X_1          0.379         1.000
+ I_X_2          0.496         0.000         1.000
+ I_X_3          0.781         0.000         0.000         1.000
+
+
+           S.E. FOR ESTIMATED CORRELATION MATRIX FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+ L_X_1          0.000
+ L_X_2          0.030         0.000
+ L_X_3          0.033         0.033         0.000
+ A_X_1          0.000         0.030         0.033         0.000
+ A_X_2          0.030         0.000         0.033         0.030         0.000
+ A_X_3          0.033         0.033         0.000         0.033         0.033
+ I_X_1          0.000         0.030         0.033         0.000         0.030
+ I_X_2          0.000         0.023         0.023         0.000         0.023
+ I_X_3          0.000         0.000         0.026         0.000         0.000
+
+
+           S.E. FOR ESTIMATED CORRELATION MATRIX FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+ A_X_3          0.000
+ I_X_1          0.033         0.000
+ I_X_2          0.023         0.000         0.000
+ I_X_3          0.026         0.000         0.000         0.000
+
+
+           EST./S.E. FOR ESTIMATED CORRELATION MATRIX FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+ L_X_1        999.000
+ L_X_2         20.256       999.000
+ L_X_3         11.403        19.042       999.000
+ A_X_1    ***********        20.256        11.403       999.000
+ A_X_2         20.256   ***********        19.042        20.256       999.000
+ A_X_3         11.403        19.042   ***********        11.403        19.042
+ I_X_1    ***********        20.256        11.403   ***********        20.256
+ I_X_2          0.000        34.670        21.656         0.000        34.670
+ I_X_3          0.000         0.000        29.751         0.000         0.000
+
+
+           EST./S.E. FOR ESTIMATED CORRELATION MATRIX FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+ A_X_3        999.000
+ I_X_1         11.403       999.000
+ I_X_2         21.656         0.000       999.000
+ I_X_3         29.751         0.000         0.000       999.000
+
+
+           TWO-TAILED P-VALUE FOR ESTIMATED CORRELATION MATRIX FOR THE LATENT VARIABLES
+              L_X_1         L_X_2         L_X_3         A_X_1         A_X_2
+              ________      ________      ________      ________      ________
+ L_X_1          0.000
+ L_X_2          0.000         0.000
+ L_X_3          0.000         0.000         0.000
+ A_X_1          0.000         0.000         0.000         0.000
+ A_X_2          0.000         0.000         0.000         0.000         0.000
+ A_X_3          0.000         0.000         0.000         0.000         0.000
+ I_X_1          0.000         0.000         0.000         0.000         0.000
+ I_X_2          1.000         0.000         0.000         1.000         0.000
+ I_X_3          1.000         1.000         0.000         1.000         1.000
+
+
+           TWO-TAILED P-VALUE FOR ESTIMATED CORRELATION MATRIX FOR THE LATENT VARIABLES
+              A_X_3         I_X_1         I_X_2         I_X_3
+              ________      ________      ________      ________
+ A_X_3          0.000
+ I_X_1          0.000         0.000
+ I_X_2          0.000         1.000         0.000
+ I_X_3          0.000         1.000         1.000         0.000
+
+
+     Beginning Time:  12:48:26
+        Ending Time:  12:48:26
+       Elapsed Time:  00:00:00
+
+
+

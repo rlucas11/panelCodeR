@@ -285,8 +285,16 @@
                   model$op %in% c("~", "~~", "=~"))
     vals <- rep(NA_real_, length(rows))
     ses <- rep(NA_real_, length(rows))
+    stdses <- rep(NA_real_, length(rows))
     hdr <- toupper(est$paramHeader)
     prm <- toupper(est$param)
+    ## Standardized results have the same rows (paramHeader + param); their
+    ## SEs tell a genuine SE of 0 apart from one that rounds to 0.000
+    std <- fit$results$parameters$stdyx.standardized
+    hasStd <- !is.null(std) && nrow(std) > 0 && !is.null(std$se)
+    if (hasStd) {
+        stdKey <- paste(toupper(std$paramHeader), toupper(std$param))
+    }
     for (k in seq_along(rows)) {
         r <- rows[k]
         lhs <- toupper(gsub(".", "_", model$lhs[r], fixed = TRUE))
@@ -306,15 +314,21 @@
         if (length(hit) > 0) {
             vals[k] <- est$est[hit[1]]
             if (!is.null(est$se)) ses[k] <- est$se[hit[1]]
+            if (hasStd) {
+                s <- match(paste(hdr[hit[1]], prm[hit[1]]), stdKey)
+                if (!is.na(s)) stdses[k] <- std$se[s]
+            }
         }
     }
-    data.frame(label = model$label[rows],
-               lhs = model$lhs[rows],
-               op = model$op[rows],
-               rhs = model$rhs[rows],
-               est = vals,
-               se = ses,
-               stringsAsFactors = FALSE)
+    out <- data.frame(label = model$label[rows],
+                      lhs = model$lhs[rows],
+                      op = model$op[rows],
+                      rhs = model$rhs[rows],
+                      est = vals,
+                      se = ses,
+                      stringsAsFactors = FALSE)
+    if (hasStd) out$stdse <- stdses
+    out
 }
 
 ## Parameter estimates and SEs from a lavaan fit, by label
@@ -333,20 +347,51 @@
 
 ## Free parameters whose SE is missing, 0, or 999 (Mplus's marker for an
 ## undefined value), excluding parameters that depend on others through `==`.
-.undefinedSEs <- function(labelEst, model) {
+##
+## `rounded = TRUE` is for Mplus, which prints SEs to three decimals: an SE of
+## 0 on a small-scale parameter is often a genuine SE that rounds to 0.000.
+## Such an SE is flagged only when the standardized SE (column `stdse`) is also
+## 0 or missing. Without standardized results, it is skipped when |est| < .05.
+## Skipped SEs are reported as info-level `se_rounded` rows. lavaan SEs are not
+## rounded, so lavaan uses the default (`rounded = FALSE`): 0 or NA is
+## undefined.
+.undefinedSEs <- function(labelEst, model, rounded = FALSE) {
     if (is.null(labelEst) || nrow(labelEst) == 0) return(.emptyDiagnostics())
     deps <- if (is.null(model)) character(0) else .dependentLabels(model)
     le <- labelEst[!(labelEst$label %in% deps) & !is.na(labelEst$est), ,
                    drop = FALSE]
-    bad <- is.na(le$se) | le$se == 0 | le$se == 999
-    if (!any(bad)) return(.emptyDiagnostics())
-    le <- le[bad, , drop = FALSE]
-    msgs <- paste0("Standard error of ", le$label, " (", le$lhs, " ", le$op,
-                   " ", le$rhs, ") is ",
-                   ifelse(is.na(le$se), "missing",
-                          ifelse(le$se == 999, "undefined (999)", "0")))
-    .bindDiagnostics(.diagRow("se_undefined", "se", msgs, parameter = le$label,
-                              value = le$se))
+    se <- suppressWarnings(as.numeric(le$se))
+    zero <- !is.na(se) & se == 0
+    isRounded <- rep(FALSE, nrow(le))
+    if (rounded && any(zero)) {
+        if (!is.null(le$stdse)) {
+            stdse <- suppressWarnings(as.numeric(le$stdse))
+            isRounded <- zero & !is.na(stdse) & stdse > 0
+        } else {
+            isRounded <- zero & abs(le$est) < 0.05
+        }
+    }
+    bad <- (is.na(se) | se == 0 | se == 999) & !isRounded
+    out <- list()
+    if (any(bad)) {
+        b <- le[bad, , drop = FALSE]
+        msgs <- paste0("Standard error of ", b$label, " (", b$lhs, " ", b$op,
+                       " ", b$rhs, ") is ",
+                       ifelse(is.na(se[bad]), "missing",
+                              ifelse(se[bad] == 999, "undefined (999)", "0")))
+        out[[1]] <- .diagRow("se_undefined", "se", msgs, parameter = b$label,
+                             value = se[bad])
+    }
+    if (any(isRounded)) {
+        r <- le[isRounded, , drop = FALSE]
+        msgs <- paste0("SE of ", r$label, " (", r$lhs, " ", r$op, " ", r$rhs,
+                       ") printed as 0.000; estimate is on a small scale ",
+                       "(unstandardized p-value unusable)")
+        out[[length(out) + 1]] <- .diagRow("se_rounded", "info", msgs,
+                                           parameter = r$label, value = 0)
+    }
+    if (length(out) == 0) return(.emptyDiagnostics())
+    do.call(.bindDiagnostics, out)
 }
 
 ## Readable name of the parameter with a given label
@@ -526,7 +571,7 @@
     skipSE <- any(out[[1]]$type %in% c("se_failed", .notConvergedTypes))
     if (!skipSE && !is.null(model)) {
         out[[length(out) + 1]] <- .undefinedSEs(.mplusLabelEstimates(model, fit),
-                                                model)
+                                                model, rounded = TRUE)
     }
     do.call(.bindDiagnostics, out)
 }
@@ -639,12 +684,41 @@
     list(warningM = warningM, errorM = errorM, success = success)
 }
 
+## Mplus prints values too large for their field as asterisks ("*********").
+## MplusAutomation then reads the whole column as character, and arithmetic on
+## it (e.g. round() in .summarizeMplus()) fails. Convert every character column
+## of the parameter tables whose entries are all numbers or asterisks to
+## numeric; asterisks become NA (so .undefinedSEs() flags such an SE).
+.coerceMplusParams <- function(fit) {
+    params <- fit$results$parameters
+    if (is.null(params) || !is.list(params)) return(fit)
+    for (nm in names(params)) {
+        tab <- params[[nm]]
+        if (!is.data.frame(tab)) next
+        for (col in names(tab)) {
+            x <- tab[[col]]
+            if (!is.character(x)) next
+            xt <- trimws(x)
+            stars <- is.na(xt) | xt == "" | grepl("^\\*+$", xt)
+            v <- suppressWarnings(as.numeric(xt))
+            if (all(stars | !is.na(v)) && !all(stars)) {
+                v[stars] <- NA_real_
+                tab[[col]] <- v
+            }
+        }
+        params[[nm]] <- tab
+    }
+    fit$results$parameters <- params
+    fit
+}
+
 ## Run the Mplus checks on a finished (or failed) Mplus run and return the
 ## pieces panelcoder() needs: success flag, legacy warning/error strings,
 ## diagnostics and status.
 .mplusRunResult <- function(fit, file_out, rWarnings = character(0),
                             runError = NULL, model = NULL, info = NULL,
                             data = NULL) {
+    fit <- .coerceMplusParams(fit)
     lines <- fit$results$output
     if (is.null(lines) && !is.null(file_out) && file.exists(file_out)) {
         lines <- readLines(file_out, warn = FALSE)

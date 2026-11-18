@@ -105,7 +105,11 @@ correlations to possible values. Defaults to TRUE.}
 \item{rstarts}{Numeric value indicating the number of random starts in
 mplus. This is often necessary to avoid local maximum when limiting variance
 to be positive, thus the default is to set it to 5 when limits are also set.
-If you wish to remove this option, set \code{rstarts} to NULL.}
+If you wish to remove this option, set \code{rstarts} to NULL. The value is
+passed to the Mplus \code{STARTS} option. For these (non-mixture) models, Mplus
+runs every random start plus the unperturbed start to completion, so the
+default of 5 gives six final solutions and replication of the best
+solution can be checked (\code{status$llReplicated}).}
 
 \item{stationarity}{Logical value indicating whether and how to impose
 stationarity in the autoregressive process. Defaults to "paths" which
@@ -225,8 +229,12 @@ correlation at the .99 bound) and \code{"info"}. Types include
 \code{mplus_input_error}, \code{se_untrusted}, \code{se_failed}, \code{se_undefined},
 \code{psi_npd}, \code{theta_npd}, \code{post_check} (lavaan), \code{ll_not_replicated},
 \code{starts_insufficient}, \code{not_terminated}, \code{no_convergence}, \code{sparse},
-\code{coverage}, \code{boundary},
-\code{mplus_warning}, \code{r_warning}, \code{r_error} and \code{no_estimates}.
+\code{coverage}, \code{boundary}, \code{se_rounded} (info: an Mplus SE printed as
+0.000 whose standardized SE is nonzero, so the unstandardized p-value
+is unusable but the SE is not undefined),
+\code{mplus_warning}, \code{r_warning}, \code{r_error} and \code{no_estimates}. An Mplus SE
+printed as asterisks (too large for its field) is read as \code{NA} and
+reported as \code{se_undefined}.
 \item \code{status}: a one-row data frame of flags summarizing the diagnostics:
 \code{converged}, \code{seTrusted}, \code{admissible}, \code{llReplicated} (\code{NA} when
 random starts were not used or fewer than two starts converged, and

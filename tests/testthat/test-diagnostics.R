@@ -400,3 +400,111 @@ test_that("a STARTS fit without state variance reports the boundary (Mplus)", {
     expect_true("state variance of x at 0" %in% out$diagnostics$message)
     expect_true("se_undefined" %in% out$diagnostics$type)
 })
+
+## --- SEs printed as 0.000 or as asterisks ------------------------------------
+
+# Label-estimate table as .mplusLabelEstimates() returns it
+se_table <- function(se, stdse = NULL, est = .5) {
+    le <- data.frame(label = paste0("p", seq_along(se)), lhs = "a", op = "~",
+                     rhs = "b", est = est, se = se, stringsAsFactors = FALSE)
+    if (!is.null(stdse)) le$stdse <- stdse
+    le
+}
+
+test_that("Mplus SEs of 0 with a nonzero standardized SE are rounding", {
+    d <- .undefinedSEs(se_table(se = 0, stdse = .019, est = .003), NULL,
+                       rounded = TRUE)
+    expect_equal(d$type, "se_rounded")
+    expect_equal(d$severity, "info")
+    expect_equal(d$parameter, "p1")
+    expect_true(.diagStatus(d, hasEstimates = TRUE)$seTrusted)
+})
+
+test_that("undefined Mplus SEs are still flagged", {
+    # 999, 0 with standardized SE 0, 0 with standardized SE missing, and NA
+    le <- se_table(se = c(999, 0, 0, NA, .1), stdse = c(.1, 0, NA, .1, .1))
+    d <- .undefinedSEs(le, NULL, rounded = TRUE)
+    expect_equal(d$type, rep("se_undefined", 4))
+    expect_equal(d$parameter, c("p1", "p2", "p3", "p4"))
+    expect_false(.diagStatus(d, hasEstimates = TRUE)$seTrusted)
+})
+
+test_that("without standardized results, small estimates with SE 0 are skipped", {
+    d <- .undefinedSEs(se_table(se = c(0, 0), est = c(.003, .5)), NULL,
+                       rounded = TRUE)
+    expect_equal(d$type, c("se_undefined", "se_rounded"))
+    expect_equal(d$parameter, c("p2", "p1"))
+})
+
+test_that("lavaan SEs of 0 are always undefined", {
+    d <- .undefinedSEs(se_table(se = 0, est = .003), NULL)
+    expect_equal(d$type, "se_undefined")
+})
+
+test_that("asterisk SEs do not break the summary and are flagged (Mplus)", {
+    skip_if_not_installed("MplusAutomation")
+    fixture <- test_path("fixtures", "mplus-asterisk-se.out")
+    dir <- withr::local_tempdir()
+    local_mocked_bindings(
+        mplusModeler = function(object, modelout, run, ...) {
+            out <- sub("\\.inp$", ".out", modelout)
+            file.copy(fixture, out, overwrite = TRUE)
+            list(results = MplusAutomation::readModels(out, quiet = TRUE))
+        },
+        .package = "MplusAutomation"
+    )
+    d <- make_pc_data(nwaves = 3, nobs = 300)
+    out <- NULL
+    utils::capture.output(
+        out <- panelcoder(d, panelModel = "clpm", program = "mplus",
+                          mplusDirectory = dir, title = "asterisk")
+    )
+    expect_s3_class(out, "pcOutput")
+    expect_false(is.null(out[[1]]))
+    expect_null(out[[8]])
+    se <- out[[4]]$results$parameters$unstandardized$se
+    expect_type(se, "double")
+    expect_equal(sum(is.na(se)), 1)
+    und <- out$diagnostics[out$diagnostics$type == "se_undefined", ]
+    expect_equal(nrow(und), 1)
+    expect_match(und$message, "I_X_1|i_x_1", ignore.case = TRUE)
+    expect_match(und$message, "missing")
+    expect_true(out$status$converged)
+    expect_false(out$status$seTrusted)
+})
+
+# Bivariate data with Y on a scale 100 times larger, so the X-on-Y cross-lag
+# has an unstandardized SE that prints as 0.000
+rescaled_data <- function() {
+    set.seed(2)
+    d <- gen_starts(n = 500, nwaves = 5, xr = .5, yr = .5)
+    names(d) <- paste(rep(c("x", "y"), each = 5), rep(1:5, 2), sep = "_")
+    d[, 6:10] <- d[, 6:10] * 100
+    d
+}
+
+test_that("SEs that round to 0.000 do not make SEs untrusted (Mplus)", {
+    skip_on_cran()
+    skip_if_not_installed("MplusAutomation")
+    skip_if(Sys.which("mplus") == "", "Mplus is not installed")
+    dir <- withr::local_tempdir()
+    out <- NULL
+    utils::capture.output(out <- panelcoder(rescaled_data(), panelModel = "clpm",
+                                            program = "mplus",
+                                            mplusDirectory = dir,
+                                            title = "rounded"))
+    expect_true(out$status$converged)
+    expect_true(out$status$seTrusted)
+    expect_false("se_undefined" %in% out$diagnostics$type)
+    expect_true("se_rounded" %in% out$diagnostics$type)
+
+    # A start value sequence stops at the first attempt
+    utils::capture.output(out <- panelcoder(rescaled_data(), panelModel = "clpm",
+                                            program = "mplus",
+                                            mplusDirectory = dir,
+                                            title = "roundedsv",
+                                            startVals = list(NULL, "data")))
+    expect_true(out$startVals$selected[1])
+    expect_true(out$startVals$seTrusted[1])
+    expect_true(is.na(out$startVals$converged[2]))
+})

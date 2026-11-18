@@ -453,7 +453,11 @@
 #' @param rstarts Numeric value indicating the number of random starts in
 #'   mplus. This is often necessary to avoid local maximum when limiting variance
 #'   to be positive, thus the default is to set it to 5 when limits are also set.
-#'   If you wish to remove this option, set `rstarts` to NULL.
+#'   If you wish to remove this option, set `rstarts` to NULL. The value is
+#'   passed to the Mplus `STARTS` option. For these (non-mixture) models, Mplus
+#'   runs every random start plus the unperturbed start to completion, so the
+#'   default of 5 gives six final solutions and replication of the best
+#'   solution can be checked (`status$llReplicated`).
 #' @param stationarity Logical value indicating whether and how to impose
 #'   stationarity in the autoregressive process. Defaults to "paths" which
 #'   constrains the stability and cross-lagged paths to be equal. Can also be
@@ -557,8 +561,12 @@
 #'     `mplus_input_error`, `se_untrusted`, `se_failed`, `se_undefined`,
 #'     `psi_npd`, `theta_npd`, `post_check` (lavaan), `ll_not_replicated`,
 #'     `starts_insufficient`, `not_terminated`, `no_convergence`, `sparse`,
-#'     `coverage`, `boundary`,
-#'     `mplus_warning`, `r_warning`, `r_error` and `no_estimates`.
+#'     `coverage`, `boundary`, `se_rounded` (info: an Mplus SE printed as
+#'     0.000 whose standardized SE is nonzero, so the unstandardized p-value
+#'     is unusable but the SE is not undefined),
+#'     `mplus_warning`, `r_warning`, `r_error` and `no_estimates`. An Mplus SE
+#'     printed as asterisks (too large for its field) is read as `NA` and
+#'     reported as `se_undefined`.
 #'   * `status`: a one-row data frame of flags summarizing the diagnostics:
 #'     `converged`, `seTrusted`, `admissible`, `llReplicated` (`NA` when
 #'     random starts were not used or fewer than two starts converged, and
@@ -991,7 +999,7 @@ panelcoder <- function(data,
     
     pcSum$diagnostics <- output$diagnostics
     pcSum$status <- output$status
-    pcOutput <- list(pcSum, info, model, fit, corSummary, modelCode, output$warningM, output$errorM)
+    pcOutput <- list(pcSum, info, model, output$fit, corSummary, modelCode, output$warningM, output$errorM)
     pcOutput$diagnostics <- output$diagnostics
     pcOutput$status <- output$status
     class(pcOutput) <- "pcOutput"
